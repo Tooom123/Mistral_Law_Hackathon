@@ -1,6 +1,6 @@
 id: PRG-01
 category: INSTRUCTION
-title: Purge des nullités après arrêt de la chambre de l'instruction
+title: Defects purged after a ruling of the investigating chamber
 article: art. 174 CPP
 applies_to: [chamber_ruling]
 condition_type: procedural
@@ -8,8 +8,8 @@ confidence: M
 versions:
   - label: art. 174 CPP
     check: purge
-rights_at_stake: [forclusion]
+rights_at_stake: [time bar]
 next_steps:
-  - Vérifier si les moyens identifiés pouvaient être connus avant l'arrêt.
+  - Check whether the defects found could have been known before the ruling.
 judilibre_query: purge des nullités article 174 chambre de l'instruction
 weight: 0.4

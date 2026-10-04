@@ -168,7 +168,7 @@ For each `ACT` node, for each possible nullity of its category:
 
 **Report:** list of "moyens de nullité à examiner", each with pages and acts to name. Export Markdown/PDF.
 
-UI language: French. Words: "nullité possible", "à instruire". Never "nul".
+UI language: English (the case files themselves stay in French). Words: "possible nullity", "to investigate". Never "void".
 
 ---
 

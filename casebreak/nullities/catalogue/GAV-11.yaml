@@ -1,6 +1,6 @@
 id: GAV-11
 category: GARDE_A_VUE
-title: Proche à prévenir — demande non suivie d'avis
+title: Relative to be informed — request not followed by a notice
 article: art. 63-2 CPP
 applies_to: [garde_a_vue]
 needs: [family_requested]
@@ -9,15 +9,15 @@ condition_type: structural
 confidence: M
 versions:
   - valid_to: 2024-07-01
-    label: art. 63-2 CPP, version antérieure à la loi du 22 avril 2024
+    label: art. 63-2 CPP, version before the law of 22 April 2024
     check: family_informed
   - valid_from: 2024-07-01
-    label: art. 63-2 CPP, version issue de la loi du 22 avril 2024 (« toute personne qu'elle désigne »)
+    label: art. 63-2 CPP, version from the law of 22 April 2024 ("any person they designate")
     check: family_informed
-rights_at_stake: [droit de faire prévenir un proche]
+rights_at_stake: [right to have a relative informed]
 next_steps:
-  - Vérifier l'existence d'un PV d'avis ou d'une décision de différer l'avis.
-prosecution_hints: [avis_ailleurs, grief]
+  - Check for a notice report or a decision to defer the notice.
+prosecution_hints: [notice_elsewhere, no_prejudice]
 judilibre_query: garde à vue avis à famille proche
 weight: 0.5
-legal_todo: [Délais et exceptions de l'avis au proche — TODO(legal).]
+legal_todo: [Time limits and exceptions for informing a relative — TODO(legal).]

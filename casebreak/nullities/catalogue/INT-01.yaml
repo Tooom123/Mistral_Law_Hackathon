@@ -1,18 +1,18 @@
 id: INT-01
 category: INTERCEPTIONS
-title: Interceptions — ordonnance d'autorisation présente au dossier
+title: Interceptions — authorising order present in the file
 article: TODO(legal)
 applies_to: [interception]
 kind: graph
 condition_type: structural
 confidence: n/a
 versions:
-  - label: contrôle de présence de l'ordonnance (graphe)
+  - label: order presence check (graph)
     check: authorization_present
     params: {auth_subtype: interception_order}
-rights_at_stake: [secret des correspondances]
-next_steps: [Vérifier la durée et les renouvellements. TODO(legal)]
-prosecution_hints: [piece_hors_dossier]
+rights_at_stake: [secrecy of correspondence]
+next_steps: [Check the duration and renewals. TODO(legal)]
+prosecution_hints: [document_outside_file]
 judilibre_query: interception correspondances ordonnance juge d'instruction
 weight: 0.6
-legal_todo: [Article et durée — TODO(legal).]
+legal_todo: [Article and duration — TODO(legal).]

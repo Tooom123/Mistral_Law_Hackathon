@@ -1,14 +1,14 @@
 id: AUD-01
 category: AUDITION
-title: Audition de personne gardée à vue hors de la période de garde à vue
-article: "— (cohérence du graphe)"
+title: Custody hearing outside the custody period
+article: "— (graph consistency)"
 applies_to: [hearing]
 kind: graph
 condition_type: measurable
 confidence: n/a
 versions:
-  - label: contrôle d'ordre temporel (graphe)
+  - label: time-order check (graph)
     check: hearing_in_custody_window
-rights_at_stake: [régime de l'audition]
-next_steps: [Vérifier le cadre de l'audition (libre ou sous contrainte).]
+rights_at_stake: [legal regime of the hearing]
+next_steps: [Check the framework of the hearing (voluntary or under constraint).]
 weight: 0.6

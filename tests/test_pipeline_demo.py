@@ -69,4 +69,4 @@ def test_law_as_of_date_gav08():
     old = [c for c in run_checks(g, as_of=date(2023, 5, 1), use_judge=False)
            if c.nullity_id == "GAV-08" and c.node_id == "act:D10:hearing"][0]
     assert now.status == "possible_nullity"
-    assert old.status == "satisfied" and "2 h 15" in old.statement_fr
+    assert old.status == "satisfied" and "2h15" in old.statement_fr

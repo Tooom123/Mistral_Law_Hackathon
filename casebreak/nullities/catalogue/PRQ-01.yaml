@@ -1,19 +1,19 @@
 id: PRQ-01
 category: PERQUISITION_SAISIE
-title: Perquisition domiciliaire commencée avant 6 h ou après 21 h
+title: Home search started before 6:00 or after 21:00
 article: art. 59 CPP
 applies_to: [search]
 needs: [start, is_home]
 condition_type: measurable
 confidence: H
 versions:
-  - label: art. 59 CPP (heures légales ; une perquisition commencée avant 21 h peut se poursuivre)
+  - label: art. 59 CPP (legal hours; a search started before 21:00 may continue)
     check: search_hours
     params: {earliest: "06:00", latest: "21:00"}
-rights_at_stake: [inviolabilité du domicile]
+rights_at_stake: [inviolability of the home]
 next_steps:
-  - Vérifier l'absence de régime dérogatoire autorisant une perquisition de nuit. TODO(legal)
-  - Lister les saisies réalisées et leurs exploitations (actes à viser).
-prosecution_hints: [regime_derogatoire, assentiment, grief]
+  - Check that no special regime allows a night search. TODO(legal)
+  - List the seizures made and how they were used (acts to name).
+prosecution_hints: [special_regime, consent, no_prejudice]
 judilibre_query: perquisition heures légales 21 heures domicile nullité
 weight: 1.0

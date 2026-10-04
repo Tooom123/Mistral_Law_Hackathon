@@ -25,9 +25,9 @@ def load_catalogue() -> dict[str, Nullity]:
 def version_label(n: Nullity, d: date | None) -> str:
     v = n.version_at(d)
     if v is None:
-        return f"{n.article} — aucune version applicable à la date"
-    when = d.strftime("%d/%m/%Y") if d else "date inconnue"
-    return f"{v.label} — en vigueur au {when}"
+        return f"{n.article} — no version applicable on that date"
+    when = d.strftime("%d/%m/%Y") if d else "unknown date"
+    return f"{v.label} — in force on {when}"
 
 
 def reform_dates() -> list[dict]:

@@ -1,23 +1,23 @@
-// Salle des opérations — live counters while the pipeline reads the file. Every number comes from /status.
+// War room — live counters while the pipeline reads the file. Every number comes from /status.
 import { api } from "./api.js";
 import { $, h, countTo, CAT_FR, REDUCED } from "./ui.js";
 
 const COUNTERS = [
-  ["pages", "pages lues", c => c.pages_ocr ? `${c.pages_ocr} OCR` : ""],
-  ["pieces", "pièces classées", () => ""],
-  ["acts", "actes reconstitués", () => ""],
-  ["quotes_verified", "citations vérifiées", () => "sur la page"],
-  ["supports", "liens de dépendance", c => c.contradictions ? `${c.contradictions} contradictions` : ""],
-  ["possible_nullity", "nullités possibles", c => c.needs_reading ? `+${c.needs_reading} à lire` : ""],
+  ["pages", "pages read", c => c.pages_ocr ? `${c.pages_ocr} OCR` : ""],
+  ["pieces", "documents classified", () => ""],
+  ["acts", "acts rebuilt", () => ""],
+  ["quotes_verified", "quotes verified", () => "on the page"],
+  ["supports", "dependency links", c => c.contradictions ? `${c.contradictions} contradictions` : ""],
+  ["possible_nullity", "possible nullities", c => c.needs_reading ? `+${c.needs_reading} to read` : ""],
 ];
-const KIND_FR = { piece: "pièce", ocr: "ocr", act: "acte", alert: "alerte", contradiction: "contradiction", cascade: "domino",
-  warn: "à lire", done: "prêt", error: "erreur", info: "info" };
+const KIND_FR = { piece: "document", ocr: "ocr", act: "act", alert: "alert", contradiction: "contradiction", cascade: "domino",
+  warn: "to read", done: "ready", error: "error", info: "info" };
 
 export function startWarroom(caseId, onDone) {
   const root = $("#warroom");
   root.hidden = false;
   $("#war-case").textContent = caseId;
-  $("#war-title").textContent = "Lecture du dossier";
+  $("#war-title").textContent = "Reading the case file";
   $("#war-open").disabled = true;
   const counters = $("#counters");
   counters.replaceChildren(...COUNTERS.map(([k, l], i) => h("div", { class: `counter ${i === 5 ? "counter--alert" : i === 3 ? "counter--hot" : ""}`, "data-k": k },
@@ -67,8 +67,8 @@ export function startWarroom(caseId, onDone) {
     const done = Object.values(st.stages ?? {}).filter(s => s.state === "done").length;
     pix.heat(done / Math.max(1, Object.keys(st.stages ?? {}).length), (c.possible_nullity ?? 0) > 0);
     if (st.state === "done") {
-      $("#war-title").textContent = `${c.possible_nullity} nullités possibles, ${c.needs_reading} points à lire`;
-      $("#war-sub").textContent = `${c.pages} pages · ${c.pieces} pièces · ${c.acts} actes · ${c.supports} liens de dépendance — chaque alerte renvoie à sa page.`;
+      $("#war-title").textContent = `${c.possible_nullity} possible nullities, ${c.needs_reading} points to read`;
+      $("#war-sub").textContent = `${c.pages} pages · ${c.pieces} documents · ${c.acts} acts · ${c.supports} dependency links — every alert points to its page.`;
       $("#war-open").disabled = false;
       $("#war-open").focus({ preventScroll: true });
       clearInterval(clock);
@@ -77,7 +77,7 @@ export function startWarroom(caseId, onDone) {
       return;
     }
     if (st.state === "error") {
-      $("#war-title").textContent = "Erreur pendant l'analyse";
+      $("#war-title").textContent = "Error during the analysis";
       $("#war-sub").textContent = st.error ?? "";
       clearInterval(clock);
       return;
@@ -103,7 +103,7 @@ function renderStages(st) {
   for (const [k, s] of entries) {
     const li = ol.querySelector(`[data-s="${k}"]`);
     li.className = `is-${s.state}`;
-    li.querySelector(".st").textContent = { pending: "en attente", running: "en cours", done: "fait" }[s.state] ?? s.state;
+    li.querySelector(".st").textContent = { pending: "pending", running: "running", done: "done" }[s.state] ?? s.state;
   }
 }
 

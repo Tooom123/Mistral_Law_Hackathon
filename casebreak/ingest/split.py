@@ -66,8 +66,8 @@ def _llm_classify(text: str) -> tuple[str, str] | None:
     allowed = sorted({t for _, t, _ in TYPES})
     try:
         out = mistral.chat_json(
-            "Tu classes des pièces de procédure pénale française. Réponds en JSON {\"type\": <un des types>}.",
-            f"Types autorisés : {allowed}\n\nDébut de la pièce :\n{text[:1800]}", model=settings.fast_model)
+            "You classify documents from French criminal case files. Answer in JSON {\"type\": <one of the types>}.",
+            f"Allowed types: {allowed}\n\nStart of the document:\n{text[:1800]}", model=settings.fast_model)
     except mistral.MistralUnavailable:
         return None
     t = out.get("type")

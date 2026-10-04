@@ -23,11 +23,11 @@ _STOP = {"PV", "OPJ", "APJ", "CPP", "N", "D", "S", "LE", "LA", "LES", "DE", "DU"
          "DONNÉES", "BORNAGE", "RELEVÉ", "DÉTAILLÉ", "COMMUNICATIONS", "NORD", "SUD", "EST", "GARE", "HALLES", "ZI"}
 
 PATTERNS = [
-    ("ADRESSE", re.compile(r"\b\d{1,3},? (?:rue|allée|allee|chemin|impasse|boulevard|place|avenue) [^,.;\n]{3,40}")),
-    ("NAISSANCE", re.compile(r"\bné(?:e)? le \d{2}/\d{2}/\d{4}")),
-    ("TEL", re.compile(r"\+33(?: ?\d{1,2}){5}")),
-    ("NOM", re.compile(rf"\b({_UP}) ({_CAP})\b")),  # VASSEUR Théo
-    ("NOM", re.compile(rf"\b({_CAP}) ({_UP})\b")),  # Théo VASSEUR
+    ("ADDRESS", re.compile(r"\b\d{1,3},? (?:rue|allée|allee|chemin|impasse|boulevard|place|avenue) [^,.;\n]{3,40}")),
+    ("BIRTH", re.compile(r"\bné(?:e)? le \d{2}/\d{2}/\d{4}")),
+    ("PHONE", re.compile(r"\+33(?: ?\d{1,2}){5}")),
+    ("NAME", re.compile(rf"\b({_UP}) ({_CAP})\b")),  # VASSEUR Théo
+    ("NAME", re.compile(rf"\b({_CAP}) ({_UP})\b")),  # Théo VASSEUR
 ]
 
 
@@ -50,7 +50,7 @@ def mask(text: str, stable: bool = False) -> tuple[str, dict[str, str]]:
     for kind, rx in PATTERNS:
         def repl(m: re.Match) -> str:
             s = m.group(0)
-            if kind == "NOM":
+            if kind == "NAME":
                 up = m.group(1) if m.group(1).isupper() else m.group(2)
                 if up.strip("'-") in _STOP or len(up) < 3:
                     return s

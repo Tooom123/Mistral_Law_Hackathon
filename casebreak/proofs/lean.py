@@ -36,7 +36,7 @@ def statement(c: Check) -> dict | None:
     kind = f["kind"]
     header = (f"/-! CASEBREAK · {c.nullity_id} · {c.node_id}\n"
               f"    {c.statement_fr}\n"
-              "    Prouve l'arithmétique sur les faits extraits — pas l'extraction, pas le droit. -/\n")
+              "    Proves the arithmetic on the extracted facts — not the extraction, not the law. -/\n")
     if kind.startswith("duration"):
         a, b = datetime.fromisoformat(f["start"]), datetime.fromisoformat(f["end"])
         day0 = a.replace(hour=0, minute=0)
@@ -44,24 +44,24 @@ def statement(c: Check) -> dict | None:
         mb = int((b - day0).total_seconds() // 60)
         lim = int(f["limit_minutes"])
         rel = {"duration_gt": ">", "duration_le": "≤", "duration_lt": "<"}[kind]
-        name = {"duration_gt": "ecart_depasse_la_borne", "duration_le": "ecart_dans_la_borne",
-                "duration_lt": "attente_inferieure_a_la_borne"}[kind]
-        srcs = "\n".join(f"-- p. {s.page} « {s.quote[:90]} »" for s in c.sources[:3])
-        code = (header + f"-- Minutes écoulées depuis le {day0:%d/%m/%Y} à 00h00\n{srcs}\n"
-                f"def debut : Nat := {ma}   -- {a:%d/%m %Hh%M}\n"
-                f"def fin : Nat := {mb}   -- {b:%d/%m %Hh%M}\n"
-                f"def borne : Nat := {lim}   -- {lim // 60} h {lim % 60:02d}\n\n"
-                f"theorem {name} : fin - debut {rel} borne := by\n  PROOF\n\n"
-                f"#eval fin - debut  -- {mb - ma} minutes\n")
-        human = f"fin − début = {mb - ma} min {rel} {lim} min"
+        name = {"duration_gt": "gap_exceeds_bound", "duration_le": "gap_within_bound",
+                "duration_lt": "wait_below_bound"}[kind]
+        srcs = "\n".join(f"-- p. {s.page} \"{s.quote[:90]}\"" for s in c.sources[:3])
+        code = (header + f"-- Minutes elapsed since {day0:%d/%m/%Y} 00:00\n{srcs}\n"
+                f"def start : Nat := {ma}   -- {a:%d/%m %H:%M}\n"
+                f"def finish : Nat := {mb}   -- {b:%d/%m %H:%M}\n"
+                f"def bound : Nat := {lim}   -- {lim // 60}h{lim % 60:02d}\n\n"
+                f"theorem {name} : finish - start {rel} bound := by\n  PROOF\n\n"
+                f"#eval finish - start  -- {mb - ma} minutes\n")
+        human = f"end − start = {mb - ma} min {rel} {lim} min"
     elif kind.startswith("clock"):
         h, m = map(int, f["start_clock"].split(":"))
         bh, bm = map(int, f["bound"].split(":"))
         rel = "≥" if kind == "clock_ge" else "<"
-        code = (header + f"def heure_debut : Nat := {h * 60 + m}   -- {h:02d}h{m:02d}\n"
-                f"def borne : Nat := {bh * 60 + bm}   -- {bh:02d}h{bm:02d}\n\n"
-                f"theorem hors_des_heures_legales : heure_debut {rel} borne := by\n  PROOF\n")
-        human = f"{h * 60 + m} min {rel} {bh * 60 + bm} min (depuis minuit)"
+        code = (header + f"def start_clock : Nat := {h * 60 + m}   -- {h:02d}:{m:02d}\n"
+                f"def bound : Nat := {bh * 60 + bm}   -- {bh:02d}:{bm:02d}\n\n"
+                f"theorem outside_legal_hours : start_clock {rel} bound := by\n  PROOF\n")
+        human = f"{h * 60 + m} min {rel} {bh * 60 + bm} min (since midnight)"
     else:
         return None
     return {"template": code, "human": human}
@@ -82,7 +82,7 @@ def _leanstral(code: str) -> str | None:
 def prove(c: Check) -> dict:
     st = statement(c)
     if st is None:
-        return {"status": "not_applicable", "reason": "Condition non mesurable (zone grise ou absence) : rien à prouver."}
+        return {"status": "not_applicable", "reason": "Not a measurable condition (grey zone or absence): nothing to prove."}
     key = hashlib.sha256(st["template"].encode()).hexdigest()[:16]
     cache = LEAN_DIR / f"{key}.json"
     if cache.exists():
@@ -93,15 +93,15 @@ def prove(c: Check) -> dict:
         prover, tactic = "leanstral", ls
     code = st["template"].replace("PROOF", tactic)
     res = {"code": code, "human": st["human"], "prover": prover, "lean": None, "status": "unchecked",
-           "scope": "Prouve l'arithmétique sur les faits extraits, pas l'extraction ni le droit."}
+           "scope": "Proves the arithmetic on the extracted facts, not the extraction nor the law."}
     lean = settings.lean
     if lean is None:
-        res["reason"] = "Lean 4 non installé : preuve générée, non vérifiée."
+        res["reason"] = "Lean 4 not installed: proof generated, not checked."
     else:
         res.update(_check(lean, code, key))
         if res["status"] != "proved" and prover == "leanstral":  # fall back to our own tactic, still kernel-checked
             code = st["template"].replace("PROOF", "decide")
-            res.update({"code": code, "prover": "casebreak (repli)"}, **_check(lean, code, key))
+            res.update({"code": code, "prover": "casebreak (fallback)"}, **_check(lean, code, key))
     cache.write_text(json.dumps(res, ensure_ascii=False))
     return res
 

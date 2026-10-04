@@ -76,7 +76,7 @@ def build_graph(pieces: list[Piece], drafts: list[Draft], pages: dict[int, PageR
         start = placement.start
         end_dt = end.start if end else None
         c = Node(id=cid, type="ACT", category="GARDE_A_VUE", subtype="garde_a_vue",
-                 label=f"Garde à vue — {names.get(pid, pid)}", start=start, end=end_dt,
+                 label=f"Custody — {names.get(pid, pid)}", start=start, end=end_dt,
                  framework=placement.framework, person=pid,
                  doc_ids=sorted({x for n in lst if n.subtype in GAV_CHILDREN for x in n.doc_ids}),
                  pages=sorted({x for n in lst if n.subtype in GAV_CHILDREN for x in n.pages}))
@@ -103,15 +103,15 @@ def build_graph(pieces: list[Piece], drafts: list[Draft], pages: dict[int, PageR
             if n.subtype == "hearing" and n.start and start and n.start >= start - timedelta(hours=1) and \
                     (end_dt is None or n.start <= end_dt + timedelta(hours=1)):
                 n.attrs["custody_id"] = Attr(value=cid)
-                edge(cid, n.id, "SUPPORTS", label="audition pendant la garde à vue")
+                edge(cid, n.id, "SUPPORTS", label="hearing during custody")
             if n.subtype == "interpellation":
-                edge(n.id, cid, "SUPPORTS", label="interpellation → garde à vue")
+                edge(n.id, cid, "SUPPORTS", label="arrest → custody")
         notif = next((n for n in lst if n.subtype == "rights_notification"), None)
         if notif:
             for n in lst:
                 if n.subtype == "hearing" and n.start and notif.start and n.start >= notif.start and \
                         (end_dt is None or n.start <= end_dt):
-                    edge(notif.id, n.id, "SUPPORTS", label="droits notifiés → audition")
+                    edge(notif.id, n.id, "SUPPORTS", label="rights notified → hearing")
 
     # DOCUMENTED_IN, INVOLVES
     for d in drafts:
@@ -127,7 +127,7 @@ def build_graph(pieces: list[Piece], drafts: list[Draft], pages: dict[int, PageR
         for seal in d.seals_seized:
             seized_by[seal] = d.node
             iid = f"item:{seal}"
-            nodes.setdefault(iid, Node(id=iid, type="ITEM", subtype="seal", label=f"Scellé {seal}",
+            nodes.setdefault(iid, Node(id=iid, type="ITEM", subtype="seal", label=f"Seal {seal}",
                                        attrs={"seal_number": Attr(value=seal)}))
             edge(d.node.id, iid, "INVOLVES")
     search_of: dict[str, Node] = {}
@@ -143,11 +143,11 @@ def build_graph(pieces: list[Piece], drafts: list[Draft], pages: dict[int, PageR
         for seal, src in d.seals_used:
             iid = f"item:{seal}"
             if seal in seized_by:
-                edge(seized_by[seal].id, d.node.id, "SUPPORTS", ref=src, label=f"scellé {seal}")
+                edge(seized_by[seal].id, d.node.id, "SUPPORTS", ref=src, label=f"seal {seal}")
                 edge(d.node.id, iid, "INVOLVES")
             else:
                 orphan_seals[seal].append((d.node, src))
-                nodes.setdefault(iid, Node(id=iid, type="ITEM", subtype="seal", label=f"Scellé {seal} (origine ?)",
+                nodes.setdefault(iid, Node(id=iid, type="ITEM", subtype="seal", label=f"Seal {seal} (origin?)",
                                            attrs={"seal_number": Attr(value=seal), "seized": Attr(value=False, status="missing")}))
                 edge(d.node.id, iid, "INVOLVES")
     for seal, uses in orphan_seals.items():
@@ -171,7 +171,7 @@ def build_graph(pieces: list[Piece], drafts: list[Draft], pages: dict[int, PageR
                 continue
             a = main_act.get(pc.id)
             if a is not None:
-                edge(a.id, d.node.id, "SUPPORTS", origin="cited_in_text", ref=src, label=f"vu le PV n° {num}")
+                edge(a.id, d.node.id, "SUPPORTS", origin="cited_in_text", ref=src, label=f"cites report no. {num}")
 
     # PRECEDES (global time order of acts, skipping containers)
     timed = sorted([n for n in acts if n.start], key=lambda n: n.start)
@@ -195,9 +195,9 @@ def build_graph(pieces: list[Piece], drafts: list[Draft], pages: dict[int, PageR
             for other in stated[1:]:
                 if other[0] != base[0] and other[2] != base[2]:
                     edge(base[2], other[2], "CONTRADICTS", ref=other[1],
-                         label=f"heure de placement : {base[0]:%Hh%M} / {other[0]:%Hh%M}")
+                         label=f"custody start: {base[0]:%H:%M} / {other[0]:%H:%M}")
             nodes[cid].attrs["custody_start_conflict"] = Attr(
-                value=" / ".join(sorted({f"{v:%Hh%M}" for v in vals})), src=stated[1][1] if len(stated) > 1 else None)
+                value=" / ".join(sorted({f"{v:%H:%M}" for v in vals})), src=stated[1][1] if len(stated) > 1 else None)
             nodes[cid].attrs["_conflict_sources"] = Attr(value=[s[1].model_dump() for s in stated])
     # EXIF of a photo vs time window of the search that seized the photographed seal
     for d in drafts:
@@ -208,11 +208,11 @@ def build_graph(pieces: list[Piece], drafts: list[Draft], pages: dict[int, PageR
             srch = search_of.get(seal)
             if srch is None:
                 continue
-            edge(srch.id, n.id, "INVOLVES", label=f"photo du scellé {seal}")
+            edge(srch.id, n.id, "INVOLVES", label=f"photo of seal {seal}")
             if srch.start and (n.start < srch.start - timedelta(minutes=5) or (srch.end and n.start > srch.end + timedelta(hours=2))):
                 edge(n.id, srch.id, "CONTRADICTS", ref=srch.attrs.get("start").src if srch.attrs.get("start") else None,
-                     label=f"EXIF {n.start:%Hh%M} / perquisition {srch.start:%Hh%M}")
-                n.attrs["exif_conflict"] = Attr(value=f"EXIF {n.start:%d/%m %Hh%M} ; début de perquisition {srch.start:%d/%m %Hh%M}",
+                     label=f"EXIF {n.start:%H:%M} / search {srch.start:%H:%M}")
+                n.attrs["exif_conflict"] = Attr(value=f"EXIF {n.start:%d/%m %H:%M}; search started {srch.start:%d/%m %H:%M}",
                                                 src=srch.attrs["start"].src if srch.attrs.get("start") else None)
                 n.attrs["exif_conflict_search"] = Attr(value=srch.id)
 
@@ -236,9 +236,9 @@ def _llm_supports(nodes: dict[str, Node], edges: list[Edge], edge) -> None:
     listing = "\n".join(f"{n.id} | {n.category} | {n.label} | {n.start}" for n in acts)
     try:
         out = mistral.chat_json(
-            "Tu proposes des liens de dépendance (acte B s'appuie sur acte A) entre actes d'un dossier pénal. "
-            "Ne propose que des liens évidents. JSON: {\"links\": [{\"src\": id, \"dst\": id, \"why\": str}]}",
-            f"Actes:\n{listing}\n\nActes sans appui identifié: {[n.id for n in orphans]}")
+            "You propose dependency links (act B relies on act A) between the acts of a criminal case file. "
+            "Only propose obvious links. JSON: {\"links\": [{\"src\": id, \"dst\": id, \"why\": str}]}",
+            f"Acts:\n{listing}\n\nActs with no identified support: {[n.id for n in orphans]}")
     except mistral.MistralUnavailable:
         return
     for link in out.get("links", [])[:20]:

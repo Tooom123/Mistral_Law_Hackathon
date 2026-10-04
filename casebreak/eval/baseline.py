@@ -1,4 +1,4 @@
-"""Baseline: the same dossier given to an LLM alone (« trouve les nullités de procédure »). Needs a Mistral key."""
+"""Baseline: the same dossier given to an LLM alone ("find the procedural defects"). Needs a Mistral key."""
 
 from __future__ import annotations
 
@@ -16,13 +16,13 @@ MAX_CHARS = 120_000
 
 def run_baseline(g: CaseGraph, truth: dict) -> dict:
     if not settings.mistral:
-        return {"status": "not_run", "reason": "Clé MISTRAL_API_KEY absente : référence « LLM seul » non exécutée."}
+        return {"status": "not_run", "reason": "No MISTRAL_API_KEY: the LLM-alone baseline was not run."}
     ids = sorted(k for k, v in load_catalogue().items() if v.versions[0].check != "info_only")
     text = "\n\n".join(f"[page {p.page}]\n{p.text}" for p in g.pages)[:MAX_CHARS]
     masked, _ = pseudonymize.mask(text) if settings.pseudonymize else (text, {})
     try:
         out = mistral.chat_json(
-            "Tu es avocat pénaliste. Trouve les nullités de procédure possibles dans ce dossier. Réponds en JSON "
+            "You are a French criminal defence lawyer. Find the possible procedural defects in this case file. Answer in JSON "
             "{\"findings\": [{\"nullity_id\": un de " + str(ids) + ", \"page\": int, \"why\": str}]}",
             masked, model=settings.judge_model)
     except mistral.MistralUnavailable as e:

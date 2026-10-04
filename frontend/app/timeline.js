@@ -1,4 +1,4 @@
-// Frise par catégories — one swim lane per category, time on X (long gaps compressed), one mark per act.
+// Timeline by category — one swim lane per category, time on X (long gaps compressed), one mark per act.
 // SUPPORTS edges = what depends on what; CONTRADICTS = zig-zag; custody = a bar with its acts on it.
 import { $, h, CAT_FR, hm, dmy, dayLabel, sleep, REDUCED } from "./ui.js";
 
@@ -12,12 +12,12 @@ const s = (tag, attrs = {}, ...kids) => {
 
 const GAV_CHILDREN = new Set(["placement_gav", "rights_notification", "lawyer_notice", "family_notice", "medical_exam", "extension", "custody_end"]);
 const SHORT = {
-  placement_gav: "Placement", rights_notification: "Droits", lawyer_notice: "Avocat avisé", family_notice: "Proche avisé",
-  medical_exam: "Médecin", extension: "Prolongation", custody_end: "Fin", hearing: "Audition", hearing_witness: "Témoin",
-  interpellation: "Interpellation", search: "Perquisition", seizure: "Saisie", seal_analysis: "Exploitation",
-  lab_report: "Expertise", geolocation: "Balise", geolocation_authorization: "Autorisation", interception: "Écoutes",
-  interception_order: "Ordonnance", opening: "Réquisitoire", mise_en_examen: "Mise en examen", expert_order: "Commission",
-  chamber_ruling: "Arrêt CHINS", photo: "Photo", other: "",
+  placement_gav: "Placement", rights_notification: "Rights", lawyer_notice: "Lawyer notified", family_notice: "Relative informed",
+  medical_exam: "Doctor", extension: "Extension", custody_end: "End", hearing: "Hearing", hearing_witness: "Witness",
+  interpellation: "Arrest", search: "Search", seizure: "Seizure", seal_analysis: "Seal analysis",
+  lab_report: "Expert report", geolocation: "Tracker", geolocation_authorization: "Authorisation", interception: "Wiretaps",
+  interception_order: "Order", opening: "Opening", mise_en_examen: "Formal charge", expert_order: "Expert appointment",
+  chamber_ruling: "Chamber ruling", photo: "Photo", other: "",
 };
 const ROW = 30, TOP = 46, LANE_PAD = 16, HOUR = 44, CAP_H = 4, BREAK_W = 54;
 
@@ -137,7 +137,7 @@ export class Timeline {
     if (n.subtype === "other" || n.subtype === "garde_a_vue") return "";
     if (!al && z < 1.4 && !["search", "mise_en_examen", "interpellation", "hearing", "lab_report", "seal_analysis", "geolocation"].includes(n.subtype)) return "";
     const base = SHORT[n.subtype] ?? n.label;
-    const who = n.subtype === "seizure" ? (n.attrs?.seal_number?.value ?? "sans scellé") : "";
+    const who = n.subtype === "seizure" ? (n.attrs?.seal_number?.value ?? "no seal") : "";
     return `${base}${who ? " " + who : ""} · ${n._approx ? "?" : hm(n._t.toISOString())}`;
   }
 
@@ -178,7 +178,7 @@ export class Timeline {
       const wx = this.xOf(b.t - CAP_H / 2 * 36e5) - x0;
       gAxis.append(s("rect", { class: "t-break", x: x0, y: TOP - 10, width: Math.max(8, wx), height: this.height - TOP }));
       const days = Math.floor(b.gapH / 24), hrs = Math.round(b.gapH % 24);
-      gAxis.append(s("text", { class: "t-breaklabel", x: x0 + wx / 2, y: TOP - 14, "text-anchor": "middle" }, `+${days ? days + " j " : ""}${hrs} h`));
+      gAxis.append(s("text", { class: "t-breaklabel", x: x0 + wx / 2, y: TOP - 14, "text-anchor": "middle" }, `+${days ? days + "d " : ""}${hrs}h`));
       void x1;
     }
     const t0 = new Date(this.segs[0].t), t1 = new Date(this.segs.at(-1).t);
@@ -209,7 +209,7 @@ export class Timeline {
         if ((t - a.t) / 36e5 > CAP_H / 2 && (b.t - t) / 36e5 > CAP_H / 2 && b.brk) continue;
         const x = this.xOf(t);
         gAxis.append(s("line", { class: "t-hour", x1: x, x2: x, y1: 28, y2: this.height }));
-        gAxis.append(s("text", { class: "t-hourlabel", x: x + 3, y: 38 }, `${tt.getHours()}h`));
+        gAxis.append(s("text", { class: "t-hourlabel", x: x + 3, y: 38 }, `${String(tt.getHours()).padStart(2, "0")}:00`));
       }
     }
     // legal hour band for home searches (21h–6h) — drawn faintly behind the PERQUISITION lane
@@ -221,7 +221,7 @@ export class Timeline {
         const xa = this.xOf(n21), xb = this.xOf(n6);
         if (xb - xa > 4) {
           gAxis.append(s("rect", { x: xa, y: pl.y + 1, width: xb - xa, height: pl.h - 2, fill: "#151524", opacity: .05 }));
-          gAxis.append(s("text", { x: xa + 4, y: pl.y + pl.h - 5, class: "t-hourlabel" }, "21h–6h"));
+          gAxis.append(s("text", { x: xa + 4, y: pl.y + pl.h - 5, class: "t-hourlabel" }, "21:00–06:00"));
         }
       }
     }
@@ -235,13 +235,13 @@ export class Timeline {
       const pn = (n.checks ?? []).some(c => c.status === "possible_nullity");
       const g = s("g", { class: `t-custody ${pn ? "pn" : ""}`, "data-id": n.id });
       g.append(s("rect", { class: "bar", x: p.x, y: p.y - 8, width: Math.max(10, x2 - p.x), height: 16 }));
-      g.append(s("text", { x: p.x + 2, y: p.y - 12 }, (n.label.replace("Garde à vue — ", "GAV · ") + (n.end ? "" : " · fin ?")).toUpperCase()));
+      g.append(s("text", { x: p.x + 2, y: p.y - 12 }, (n.label.replace("Custody — ", "Custody · ") + (n.end ? "" : " · end?")).toUpperCase()));
       // 24h mark
       const lim = new Date(+new Date(n.start) + 24 * 36e5);
       if (n.end && new Date(n.end) > lim) {
         const lx = this.xOf(lim);
         g.append(s("line", { class: "limit", x1: lx, x2: lx, y1: p.y - 14, y2: p.y + 12 }));
-        g.append(s("text", { class: "limit-label", x: lx + 3, y: p.y + 20 }, "24 h"));
+        g.append(s("text", { class: "limit-label", x: lx + 3, y: p.y + 20 }, "24h"));
       }
       g.addEventListener("click", () => this.onSelect?.(n));
       g.style.cursor = "pointer";
@@ -309,7 +309,7 @@ export class Timeline {
       const [name, sub] = CAT_FR[l.cat] ?? [l.cat, ""];
       const pns = l.nodes.flatMap(n => this.alertsByNode.get(n.id) ?? []);
       this.labels.append(h("div", { class: "lane-label", style: { height: `${l.h}px` } },
-        h("b", {}, name.toUpperCase()), h("small", {}, `${l.count} acte${l.count > 1 ? "s" : ""} · ${sub}`),
+        h("b", {}, name.toUpperCase()), h("small", {}, `${l.count} act${l.count > 1 ? "s" : ""} · ${sub}`),
         pns.length ? h("span", { class: "lane-alerts" }, pns.slice(0, 12).map(a => h("i", { class: a.status === "needs_reading" ? "nr" : "" }))) : null));
     }
     this.scroll.onscroll = () => { this.labels.scrollTop = this.scroll.scrollTop; };
@@ -332,9 +332,9 @@ export class Timeline {
     const al = this.alertsByNode.get(n.id) ?? [];
     this.tooltip.replaceChildren(
       h("b", {}, n.label),
-      h("small", {}, `${n._approx ? "date seule — heure illisible" : `${dmy(n._t.toISOString())} · ${hm(n._t.toISOString())}`}${n.end ? " → " + hm(n.end) : ""} · ${n.doc_ids.join(", ")} · p. ${n.pages.slice(0, 3).join(", ")}`),
+      h("small", {}, `${n._approx ? "date only — time unreadable" : `${dmy(n._t.toISOString())} · ${hm(n._t.toISOString())}`}${n.end ? " → " + hm(n.end) : ""} · ${n.doc_ids.join(", ")} · p. ${n.pages.slice(0, 3).join(", ")}`),
       ...al.slice(0, 3).map(a => h("span", { class: "tt-st" }, `⚠ ${a.nullity_id} — ${a.title}`)),
-      ch.size > 1 ? h("small", {}, `${ch.size - 1} acte(s) liés par dépendance`) : null);
+      ch.size > 1 ? h("small", {}, `${ch.size - 1} act(s) linked by dependency`) : null);
     this.tooltip.hidden = false;
     this.moveTip(ev);
     this.onHover?.(n);

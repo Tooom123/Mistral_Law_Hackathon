@@ -1,17 +1,17 @@
 id: GAV-10
 category: GARDE_A_VUE
-title: Personne ne comprenant pas le français, sans interprète
+title: Person who does not understand French, without an interpreter
 article: art. 63-1 CPP
 applies_to: [rights_notification, hearing]
 needs: [understands_french, interpreter_present]
 condition_type: measurable
 confidence: H
 versions:
-  - label: art. 63-1 CPP (droit à un interprète)
+  - label: art. 63-1 CPP (right to an interpreter)
     check: interpreter
-rights_at_stake: [droit à l'interprète, compréhension des droits]
+rights_at_stake: [right to an interpreter, understanding of rights]
 next_steps:
-  - Vérifier à quel moment l'interprète est intervenu et si les droits ont été renotifiés.
-prosecution_hints: [renotification, grief]
+  - Check when the interpreter arrived and whether rights were notified again.
+prosecution_hints: [renotification, no_prejudice]
 judilibre_query: garde à vue interprète notification des droits langue
 weight: 1.0

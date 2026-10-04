@@ -7,7 +7,7 @@ from pathlib import Path
 from casebreak.synth.render import render_case
 from casebreak.synth.scenario import demo_case, random_case
 
-DEMO_TITLE = "Affaire des Mathurins (synthétique)"
+DEMO_TITLE = "The Mathurins case (synthetic)"
 
 
 def generate_demo(out_dir: Path) -> dict:
@@ -15,4 +15,4 @@ def generate_demo(out_dir: Path) -> dict:
 
 
 def generate_random(out_dir: Path, seed: int) -> dict:
-    return render_case(random_case(seed), out_dir, f"NullityBench-FR #{seed:03d} (synthétique)")
+    return render_case(random_case(seed), out_dir, f"NullityBench-FR #{seed:03d} (synthetic)")

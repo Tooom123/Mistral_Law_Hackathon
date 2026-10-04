@@ -18,7 +18,7 @@ def search(query: str, chamber: str = "cr", size: int = 5) -> dict:
     if not query:
         return {"status": "no_query", "results": []}
     if not settings.judilibre:
-        return {"status": "unavailable", "reason": "Clé JUDILIBRE_KEY_ID absente : aucun précédent récupéré.",
+        return {"status": "unavailable", "reason": "No JUDILIBRE_KEY_ID: no precedent retrieved.",
                 "results": [], "query": query}
     key = hashlib.sha256(f"{query}|{chamber}|{size}".encode()).hexdigest()[:16]
     cache = CACHE / f"judilibre_{key}.json"
@@ -32,7 +32,7 @@ def search(query: str, chamber: str = "cr", size: int = 5) -> dict:
         data = r.json()
     except (httpx.HTTPError, ValueError) as e:
         log.warning("Judilibre failed: %s", e)
-        return {"status": "error", "reason": f"Judilibre injoignable ({type(e).__name__}).", "results": [], "query": query}
+        return {"status": "error", "reason": f"Judilibre unreachable ({type(e).__name__}).", "results": [], "query": query}
     results = []
     for d in data.get("results", [])[:size]:
         hl = d.get("highlights") or {}
@@ -43,6 +43,6 @@ def search(query: str, chamber: str = "cr", size: int = 5) -> dict:
             "snippet": snippet, "url": f"https://www.courdecassation.fr/decision/{d.get('id')}",
         })
     out = {"status": "ok", "query": query, "total": data.get("total"), "results": results,
-           "corpus": "Judilibre — Cour de cassation, chambre criminelle", "retrieved": True}
+           "corpus": "Judilibre — Cour de cassation, criminal chamber", "retrieved": True}
     cache.write_text(json.dumps(out, ensure_ascii=False))
     return out

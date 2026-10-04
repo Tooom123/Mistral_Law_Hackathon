@@ -18,57 +18,72 @@ export function h(tag, attrs = {}, ...kids) {
 
 export const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
-const JOURS = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const d = iso => iso ? new Date(iso) : null;
-export const hm = iso => { const x = d(iso); return x ? `${String(x.getHours()).padStart(2, "0")}h${String(x.getMinutes()).padStart(2, "0")}` : "?"; };
+export const hm = iso => { const x = d(iso); return x ? `${String(x.getHours()).padStart(2, "0")}:${String(x.getMinutes()).padStart(2, "0")}` : "?"; };
 export const dmy = iso => { const x = d(iso); return x ? `${String(x.getDate()).padStart(2, "0")}/${String(x.getMonth() + 1).padStart(2, "0")}/${x.getFullYear()}` : "?"; };
 export const dm = iso => { const x = d(iso); return x ? `${String(x.getDate()).padStart(2, "0")}/${String(x.getMonth() + 1).padStart(2, "0")}` : "?"; };
-export const dayLabel = x => `${JOURS[x.getDay()]} ${x.getDate()} ${MOIS[x.getMonth()]}`;
-export const longDate = iso => { const x = d(iso); return x ? `${x.getDate()} ${MOIS[x.getMonth()]} ${x.getFullYear()}` : "?"; };
+export const dayLabel = x => `${DAYS[x.getDay()]} ${x.getDate()} ${MONTHS[x.getMonth()]}`;
+export const longDate = iso => { const x = d(iso); return x ? `${x.getDate()} ${MONTHS[x.getMonth()]} ${x.getFullYear()}` : "?"; };
 
+// category id -> [label, subtitle] (the ids stay the French procedural categories of the data model)
 export const CAT_FR = {
-  INTERPELLATION: ["Interpellation", "arrestation"],
-  GARDE_A_VUE: ["Garde à vue", "placement · droits · fin"],
-  AUDITION: ["Auditions", "gardés à vue · témoins"],
-  PERQUISITION_SAISIE: ["Perquisitions", "saisies · scellés · photos"],
-  EXPERTISE: ["Expertises", "scellés exploités"],
-  GEOLOCALISATION: ["Géolocalisation", "balises"],
-  INTERCEPTIONS: ["Interceptions", "écoutes"],
-  INSTRUCTION: ["Instruction", "juge · mise en examen"],
-  AUTRE: ["Autres pièces", "plaintes · annexes"],
+  INTERPELLATION: ["Arrest", "arrests"],
+  GARDE_A_VUE: ["Custody", "placement · rights · end"],
+  AUDITION: ["Hearings", "custody · witnesses"],
+  PERQUISITION_SAISIE: ["Searches", "seizures · seals · photos"],
+  EXPERTISE: ["Forensics", "seal analyses"],
+  GEOLOCALISATION: ["Geolocation", "trackers"],
+  INTERCEPTIONS: ["Interceptions", "wiretaps"],
+  INSTRUCTION: ["Judicial investigation", "judge · formal charge"],
+  AUTRE: ["Other documents", "complaints · annexes"],
 };
-export const CERT = { documented: ["documenté", "pill--doc"], inferred: ["déduit", "pill--inf"], needs_reading: ["à lire", "pill--read"] };
+export const CERT = { documented: ["documented", "pill--doc"], inferred: ["inferred", "pill--inf"], needs_reading: ["needs reading", "pill--read"] };
 export const VERDICT = {
-  survit: ["Survit", ""], survit_sous_reserve: ["Survit ?", ""], fragilise: ["Fragilisé", "stamp--fragile"],
-  a_instruire: ["À instruire", "stamp--instruire"],
+  survives: ["Survives", ""], survives_with_caveats: ["Survives?", ""], weakened: ["Weakened", "stamp--fragile"],
+  to_investigate: ["To investigate", "stamp--instruire"],
 };
 export const ATTR_FR = {
-  custody_start: "Début de garde à vue", custody_end: "Fin de garde à vue", custody_start_stated: "Placement (déclaré)",
-  placed_at_stated: "Placement (déclaré)", notified_at: "Droits notifiés", arrest_time: "Interpellation",
-  prosecutor_informed_at: "Avis au procureur", understands_french: "Comprend le français", language: "Langue",
-  objectives_text: "Motivation", interpreter_present: "Interprète", delay_justification: "Justification du délai",
-  lawyer_requested: "Avocat demandé", doctor_requested: "Médecin demandé", family_requested: "Proche à prévenir",
-  signed: "Signé", lawyer_notified_at: "Avocat avisé", family_notified_at: "Proche avisé", exam_at: "Examen médical",
-  authorized_at: "Autorisation", extension_authorized: "Prolongation", extension_from: "Prolongation à compter de",
-  extension_authorized_at: "Prolongation autorisée à", end_time: "Fin", end_date: "Date de fin", start: "Début", end: "Fin",
-  in_custody: "En garde à vue", lawyer_present: "Avocat présent", lawyer_waiver: "Renonciation à l'avocat",
-  prosecutor_authorization: "Autorisation du procureur", lawyer_notified_at_stated: "Avocat avisé (déclaré)",
-  place: "Lieu", is_home: "Domicile", occupant_present: "Occupant présent", witnesses_present: "Deux témoins",
-  consent: "Assentiment", jld_authorization: "Autorisation JLD", item: "Objet", seal_number: "Scellé",
-  seals_analysed: "Scellés analysés", authorization_ref: "Autorisation visée", authorization_date: "Date d'autorisation",
-  date: "Date", person_name: "Personne", exif_time: "Horodatage EXIF", seal_label: "Étiquette", orphan_seals: "Scellé sans saisie",
-  custody_start_conflict: "Heures divergentes", exif_conflict: "Incohérence EXIF", special_regime: "Régime dérogatoire",
-  cited_missing: "PV cité absent", geoloc_used: "Géolocalisation utilisée", custody_id: "Garde à vue", custody_end_date: "Date de fin",
-  start_date_only: "Date (heure illisible)", seized: "Saisi",
+  custody_start: "Custody start", custody_end: "Custody end", custody_start_stated: "Placement (as stated)",
+  placed_at_stated: "Placement (as stated)", notified_at: "Rights notified", arrest_time: "Arrest",
+  prosecutor_informed_at: "Prosecutor informed", understands_french: "Understands French", language: "Language",
+  objectives_text: "Grounds", interpreter_present: "Interpreter", delay_justification: "Delay justification",
+  lawyer_requested: "Lawyer requested", doctor_requested: "Doctor requested", family_requested: "Relative to inform",
+  signed: "Signed", lawyer_notified_at: "Lawyer notified", family_notified_at: "Relative informed", exam_at: "Medical examination",
+  authorized_at: "Authorisation", extension_authorized: "Extension", extension_from: "Extension from",
+  extension_authorized_at: "Extension authorised at", end_time: "End", end_date: "End date", start: "Start", end: "End",
+  in_custody: "In custody", lawyer_present: "Lawyer present", lawyer_waiver: "Waiver of lawyer",
+  prosecutor_authorization: "Prosecutor authorisation", lawyer_notified_at_stated: "Lawyer notified (as stated)",
+  place: "Place", is_home: "Home", occupant_present: "Occupant present", witnesses_present: "Two witnesses",
+  consent: "Consent", jld_authorization: "JLD authorisation", item: "Item", seal_number: "Seal",
+  seals_analysed: "Seals analysed", authorization_ref: "Authorisation cited", authorization_date: "Authorisation date",
+  date: "Date", person_name: "Person", exif_time: "EXIF timestamp", seal_label: "Label", orphan_seals: "Seal without seizure",
+  custody_start_conflict: "Conflicting times", exif_conflict: "EXIF inconsistency", special_regime: "Special regime",
+  cited_missing: "Cited report missing", geoloc_used: "Geolocation used", custody_id: "Custody", custody_end_date: "End date",
+  start_date_only: "Date (time unreadable)", seized: "Seized",
 };
 
+// document types of the case file (French police/court documents) -> English label
+export const DOC_TYPE = {
+  PV_INTERPELLATION: "Arrest report", PV_PLACEMENT_GAV: "Custody placement report", PV_NOTIFICATION_DROITS: "Rights notification report",
+  PV_AVIS_AVOCAT: "Lawyer notice", PV_AVIS_FAMILLE: "Relative notice", PV_EXAMEN_MEDICAL: "Medical examination report",
+  AUTORISATION_PROLONGATION: "Custody extension authorisation", PV_FIN_GAV: "End-of-custody report", PV_AUDITION_GAV: "Custody hearing report",
+  PV_AUDITION_TEMOIN: "Witness hearing report", PV_PERQUISITION: "Search and seizure report", PV_EXPLOITATION: "Seal analysis report",
+  RAPPORT_EXPERTISE: "Expert report", ORDONNANCE_EXPERTISE: "Expert appointment order", AUTORISATION_GEOLOC: "Geolocation authorisation",
+  PV_GEOLOCALISATION: "Geolocation report", ORDONNANCE_INTERCEPTION: "Interception order", PV_INTERCEPTION: "Interception transcript",
+  REQUISITOIRE_INTRODUCTIF: "Opening of judicial investigation", PV_MISE_EN_EXAMEN: "First appearance / formal charge",
+  ARRET_CHAMBRE_INSTRUCTION: "Investigating chamber ruling", PV_PLAINTE: "Complaint", PV_VIDEOPROTECTION: "CCTV review",
+  PV_CONSTATATIONS: "Findings report", PV_REQUISITION: "Information request", PV_ANNEXE: "Annex", PHOTO: "Photograph", INCONNU: "Document",
+};
+export const docType = p => (p && (DOC_TYPE[p.type] ?? p.title)) || "";
+
 export function fmtVal(k, v) {
-  if (v === true) return "oui";
-  if (v === false) return "non";
+  if (v === true) return "yes";
+  if (v === false) return "no";
   if (v === null || v === undefined) return "—";
   if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v)) return `${dmy(v)} ${hm(v)}`;
-  if (k === "consent") return { handwritten: "écrit de la main", verbal: "verbal" }[v] ?? v;
+  if (k === "consent") return { handwritten: "handwritten", verbal: "verbal" }[v] ?? v;
   return String(v);
 }
 

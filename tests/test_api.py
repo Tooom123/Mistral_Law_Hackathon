@@ -46,9 +46,9 @@ def test_alert_card_four_questions(client_case):
     assert top["status"] == "possible_nullity"
     card = c.get(f"/cases/{cid}/alerts/{top['id']}").json()
     assert card["what"] and card["where"] and card["why"]["article"] and card["next"]
-    assert al["deadline"]["status"] == "à vérifier"
-    parquet = c.get(f"/cases/{cid}/alerts?mode=parquet").json()["alerts"][0]
-    assert parquet["headline"].startswith("Point de régularité")
+    assert al["deadline"]["status"] == "to verify"
+    parquet = c.get(f"/cases/{cid}/alerts?mode=prosecution").json()["alerts"][0]
+    assert parquet["headline"].startswith("Regularity issue")
 
 
 def test_page_highlight(client_case):
@@ -85,11 +85,11 @@ def test_tribunal_and_proof(client_case):
     al = c.get(f"/cases/{cid}/alerts").json()["alerts"]
     gav04 = next(a for a in al if a["nullity_id"] == "GAV-04")
     t = c.get(f"/cases/{cid}/alerts/{gav04['id']}/tribunal").json()
-    assert t["president"]["verdict"] in ("survit", "survit_sous_reserve")
-    assert any(o["hint"] == "grief" and o["strength"] == "principe" for o in t["parquet"]["objections"])
+    assert t["presiding"]["verdict"] in ("survives", "survives_with_caveats")
+    assert any(o["hint"] == "no_prejudice" and o["strength"] == "principle" for o in t["prosecution"]["objections"])
     decoy = next(a for a in al if a["nullity_id"] == "GAV-05")
     td = c.get(f"/cases/{cid}/alerts/{decoy['id']}/tribunal").json()
-    assert any(o["strength"] == "appuyee" for o in td["parquet"]["objections"])
+    assert any(o["strength"] == "supported" for o in td["prosecution"]["objections"])
     p = c.get(f"/cases/{cid}/alerts/{gav04['id']}/proof").json()
     assert "theorem" in p["code"] and p["status"] in ("proved", "unchecked")
 
@@ -97,7 +97,7 @@ def test_tribunal_and_proof(client_case):
 def test_report_md_pdf(client_case):
     c, cid = client_case
     md = c.get(f"/cases/{cid}/report?format=md").text
-    assert "Moyens de nullité à examiner" in md and "p. " in md
+    assert "Grounds of nullity to examine" in md and "p. " in md
     pdf = c.get(f"/cases/{cid}/report?format=pdf")
     assert pdf.content[:4] == b"%PDF"
 

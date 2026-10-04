@@ -1,6 +1,6 @@
 id: GAV-09
 category: GARDE_A_VUE
-title: Examen médical demandé, non réalisé
+title: Medical examination requested but not carried out
 article: art. 63-3 CPP
 applies_to: [garde_a_vue]
 needs: [doctor_requested]
@@ -10,9 +10,9 @@ confidence: M
 versions:
   - label: art. 63-3 CPP
     check: doctor_seen
-rights_at_stake: [droit à la santé, dignité]
+rights_at_stake: [right to health, dignity]
 next_steps:
-  - Rechercher une réquisition à médecin ou un certificat médical hors cote.
-prosecution_hints: [piece_hors_dossier, grief]
+  - Look for a request to a doctor or a medical certificate outside the numbered file.
+prosecution_hints: [document_outside_file, no_prejudice]
 judilibre_query: garde à vue examen médical demandé non réalisé
 weight: 0.8

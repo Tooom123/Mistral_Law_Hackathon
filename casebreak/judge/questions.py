@@ -1,33 +1,33 @@
-"""Typed questions asked to the judge. Facts only: « is it stated? », never « is it lawful? »."""
+"""Typed questions asked to the judge. Facts only: "is it stated?", never "is it lawful?"."""
 
 QUESTIONS = {
     "objective_stated": {
         "type": "boolean",
-        "fr": "La motivation du placement énonce-t-elle au moins un objectif concret (et pas seulement une formule générale) ?",
+        "text": "Do the grounds for custody state at least one concrete objective (not just a generic phrase)?",
     },
     "delay_justified": {
         "type": "enum",
-        "options": ["circonstance_relevee", "aucune", "non_documentee"],
-        "fr": "Le procès-verbal fait-il état d'une circonstance expliquant le retard de notification des droits ?",
+        "options": ["circumstance_stated", "none", "not_documented"],
+        "text": "Does the report state a circumstance explaining the late notification of rights?",
     },
 }
 
 PROSECUTION = {
-    "justification_retard": "Le retard serait justifié par une circonstance insurmontable.",
-    "grief": "L'irrégularité n'aurait pas porté atteinte aux intérêts de la personne (pas de nullité sans grief, art. 171 et 802 CPP).",
-    "prolongation": "Une autorisation de prolongation existerait hors cote.",
-    "regime_derogatoire": "Un régime dérogatoire autoriserait la mesure.",
-    "renonciation": "La personne aurait renoncé à l'assistance de l'avocat.",
-    "autorisation_procureur": "Le procureur aurait autorisé l'audition immédiate (circonstances exceptionnelles).",
-    "avis_ailleurs": "L'avis figurerait dans une autre pièce (registre, main courante).",
-    "piece_hors_dossier": "La pièce existerait mais n'aurait pas été versée au dossier communiqué.",
-    "renotification": "Les droits auraient été renotifiés en présence de l'interprète.",
-    "mention_ailleurs": "La mention figurerait dans une autre pièce de la procédure.",
-    "assentiment": "L'occupant aurait consenti à la perquisition.",
-    "autorisation_jld": "Une autorisation du juge des libertés et de la détention existerait.",
-    "signature": "La présence résulterait des signatures apposées au PV.",
-    "scelle_ulterieur": "L'objet aurait été placé sous scellé dans un acte ultérieur.",
-    "erreur_materielle": "L'écart résulterait d'une erreur matérielle sans incidence.",
-    "horloge_appareil": "L'horloge de l'appareil photo serait mal réglée.",
-    "motivation_suffisante": "La motivation serait suffisante au regard des objectifs légaux.",
+    "delay_justified_claim": "The delay was justified by an insurmountable circumstance.",
+    "no_prejudice": "The irregularity did not harm the person's interests (no nullity without prejudice, art. 171 and 802 CPP).",
+    "extension": "An extension authorisation exists outside the numbered file.",
+    "special_regime": "A special regime authorised the measure.",
+    "waiver": "The person waived the right to a lawyer.",
+    "prosecutor_authorisation": "The prosecutor authorised immediate questioning (exceptional circumstances).",
+    "notice_elsewhere": "The notice appears in another document (register, logbook).",
+    "document_outside_file": "The document exists but was not added to the file disclosed.",
+    "renotification": "Rights were notified again with the interpreter present.",
+    "entry_elsewhere": "The entry appears in another document of the proceedings.",
+    "consent": "The occupant consented to the search.",
+    "jld_authorisation": "An authorisation from the liberty and custody judge exists.",
+    "signature": "Presence follows from the signatures on the report.",
+    "later_seal": "The item was placed under seal in a later act.",
+    "clerical_error": "The discrepancy is a harmless clerical error.",
+    "camera_clock": "The camera clock was set wrong.",
+    "sufficient_grounds": "The grounds are sufficient in light of the legal objectives.",
 }

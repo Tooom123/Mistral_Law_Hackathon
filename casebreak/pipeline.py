@@ -1,4 +1,4 @@
-"""Dossier → graph → checks. Emits live counters for the war room (salle des opérations)."""
+"""Dossier → graph → checks. Emits live counters for the war room."""
 
 from __future__ import annotations
 
@@ -21,14 +21,14 @@ from casebreak.schemas import CaseGraph
 log = logging.getLogger(__name__)
 
 STAGES = [
-    ("read", "Lecture", "OCR et vision — chaque page garde sa position"),
-    ("split", "Découpage", "Une pièce par procès-verbal"),
-    ("classify", "Classement", "Type de pièce → catégorie"),
-    ("extract", "Extraction", "Actes, heures, personnes — avec page et citation"),
-    ("link", "Liaison", "Ordre, dépendances, contradictions"),
-    ("check", "Vérification", "Conditions de la loi en vigueur à la date de l'acte"),
-    ("cascade", "Effet domino", "Actes potentiellement affectés"),
-    ("done", "Prêt", "Graphe et alertes disponibles"),
+    ("read", "Reading", "OCR and vision — every page keeps its position"),
+    ("split", "Splitting", "One document per police report"),
+    ("classify", "Classifying", "Document type → category"),
+    ("extract", "Extracting", "Acts, times, people — with page and quote"),
+    ("link", "Linking", "Order, dependencies, contradictions"),
+    ("check", "Checking", "Conditions of the law in force on the date of the act"),
+    ("cascade", "Domino effect", "Acts potentially affected"),
+    ("done", "Ready", "Graph and alerts available"),
 ]
 
 _STATUS: dict[str, dict] = {}
@@ -105,10 +105,10 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
                 _count(case_id, "pages_native")
             elif info["ocr"] == "none":
                 _count(case_id, "pages_unreadable")
-                _log(case_id, f"p. {info['page']} · illisible sans OCR — à lire", "warn")
+                _log(case_id, f"p. {info['page']} · unreadable without OCR — to read", "warn")
             else:
                 _count(case_id, "pages_ocr")
-                _log(case_id, f"p. {info['page']} · {'photo' if info['kind'] == 'image' else 'scan'} lu par "
+                _log(case_id, f"p. {info['page']} · {'photo' if info['kind'] == 'image' else 'scan'} read by "
                      f"{'Mistral OCR' if info['ocr'] == 'mistral_ocr' else 'Tesseract'}", "ocr")
             if pace:
                 time.sleep(pace / 60)
@@ -146,7 +146,7 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
                 _count(case_id, "attributes", n_attr)
                 _count(case_id, "quotes_verified", sum(1 for a in dr.node.attrs.values() if a.src))
                 if dr.node.start and dr.node.subtype not in ("other",):
-                    _log(case_id, f"{dr.node.label} · {dr.node.start:%d/%m %Hh%M} · {pc.id}", "act")
+                    _log(case_id, f"{dr.node.label} · {dr.node.start:%d/%m %H:%M} · {pc.id}", "act")
             if pace:
                 time.sleep(pace / 16)
         _stage(case_id, "extract", "done")
@@ -187,19 +187,19 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
         _stage(case_id, "cascade", "running")
         top = max(checks, key=lambda c: len(c.affected), default=None)
         if top and top.affected:
-            _log(case_id, f"domino · {top.nullity_id} → {len(top.affected)} actes potentiellement affectés", "cascade")
+            _log(case_id, f"domino · {top.nullity_id} → {len(top.affected)} acts potentially affected", "cascade")
         _stage(case_id, "cascade", "done")
 
         g.stats = {**status(case_id)["counters"], "categories": cats}
         store.save(d, g, checks)
         _stage(case_id, "done", "done")
         _upd(case_id, state="done", stage="done", finished_at=time.time())
-        _log(case_id, "Dossier prêt.", "done")
+        _log(case_id, "Case file ready.", "done")
         return g
     except Exception as e:
         log.exception("pipeline failed")
         _upd(case_id, state="error", error=str(e))
-        _log(case_id, f"Erreur : {e}", "error")
+        _log(case_id, f"Error: {e}", "error")
         raise
     finally:
         _persist(case_id)

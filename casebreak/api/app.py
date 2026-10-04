@@ -35,23 +35,23 @@ from casebreak.synth import DEMO_TITLE, generate_demo
 from casebreak.tribunal.court import deliberate
 
 log = logging.getLogger(__name__)
-app = FastAPI(title="CASEBREAK", version="0.3", description="Trouver le vice de procédure avant que le délai ne le fasse.")
+app = FastAPI(title="CASEBREAK", version="0.3", description="Find the procedural flaw before the deadline does.")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-Mode = Literal["defense", "parquet"]
+Mode = Literal["defense", "prosecution"]
 DEMO_SRC = CACHE / "demo_src"
 _demo_lock = threading.Lock()
 
 
 def _404(what: str):
-    raise HTTPException(404, f"{what} introuvable")
+    raise HTTPException(404, f"{what} not found")
 
 
 def _graph(cid: str):
     try:
         return svc.load(cid)
     except KeyError:
-        _404("dossier")
+        _404("case")
 
 
 # ------------------------------------------------------------------ meta
@@ -96,14 +96,14 @@ async def create_case(files: list[UploadFile] = File(...), title: str = Query(""
         names.append(sub + name)
     if not names:
         shutil.rmtree(d)
-        raise HTTPException(400, "Aucun fichier PDF ou image reçu.")
+        raise HTTPException(400, "No PDF or image file received.")
     threading.Thread(target=_run_safe, args=(cid, names, title or names[0], 0.35), daemon=True).start()
     return {"case_id": cid, "files": names}
 
 
 @app.post("/cases/demo")
 def create_demo(pace: float = Query(1.0, ge=0, le=5)) -> dict:
-    """The frozen synthetic demo (Affaire des Mathurins), run live for the war room."""
+    """The frozen synthetic demo (the Mathurins case), run live for the war room."""
     with _demo_lock:
         if not (DEMO_SRC / "ground_truth.json").exists():
             generate_demo(DEMO_SRC)
@@ -126,7 +126,7 @@ def _run_safe(cid: str, files: list[str], title: str, pace: float) -> None:
 def case_status(cid: str) -> dict:
     st = status(cid)
     if st.get("state") == "unknown":
-        _404("dossier")
+        _404("case")
     return st
 
 
@@ -181,10 +181,10 @@ def alert(cid: str, aid: str, as_of: str | None = None, mode: Mode = "defense", 
     try:
         c = svc.find_alert(cid, aid, as_of)
     except KeyError:
-        _404("alerte")
+        _404("alert")
     out = card(c, g, svc.reviews(cid), mode, pseudo)
     nl = load_catalogue().get(c.nullity_id)
-    out["counter_arguments"] = [{"hint": h, "text_fr": PROSECUTION.get(h, h)} for h in (nl.prosecution_hints if nl else [])]
+    out["counter_arguments"] = [{"hint": h, "text": PROSECUTION.get(h, h)} for h in (nl.prosecution_hints if nl else [])]
     out["judilibre_query"] = nl.judilibre_query if nl else ""
     return out
 
@@ -197,7 +197,7 @@ class SimReq(BaseModel):
 def simulate(cid: str, req: SimReq) -> dict:
     g, _ = _graph(cid)
     if req.node_id not in {n.id for n in g.nodes}:
-        _404("nœud")
+        _404("node")
     return simulate_cascade(req.node_id, g.nodes, g.edges)
 
 
@@ -212,7 +212,7 @@ def review(cid: str, aid: str, req: ReviewReq) -> dict:
     try:
         c = svc.find_alert(cid, aid)
     except KeyError:
-        _404("alerte")
+        _404("alert")
     return svc.set_review(cid, c, req.decision, req.note)
 
 
@@ -222,7 +222,7 @@ def tribunal(cid: str, aid: str, as_of: str | None = None) -> dict:
     try:
         return deliberate(svc.find_alert(cid, aid, as_of), g)
     except KeyError:
-        _404("alerte")
+        _404("alert")
 
 
 @app.get("/cases/{cid}/alerts/{aid}/proof")
@@ -231,7 +231,7 @@ def proof(cid: str, aid: str, as_of: str | None = None) -> dict:
     try:
         return lean.prove(svc.find_alert(cid, aid, as_of))
     except KeyError:
-        _404("alerte")
+        _404("alert")
 
 
 @app.get("/cases/{cid}/alerts/{aid}/precedents")
@@ -240,7 +240,7 @@ def precedents(cid: str, aid: str) -> dict:
     try:
         c = svc.find_alert(cid, aid)
     except KeyError:
-        _404("alerte")
+        _404("alert")
     nl = load_catalogue().get(c.nullity_id)
     return judilibre.search(nl.judilibre_query if nl else "")
 
@@ -333,7 +333,7 @@ def get_report(cid: str, format: Literal["md", "pdf", "json"] = "md", mode: Mode
 def case_file(cid: str, path: str) -> FileResponse:
     p = (svc.case_path(cid) / path).resolve()
     if svc.case_path(cid) not in p.parents or not p.exists():
-        _404("fichier")
+        _404("file")
     return FileResponse(p)
 
 

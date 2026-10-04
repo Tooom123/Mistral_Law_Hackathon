@@ -1,7 +1,7 @@
 """⑥ ATTACH + DETECT — run every catalogue entry on every node of its category (ARCHITECTURE §3).
 
 Law-as-of-date: by default the version in force at the date of the act; `as_of` forces one date
-(time-travel slider: « droit applicable au … »).
+(time-travel slider: "law applicable as of …").
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ def _build(nl: Nullity, n: Node, res: Result, law_date: date | None, ctx: GraphC
     ocr = ctx.ocr_pages(res.sources)
     if ocr and certainty == "documented":
         certainty = "inferred"
-        details["ocr_note"] = f"Valeurs lues par OCR (p. {', '.join(map(str, sorted(set(ocr))))}) — vérifier la page."
+        details["ocr_note"] = f"Values read by OCR (p. {', '.join(map(str, sorted(set(ocr))))}) — check the page."
     status = res.status
     jd = None
     if res.grey and use_judge:
@@ -53,7 +53,7 @@ def _build(nl: Nullity, n: Node, res: Result, law_date: date | None, ctx: GraphC
                 ans = next((a for a in jd["answers"] if a.get("id") == "objective_stated"), {})
                 if ans.get("answer") is False:
                     status, res.statement = "needs_reading", (
-                        "Motivation du placement relevée, mais aucun objectif concret identifié : formule à lire.")
+                        "Grounds for custody found, but no concrete objective identified: wording to be read.")
                 elif ans.get("answer") is True and not jd["unsure"]:
                     status = "satisfied"
             certainty = "needs_reading" if jd["unsure"] else ("inferred" if certainty != "needs_reading" else certainty)

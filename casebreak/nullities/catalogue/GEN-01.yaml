@@ -1,13 +1,13 @@
 id: GEN-01
 category: AUTRE
-title: Pas de nullité sans grief — le grief n'est jamais apprécié par l'outil
-article: art. 171 et 802 CPP
+title: No nullity without prejudice — prejudice is never assessed by the tool
+article: art. 171 and 802 CPP
 applies_to: []
 condition_type: procedural
 confidence: H
 versions:
-  - label: art. 171 et 802 CPP
+  - label: art. 171 and 802 CPP
     check: info_only
 rights_at_stake: []
-next_steps: [Qualifier le grief (avocat).]
+next_steps: [Establish the prejudice (lawyer).]
 weight: 0

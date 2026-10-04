@@ -1,19 +1,19 @@
 id: GAV-02
 category: GARDE_A_VUE
-title: Durée de garde à vue au-delà de 24 h sans prolongation autorisée
+title: Custody beyond 24 h without an authorised extension
 article: art. 63 CPP
 applies_to: [garde_a_vue]
 needs: [custody_start, custody_end]
 condition_type: measurable
 confidence: H
 versions:
-  - label: art. 63 CPP (droit commun — 24 h, une prolongation de 24 h autorisée par le procureur)
+  - label: art. 63 CPP (ordinary offences — 24 h, one 24 h extension authorised by the prosecutor)
     check: custody_duration
     params: {initial_hours: 24, extension_hours: 24}
-rights_at_stake: [liberté individuelle]
+rights_at_stake: [personal liberty]
 next_steps:
-  - Vérifier l'absence d'autorisation écrite de prolongation dans les pièces non cotées.
-  - Vérifier si un régime dérogatoire est invoqué (GAV-03).
-prosecution_hints: [prolongation, regime_derogatoire]
+  - Check that no written extension authorisation exists in unnumbered documents.
+  - Check whether a special regime is invoked (GAV-03).
+prosecution_hints: [extension, special_regime]
 judilibre_query: garde à vue durée prolongation autorisation procureur
 weight: 1.0

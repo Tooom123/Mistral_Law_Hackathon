@@ -1,7 +1,7 @@
 """NullityBench-FR — synthetic dossiers with injected nullities and decoys; recall/precision per nullity and
 per certainty level; comparison with an LLM alone when a Mistral key is set (ARCHITECTURE §8).
 
-Say it honestly: « sur notre jeu synthétique de N dossiers ». Synthetic ≠ real accuracy.
+Say it honestly: "on our synthetic set of N case files". Synthetic ≠ real accuracy.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ def match(alert: Check, entry: dict) -> bool:
 
 
 def score_case(checks: list[Check], truth: dict) -> dict:
-    """Per-entry outcome + false positives. Strict = flagged « nullité possible »; any = possible or à instruire."""
+    """Per-entry outcome + false positives. Strict = flagged "possible nullity"; any = possible or to investigate."""
     alerts = [c for c in checks if c.status in ("possible_nullity", "needs_reading")]
     used: set[int] = set()
     rows = []
@@ -146,10 +146,9 @@ def run(n: int = 10, seed0: int = 1, baseline: bool = True, progress=None) -> di
         "seconds_per_1000_pages": round(elapsed / pages_total * 1000, 1) if pages_total else None,
         "casebreak": aggregate(per_case), "cases": per_case,
         "baseline": _agg_baseline(base_cases),
-        "honesty": f"Sur notre jeu synthétique de {n} dossiers ({pages_total} pages). Le générateur et les extracteurs ont "
-                   "été écrits par la même équipe : ce score mesure la chaîne de bout en bout, pas la généralisation à de "
-                   "vrais dossiers. Données synthétiques, plus propres que la réalité ; la validation réelle exige des "
-                   "dossiers anonymisés.",
+        "honesty": f"On our synthetic set of {n} case files ({pages_total} pages). The generator and the extractors were "
+                   "written by the same team: this score measures the pipeline end to end, not generalisation to real "
+                   "case files. Synthetic data is cleaner than reality; real validation requires anonymised files.",
     }
     (BENCH / "results.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
     return res
@@ -157,7 +156,7 @@ def run(n: int = 10, seed0: int = 1, baseline: bool = True, progress=None) -> di
 
 def _agg_baseline(cases: list[dict]) -> dict:
     if not cases or all(c.get("status") != "ok" for c in cases):
-        reason = cases[0].get("reason") if cases else "non exécuté"
+        reason = cases[0].get("reason") if cases else "not run"
         return {"status": "not_run", "reason": reason}
     tp = sum(c["tp"] for c in cases if c.get("status") == "ok")
     fn = sum(c["fn"] for c in cases if c.get("status") == "ok")
@@ -183,17 +182,17 @@ def export_zip() -> bytes:
     return buf.getvalue()
 
 
-README = """# NullityBench-FR (v0.1, synthétique)
+README = """# NullityBench-FR (v0.1, synthetic)
 
-Dossiers pénaux **fictifs** en français (procès-verbaux natifs, scans avec heures manuscrites, photos avec EXIF)
-avec des irrégularités procédurales **injectées** et des **leurres** (situations d'apparence irrégulière mais licites).
+**Fictional** French criminal case files (native police reports, scans with handwritten times, photos with EXIF)
+with **injected** procedural irregularities and **decoys** (situations that look irregular but are lawful).
 
-- `dossiers/nbXXX/dossier.pdf` + `photos/` : le dossier à analyser.
-- `dossiers/nbXXX/ground_truth.json` : vérité terrain `(nullity_id, cote, pages, attendu, injecté/leurre)`.
-- `scorer/bench.py` : appariement alerte ↔ vérité (même identifiant de catalogue, pages qui se recoupent),
-  rappel/précision par nullité et par niveau de certitude, exactitude de page, rappel de cascade.
-- `results.json` : résultats de CASEBREAK (et de la référence « LLM seul » si exécutée).
+- `dossiers/nbXXX/dossier.pdf` + `photos/`: the case file to analyse.
+- `dossiers/nbXXX/ground_truth.json`: ground truth `(nullity_id, doc, pages, expected, injected/decoy)`.
+- `scorer/bench.py`: alert ↔ truth matching (same catalogue id, overlapping pages),
+  recall/precision per nullity and per certainty level, page accuracy, cascade recall.
+- `results.json`: CASEBREAK results (and the "LLM alone" baseline when run).
 
-Aucune donnée réelle. Le contenu juridique du catalogue n'est pas validé par un avocat.
-Données synthétiques ≠ précision réelle.
+No real data. The legal content of the catalogue has not been validated by a lawyer.
+Synthetic data ≠ real-world accuracy.
 """

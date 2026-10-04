@@ -492,21 +492,21 @@ def demo_case() -> CaseBuilder:
     h2_v = b.audition(vasseur, d(16, 11, 0), d(16, 12, 10), flag, mode="present", cites=[x_v], seal="S1")
     e_v = b.fin_gav(vasseur, d(16, 16, 0), flag)
 
-    gt(n_v, "GAV-04", "possible_nullity", True, "Droits notifiés 3 h 15 après le placement, sans justification.",
+    gt(n_v, "GAV-04", "possible_nullity", True, "Rights notified 3h15 after custody began, with no justification.",
        phrase="Notifions", affected=[h1_v, h2_v], cert="documented")
-    gt(n_v, "GAV-13", "needs_reading", True, "Heure de début de garde à vue : 11h05 (placement) contre 10h35 (notification).",
+    gt(n_v, "GAV-13", "needs_reading", True, "Custody start time: 11:05 (placement report) vs 10:35 (notification report).",
        phrase="placé en garde à vue ce jour", cert="needs_reading")
-    gt(h1_v, "GAV-08", "possible_nullity", True, "Audition hors la présence de l'avocat demandé, sans renonciation (droit post-2024).",
+    gt(h1_v, "GAV-08", "possible_nullity", True, "Questioned without the requested lawyer, no waiver (post-2024 law).",
        phrase="hors la présence", cert="documented")
-    gt(n_v, "GAV-09", "possible_nullity", True, "Examen médical demandé, aucun PV d'examen au dossier.",
+    gt(n_v, "GAV-09", "possible_nullity", True, "Medical examination requested, no examination report in the file.",
        phrase="examinée par un médecin", cert="needs_reading")
-    gt(p_v, "GAV-02", "possible_nullity", True, "Garde à vue de 28 h 55 sans autorisation de prolongation.",
+    gt(p_v, "GAV-02", "possible_nullity", True, "Custody of 28h55 with no extension authorisation.",
        phrase="Décidons de placer", affected=[h2_v, x_v], cert="documented")
-    gt(s_v, "PRQ-01", "possible_nullity", True, "Perquisition domiciliaire commencée à 21h35.",
+    gt(s_v, "PRQ-01", "possible_nullity", True, "Home search started at 21:35.",
        phrase="Nous transportons", affected=[x_v, h2_v], cert="documented")
-    gt(s_v, "PRQ-04", "possible_nullity", True, "Ordinateur portable saisi sans placement sous scellé.",
+    gt(s_v, "PRQ-04", "possible_nullity", True, "Laptop seized without being placed under seal.",
        phrase="ordinateur portable", cert="documented")
-    gt(ph, "MMC-01", "needs_reading", True, "Photo du scellé S2 horodatée (EXIF) 21h20, avant le début de la perquisition (21h35).",
+    gt(ph, "MMC-01", "needs_reading", True, "Photo of seal S2 timestamped (EXIF) 21:20, before the search began (21:35).",
        phrase="", cert="needs_reading")
 
     # --- LECLERC: decoys (justified delay GAV-05, lawyer present)
@@ -517,13 +517,13 @@ def demo_case() -> CaseBuilder:
     b.avis_avocat(leclerc, d(16, 4, 45), flag)
     h_l = b.audition(leclerc, d(16, 10, 0), d(16, 11, 5), flag, mode="present")
     b.fin_gav(leclerc, d(16, 15, 30), flag)
-    gt(n_l, "GAV-04", "not_flagged", False, "Leurre : retard de notification justifié par l'état d'ébriété (relevé dans le PV).",
+    gt(n_l, "GAV-04", "not_flagged", False, "Decoy: late notification justified by intoxication (stated in the report).",
        phrase="différée")
-    gt(h_l, "GAV-08", "not_flagged", False, "Leurre : audition en présence de l'avocat.")
+    gt(h_l, "GAV-08", "not_flagged", False, "Decoy: hearing with the lawyer present.")
 
     # --- geolocation (GEO-01: authorization not in the file), then WEBER
     g_w = b.geoloc(weber, d(17, 14, 0), d(16, 0), None)
-    gt(g_w, "GEO-01", "needs_reading", True, "Autorisation de géolocalisation visée mais absente du dossier.",
+    gt(g_w, "GEO-01", "needs_reading", True, "Geolocation authorisation cited but missing from the file.",
        phrase="En exécution de l'autorisation", cert="needs_reading")
     b.filler("PV_REQUISITION", "RÉQUISITION À OPÉRATEUR DE TÉLÉPHONIE", d(17, 15, 30), prel, 6)
     b.filler("PV_AUDITION_TEMOIN", "AUDITION DE TÉMOIN", d(17, 17, 0), prel, 8, who=b.person())
@@ -542,24 +542,24 @@ def demo_case() -> CaseBuilder:
                      interpreter="Mme Anna KELLER")
     b.prolongation(weber, d(19, 5, 30), prel, from_dt=d(19, 6, 35))
     e_w = b.fin_gav(weber, d(19, 13, 20), prel, with_time=False, scan=True)
-    gt(n_w, "GAV-10", "possible_nullity", True, "Droits notifiés en français à une personne déclarant ne pas le comprendre, sans interprète.",
+    gt(n_w, "GAV-10", "possible_nullity", True, "Rights notified in French to a person who says they do not understand it, with no interpreter.",
        phrase="en langue française", affected=[h_w], cert="documented")
-    gt(p_w, "GAV-06", "possible_nullity", True, "Aucune mention de l'avis au procureur de la République.",
+    gt(p_w, "GAV-06", "possible_nullity", True, "No record that the public prosecutor was informed.",
        phrase="Décidons de placer", cert="needs_reading")
-    gt(e_w, "GAV-12", "possible_nullity", True, "Heure de fin de garde à vue non mentionnée.",
+    gt(e_w, "GAV-12", "possible_nullity", True, "Custody end time not recorded.",
        phrase="Mettons fin", cert="needs_reading")
-    gt(s_w, "PRQ-03", "possible_nullity", True, "Perquisition en préliminaire sur accord verbal, sans assentiment écrit de la main.",
+    gt(s_w, "PRQ-03", "possible_nullity", True, "Preliminary-inquiry search on verbal agreement, with no handwritten consent.",
        phrase="verbalement", affected=[], cert="documented")
-    gt(h_w, "GAV-08", "not_flagged", False, "Leurre : renonciation expresse à l'avocat, mentionnée de la main.")
-    gt(p_w, "GAV-02", "not_flagged", False, "Leurre : 30 h 45 avec autorisation écrite de prolongation.")
+    gt(h_w, "GAV-08", "not_flagged", False, "Decoy: express handwritten waiver of the lawyer.")
+    gt(p_w, "GAV-02", "not_flagged", False, "Decoy: 30h45 with a written extension authorisation.")
 
     # --- ROCHAT: decoys PRQ-01 (started 20:50, ends 22:15) and PRQ-03 (handwritten consent); handwritten time on a scan
     s_r = b.perquisition(rochat, None, d(18, 22, 15), prel, place="au domicile de", presence="occupant",
                          consent="handwritten", items=[("un sweat-shirt à capuche de couleur sombre", "S6")],
                          scan=True, hw_start="20h50")
     h_r = b.audition(rochat, d(18, 22, 30), d(18, 23, 15), prel, mode="none", witness=True)
-    gt(s_r, "PRQ-01", "not_flagged", False, "Leurre : perquisition commencée à 20h50 (manuscrit) et poursuivie après 21h.")
-    gt(s_r, "PRQ-03", "not_flagged", False, "Leurre : assentiment exprès écrit de la main.")
+    gt(s_r, "PRQ-01", "not_flagged", False, "Decoy: search started at 20:50 (handwritten) and continued after 21:00.")
+    gt(s_r, "PRQ-03", "not_flagged", False, "Decoy: express handwritten consent.")
 
     # --- judicial investigation
     r = b.requisitoire(d(20, 10, 0), [vasseur.name, weber.name])
@@ -567,11 +567,11 @@ def demo_case() -> CaseBuilder:
     m_w = b.mise_en_examen(weber, d(21, 17, 0), judge, [h_w])
     oe = b.ordonnance_expertise(d(22, 9, 0), judge, ["S2", "S7"])
     ex = b.expertise(["S2", "S7"], d(25, 14, 0), oe)
-    gt(ex, "EXP-01", "needs_reading", True, "Le scellé S7 analysé n'est rattaché à aucune saisie du dossier.",
+    gt(ex, "EXP-01", "needs_reading", True, "Analysed seal S7 is not linked to any seizure in the file.",
        phrase="S7", cert="needs_reading")
     oi = b.ordonnance_interception(weber, d(28, 10, 0), judge)
     it = b.interception(weber, d(29, 18, 0), oi, d(28, 10, 0))
-    gt(it, "INT-01", "not_flagged", False, "Leurre : interception avec ordonnance présente au dossier.")
+    gt(it, "INT-01", "not_flagged", False, "Decoy: interception with the order present in the file.")
     b.filler("PV_AUDITION_TEMOIN", "AUDITION DE TÉMOIN", d(29, 9, 30), instr, 8, who=b.person())
     b.annex("PV_ANNEXE", "SYNTHÈSE DES INTERCEPTIONS (ANNEXE)", d(30, 9, 0), instr, 700, kind="ecoutes")
     for k in range(6):
@@ -623,7 +623,7 @@ def random_case(seed: int) -> CaseBuilder:
     stated = start - timedelta(minutes=30) if "GAV-13" in inject else start
     pl = b.placement(p, start, flag, interp, prosecutor_at=None if "GAV-06" in inject else start + timedelta(minutes=10))
     if "GAV-06" in inject:
-        gt(pl, "GAV-06", "possible_nullity", True, "Avis parquet absent", phrase="Décidons de placer")
+        gt(pl, "GAV-06", "possible_nullity", True, "Prosecutor notice missing", phrase="Décidons de placer")
     delay = timedelta(minutes=rng.choice([185, 200, 240])) if "GAV-04" in inject else (
         timedelta(minutes=rng.choice([110, 130])) if "GAV-04" in decoys else timedelta(minutes=rng.choice([5, 10, 15])))
     just = "l'état d'ébriété manifeste de l'intéressé, constaté à son arrivée au service" if "GAV-04" in decoys else None
@@ -635,19 +635,19 @@ def random_case(seed: int) -> CaseBuilder:
     if family_req and "GAV-11" not in inject:
         b.avis_famille(p, start + delay + timedelta(minutes=20), flag, scan=rng.random() < 0.3)
     if "GAV-11" in inject:
-        gt(nt, "GAV-11", "possible_nullity", True, "Proche à prévenir non avisé", phrase="faire prévenir")
+        gt(nt, "GAV-11", "possible_nullity", True, "Relative to inform not informed", phrase="faire prévenir")
     if "GAV-04" in inject:
-        gt(nt, "GAV-04", "possible_nullity", True, "Notification tardive", phrase="Notifions")
+        gt(nt, "GAV-04", "possible_nullity", True, "Late notification", phrase="Notifions")
     if "GAV-04" in decoys:
-        gt(nt, "GAV-04", "not_flagged", False, "Retard justifié", phrase="différée")
+        gt(nt, "GAV-04", "not_flagged", False, "Justified delay", phrase="différée")
     if "GAV-13" in inject:
-        gt(nt, "GAV-13", "needs_reading", True, "Contradiction heure de placement", phrase="placé en garde à vue")
+        gt(nt, "GAV-13", "needs_reading", True, "Conflicting custody start time", phrase="placé en garde à vue")
     if "GAV-10" in inject:
-        gt(nt, "GAV-10", "possible_nullity", True, "Pas d'interprète", phrase="en langue française")
+        gt(nt, "GAV-10", "possible_nullity", True, "No interpreter", phrase="en langue française")
     if doctor_req and "GAV-09" not in inject:
         b.examen_medical(p, start + delay + timedelta(minutes=50), flag)
     if "GAV-09" in inject:
-        gt(nt, "GAV-09", "possible_nullity", True, "Médecin demandé non vu", phrase="médecin")
+        gt(nt, "GAV-09", "possible_nullity", True, "Doctor requested, not seen", phrase="médecin")
     notified = start + delay + timedelta(minutes=5)
     if lawyer_req:
         b.avis_avocat(p, notified, flag)
@@ -664,9 +664,9 @@ def random_case(seed: int) -> CaseBuilder:
     if "GAV-08" in inject:
         reform = datetime(2024, 7, 1)
         exp = "possible_nullity" if hstart >= reform else "not_flagged"
-        gt(h, "GAV-08", exp, exp == "possible_nullity", "Audition sans avocat (règle selon la date)", phrase="hors la présence")
+        gt(h, "GAV-08", exp, exp == "possible_nullity", "Hearing without lawyer (rule depends on date)", phrase="hors la présence")
     if "GAV-08" in decoys:
-        gt(h, "GAV-08", "not_flagged", False, "Renonciation expresse")
+        gt(h, "GAV-08", "not_flagged", False, "Express waiver")
 
     # search
     is_night = "PRQ-01" in inject
@@ -682,17 +682,17 @@ def random_case(seed: int) -> CaseBuilder:
                         consent=("verbal" if "PRQ-03" in inject else "handwritten") if prelim_consent else None,
                         items=items)
     if "PRQ-01" in inject:
-        gt(sp, "PRQ-01", "possible_nullity", True, "Perquisition après 21h", phrase="Nous transportons")
+        gt(sp, "PRQ-01", "possible_nullity", True, "Search after 21:00", phrase="Nous transportons")
     if "PRQ-01" in decoys:
-        gt(sp, "PRQ-01", "not_flagged", False, "Commencée 20h50")
+        gt(sp, "PRQ-01", "not_flagged", False, "Started 20:50")
     if "PRQ-02" in inject:
-        gt(sp, "PRQ-02", "possible_nullity", True, "Ni occupant ni témoins", phrase="Procédons à la perquisition")
+        gt(sp, "PRQ-02", "possible_nullity", True, "Neither occupant nor witnesses", phrase="Procédons à la perquisition")
     if "PRQ-03" in inject:
-        gt(sp, "PRQ-03", "possible_nullity", True, "Accord verbal", phrase="verbalement")
+        gt(sp, "PRQ-03", "possible_nullity", True, "Verbal agreement", phrase="verbalement")
     if "PRQ-03" in decoys:
-        gt(sp, "PRQ-03", "not_flagged", False, "Assentiment manuscrit")
+        gt(sp, "PRQ-03", "not_flagged", False, "Handwritten consent")
     if "PRQ-04" in inject:
-        gt(sp, "PRQ-04", "possible_nullity", True, "Objet non placé sous scellé", phrase="tablette")
+        gt(sp, "PRQ-04", "possible_nullity", True, "Item not placed under seal", phrase="tablette")
     x = b.exploitation("S1", "téléphone portable", s_end + timedelta(hours=10), flag, sp)
 
     # custody length
@@ -710,11 +710,11 @@ def random_case(seed: int) -> CaseBuilder:
     if "GAV-02" in inject:
         # without an end time (GAV-12) the duration cannot be computed: the honest answer is « à lire »
         exp = "needs_reading" if "GAV-12" in inject else "possible_nullity"
-        gt(pl, "GAV-02", exp, True, "Plus de 24 h sans prolongation", phrase="Décidons de placer")
+        gt(pl, "GAV-02", exp, True, "Over 24h without extension", phrase="Décidons de placer")
     if "GAV-02" in decoys:
-        gt(pl, "GAV-02", "not_flagged", False, "Prolongation autorisée")
+        gt(pl, "GAV-02", "not_flagged", False, "Extension authorised")
     if "GAV-12" in inject:
-        gt(fin, "GAV-12", "possible_nullity", True, "Heure de fin absente", phrase="Mettons fin")
+        gt(fin, "GAV-12", "possible_nullity", True, "End time missing", phrase="Mettons fin")
 
     b.annex("PV_ANNEXE", "RELEVÉ DÉTAILLÉ DES COMMUNICATIONS (ANNEXE)", end + timedelta(hours=5), flag,
             rng.randint(60, 240))
@@ -723,12 +723,12 @@ def random_case(seed: int) -> CaseBuilder:
                  rng.randint(4, 8), who=b.person(), scan=rng.random() < 0.2)
     if "GEO-01" in inject:
         g = b.geoloc(p, end + timedelta(days=1), end, None)
-        gt(g, "GEO-01", "needs_reading", True, "Autorisation absente", phrase="En exécution")
+        gt(g, "GEO-01", "needs_reading", True, "Authorisation missing", phrase="En exécution")
     judge = "Hélène GARNIER"
     b.mise_en_examen(p, end + timedelta(days=2), judge, [h, x])
     if "EXP-01" in inject:
         oe = b.ordonnance_expertise(end + timedelta(days=3), judge, ["S2", "S9"])
         ex = b.expertise(["S2", "S9"], end + timedelta(days=6), oe)
-        gt(ex, "EXP-01", "needs_reading", True, "Scellé S9 orphelin", phrase="S9")
+        gt(ex, "EXP-01", "needs_reading", True, "Orphan seal S9", phrase="S9")
     b.pieces.sort(key=lambda s: s.dt or datetime.max)
     return b

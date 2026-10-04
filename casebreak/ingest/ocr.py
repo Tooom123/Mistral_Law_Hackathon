@@ -59,7 +59,7 @@ def _tesseract(img: Image.Image) -> tuple[str, list]:
 _NUM_WORDS = ("un|une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|"
               "vingt|minuit|midi")
 _REPAIRS = [
-    # Tesseract without the French model reads « à » as « 4 » or drops it: repair only unambiguous contexts.
+    # Tesseract without the French model reads "à" as "4" or drops it: repair only unambiguous contexts.
     (re.compile(rf"(?<=\s)[4aà](?=\s+(?:\d{{1,2}}\s?[hH:]|(?:{_NUM_WORDS})\b))"), "à"),
     (re.compile(r"\bgarde [4a] vue\b"), "garde à vue"),
     (re.compile(r"\b(r[ée]sidence|domicile) 4 "), r"\1 à "),

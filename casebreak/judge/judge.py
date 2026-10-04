@@ -38,17 +38,17 @@ def _offline(qid: str, node: Node, attr: str | None) -> dict:
     text = norm(str(a.value)) if a and a.value else ""
     if qid == "objective_stated":
         if not text:
-            return {"id": qid, "answer": "non_documentee", "quote": a.src.quote if a and a.src else None,
+            return {"id": qid, "answer": "not_documented", "quote": a.src.quote if a and a.src else None,
                     "page": a.src.page if a and a.src else None}
         ok = any(m in text for m in OBJECTIVE_MARKERS)
         return {"id": qid, "answer": ok, "quote": a.src.quote if a.src else None, "page": a.src.page if a.src else None}
     if qid == "delay_justified":
         if not text:
-            return {"id": qid, "answer": "aucune", "quote": None, "page": None}
-        return {"id": qid, "answer": "circonstance_relevee", "quote": a.src.quote if a.src else None,
+            return {"id": qid, "answer": "none", "quote": None, "page": None}
+        return {"id": qid, "answer": "circumstance_stated", "quote": a.src.quote if a.src else None,
                 "page": a.src.page if a.src else None,
                 "markers": [m for m in DELAY_MARKERS if m in text]}
-    return {"id": qid, "answer": "non_documentee", "quote": None, "page": None}
+    return {"id": qid, "answer": "not_documented", "quote": None, "page": None}
 
 
 def _jev(qids: list[str], context: str) -> list[dict] | None:
@@ -56,7 +56,7 @@ def _jev(qids: list[str], context: str) -> list[dict] | None:
     if not settings.jev:
         return None
     payload = {"questions": [{"id": q, "type": QUESTIONS[q]["type"], "options": QUESTIONS[q].get("options"),
-                              "text": QUESTIONS[q]["fr"]} for q in qids], "context": context, "require_quotes": True}
+                              "text": QUESTIONS[q]["text"]} for q in qids], "context": context, "require_quotes": True}
     try:
         r = httpx.post(f"{settings.jev_base}/v1/judge", json=payload, timeout=30,
                        headers={"Authorization": f"Bearer {settings.typesafe_key}"})
@@ -70,14 +70,14 @@ def _jev(qids: list[str], context: str) -> list[dict] | None:
 def _mistral(qids: list[str], context: str, model: str) -> list[dict] | None:
     if not settings.mistral:
         return None
-    qs = "\n".join(f"- {q} ({QUESTIONS[q]['type']}{', options: ' + str(QUESTIONS[q].get('options')) if QUESTIONS[q].get('options') else ''}): {QUESTIONS[q]['fr']}" for q in qids)
+    qs = "\n".join(f"- {q} ({QUESTIONS[q]['type']}{', options: ' + str(QUESTIONS[q].get('options')) if QUESTIONS[q].get('options') else ''}): {QUESTIONS[q]['text']}" for q in qids)
     try:
         out = mistral.chat_json(
-            "Tu réponds à des questions FACTUELLES sur des pièces de procédure pénale. Tu ne dis jamais si un acte est nul "
-            "ou régulier. Chaque réponse cite un passage recopié mot pour mot, avec sa page. Si tu ne sais pas, "
-            "réponds 'non_documentee'. JSON: {\"answers\": [{\"id\": str, \"answer\": bool|str, \"quote\": str|null, "
+            "You answer FACTUAL questions about documents of a French criminal case file. You never say whether an act "
+            "is void or lawful. Every answer quotes a passage copied word for word, with its page. If you do not know, "
+            "answer 'not_documented'. JSON: {\"answers\": [{\"id\": str, \"answer\": bool|str, \"quote\": str|null, "
             "\"page\": int|null, \"unsure\": bool}]}",
-            f"Questions:\n{qs}\n\nPièces:\n{context}", model=model)
+            f"Questions:\n{qs}\n\nDocuments:\n{context}", model=model)
         return out.get("answers")
     except mistral.MistralUnavailable as e:
         log.info("Mistral judge unavailable: %s", e)
@@ -94,7 +94,7 @@ def _verify(answers: list[dict], pages: dict[int, PageRec], mapping: dict) -> li
         a["verified"] = bool(q and page in pages and quote_on_page_loose(q, pages[page].text)) or \
             bool(q and any(quote_on_page_loose(q, p.text) for p in pages.values() if page is None))
         if q and not a["verified"]:
-            a["note"] = "citation introuvable sur la page — réponse écartée"
+            a["note"] = "quote not found on the page — answer discarded"
     return answers
 
 
@@ -123,11 +123,11 @@ def ask(nullity: Nullity, node: Node, grey_attr: str | None, sources: list[Src],
         for a in answers:
             a["verified"] = bool(a.get("quote"))
     for a in answers:
-        a["question_fr"] = QUESTIONS.get(a.get("id", ""), {}).get("fr", "")
+        a["question"] = QUESTIONS.get(a.get("id", ""), {}).get("text", "")
         a.pop("probability", None)  # never displayed (ARCHITECTURE §3.3)
-    unsure = any(a.get("unsure") or not a.get("verified") or a.get("answer") == "non_documentee" for a in answers)
+    unsure = any(a.get("unsure") or not a.get("verified") or a.get("answer") == "not_documented" for a in answers)
     return {"tier": tier, "answers": answers, "unsure": unsure, "pseudonymized": bool(mapping),
-            "calibrated": False, "note": "Le juge répond sur les faits, jamais sur la nullité ni le grief."}
+            "calibrated": False, "note": "The judge answers on facts only, never on nullity or prejudice."}
 
 
 def counter_arguments(nullity: Nullity, node: Node) -> list[dict]:
@@ -135,20 +135,20 @@ def counter_arguments(nullity: Nullity, node: Node) -> list[dict]:
     out = []
     for h in nullity.prosecution_hints:
         if h in PROSECUTION:
-            out.append({"hint": h, "text_fr": PROSECUTION[h]})
-    if not any(o["hint"] == "grief" for o in out):
-        out.append({"hint": "grief", "text_fr": PROSECUTION["grief"]})
+            out.append({"hint": h, "text": PROSECUTION[h]})
+    if not any(o["hint"] == "no_prejudice" for o in out):
+        out.append({"hint": "no_prejudice", "text": PROSECUTION["no_prejudice"]})
     return out
 
 
-def explain_fr(statement: str, nullity: Nullity) -> str:
+def explain(statement: str, nullity: Nullity) -> str:
     """Tier 2 explanation (Mistral Large) — offline returns the factual statement only."""
     if not settings.mistral:
         return statement
     try:
         return mistral.chat(
-            [{"role": "system", "content": "Reformule en 2 phrases, en français juridique sobre, sans conclure à la nullité."},
-             {"role": "user", "content": f"Règle : {nullity.title} ({nullity.article}). Constat : {statement}"}],
+            [{"role": "system", "content": "Rephrase in 2 sentences of sober legal English, without concluding that the act is void."},
+             {"role": "user", "content": f"Rule: {nullity.title} ({nullity.article}). Finding: {statement}"}],
             model=settings.judge_model)
     except mistral.MistralUnavailable:
         return statement

@@ -20,7 +20,7 @@ async function boot() {
   if (!cid) return picker();
   set({ caseId: cid });
   const st = await api.status(cid).catch(() => null);
-  if (!st) { toast("Dossier introuvable."); return picker(); }
+  if (!st) { toast("Case file not found."); return picker(); }
   $("#case-title").textContent = st.title ?? cid;
   if (st.state !== "done" || params.get("war") !== null) {
     stopWar = startWarroom(cid, () => {});
@@ -45,7 +45,7 @@ async function picker() {
   $("#picker-demo").onclick = () => { $("#picker").hidden = true; launchDemo(); };
   const list = await api.cases().catch(() => []);
   $("#picker-list").replaceChildren(...list.filter(c => c.state === "done").slice(0, 12).map(c =>
-    h("li", {}, h("a", { href: `?case=${c.case_id}#graph` }, h("span", {}, c.title ?? c.case_id), h("small", {}, `${c.pages ?? "?"} pages`), h("small", {}, `${c.alerts ?? 0} alertes`)))));
+    h("li", {}, h("a", { href: `?case=${c.case_id}#graph` }, h("span", {}, c.title ?? c.case_id), h("small", {}, `${c.pages ?? "?"} pages`), h("small", {}, `${c.alerts ?? 0} alerts`)))));
 }
 
 async function engines() {
@@ -55,16 +55,16 @@ async function engines() {
   const dots = [["mistral", "Mistral"], ["tesseract", "OCR"], ["jev", "Jev"], ["judilibre", "Judilibre"], ["lean", "Lean"]];
   $("#engines-dots").replaceChildren(...dots.map(([k]) => h("i", { class: e[k] ? "on" : "" })));
   const rows = [
-    ["mistral", "Mistral (OCR, extraction, juge, tribunal)", e.mistral ? "clé présente" : "hors ligne"],
-    ["tesseract", "OCR local (Tesseract)", e.tesseract ? "installé" : "absent"],
-    ["jev", "Jev — juge typé (TypeSafe AI)", e.jev ? "clé présente" : "hors ligne"],
-    ["judilibre", "Judilibre — précédents", e.judilibre ? "clé présente" : "hors ligne"],
-    ["lean", "Lean 4 — noyau de preuve", e.lean ? "installé" : "absent"],
-    ["leanstral", "Leanstral — prouveur Mistral", e.leanstral ? "actif" : "inactif"],
-    ["pseudonymize", "Pseudonymisation avant tout appel externe", e.pseudonymize ? "active" : "désactivée"],
+    ["mistral", "Mistral (OCR, extraction, judge, tribunal)", e.mistral ? "key present" : "offline"],
+    ["tesseract", "Local OCR (Tesseract)", e.tesseract ? "installed" : "missing"],
+    ["jev", "Jev — typed judge (TypeSafe AI)", e.jev ? "key present" : "offline"],
+    ["judilibre", "Judilibre — precedents", e.judilibre ? "key present" : "offline"],
+    ["lean", "Lean 4 — proof kernel", e.lean ? "installed" : "missing"],
+    ["leanstral", "Leanstral — Mistral prover", e.leanstral ? "active" : "inactive"],
+    ["pseudonymize", "Pseudonymisation before any external call", e.pseudonymize ? "on" : "off"],
   ];
-  $("#engines-pop").replaceChildren(h("h4", {}, "Moteurs"), h("ul", {}, rows.map(([k, l, v]) => h("li", {}, h("i", { class: e[k] ? "on" : "" }), h("span", {}, l), h("small", {}, v)))),
-    h("p", {}, "Tout fonctionne sans clé. Mistral, Jev et Judilibre ne s'activent que si leurs clés sont dans .env."));
+  $("#engines-pop").replaceChildren(h("h4", {}, "Engines"), h("ul", {}, rows.map(([k, l, v]) => h("li", {}, h("i", { class: e[k] ? "on" : "" }), h("span", {}, l), h("small", {}, v)))),
+    h("p", {}, "Everything works without keys. Mistral, Jev and Judilibre only switch on when their keys are in .env."));
   $("#engines-btn").onclick = ev => { ev.stopPropagation(); $("#engines-pop").hidden = !$("#engines-pop").hidden; };
   document.addEventListener("click", ev => { if (!ev.target.closest("#engines-pop")) $("#engines-pop").hidden = true; });
 }
@@ -93,7 +93,7 @@ async function refresh({ first = false } = {}) {
   renderDeadline();
   renderDense();
   $("#tab-count").textContent = al.counts.possible_nullity || "";
-  $("#alerts-hand").textContent = `${al.counts.possible_nullity} possibles · ${al.counts.needs_reading} à lire`;
+  $("#alerts-hand").textContent = `${al.counts.possible_nullity} possible · ${al.counts.needs_reading} to read`;
   if (first) {
     setupTimeTravel();
     prefetchVerdicts();
@@ -108,14 +108,14 @@ async function prefetchVerdicts() {
     if (state.verdicts[a.id]) continue;
     try {
       const t = await api.tribunal(state.caseId, a.key);
-      state.verdicts[a.id] = t.president.verdict;
+      state.verdicts[a.id] = t.presiding.verdict;
       const li = $(`.al[data-key="${CSS.escape(a.key)}"] .al__verdict`);
-      if (li) li.replaceChildren(stamp(t.president.verdict));
+      if (li) li.replaceChildren(stamp(t.presiding.verdict));
     } catch { /* optional */ }
   }
 }
 
-const stamp = v => h("span", { class: `stamp ${VERDICT[v]?.[1] ?? ""}`, title: "Verdict du tribunal simulé" }, VERDICT[v]?.[0] ?? v);
+const stamp = v => h("span", { class: `stamp ${VERDICT[v]?.[1] ?? ""}`, title: "Verdict of the simulated tribunal" }, VERDICT[v]?.[0] ?? v);
 
 // ------------------------------------------------------------------ alerts list
 function renderAlerts(before) {
@@ -137,15 +137,15 @@ function renderAlerts(before) {
         h("p", { class: "al__what" }, a.what),
         h("div", { class: "al__meta" },
           h("span", { class: `pill ${cc}` }, cl),
-          a.why.affected_count ? h("span", { class: "pill pill--aff" }, `${a.why.affected_count} acte${a.why.affected_count > 1 ? "s" : ""} ↘`) : null,
+          a.why.affected_count ? h("span", { class: "pill pill--aff" }, `${a.why.affected_count} act${a.why.affected_count > 1 ? "s" : ""} ↘`) : null,
           ...[...new Set(a.where.map(s => s.page))].slice(0, 3).map(p => h("span", { class: "pill pill--page" }, `p. ${p}`)),
-          a.review?.decision === "accepted" ? h("span", { class: "pill pill--acc" }, "retenu") : null,
-          a.review?.decision === "rejected" ? h("span", { class: "pill pill--rej" }, "écarté") : null)),
+          a.review?.decision === "accepted" ? h("span", { class: "pill pill--acc" }, "accepted") : null,
+          a.review?.decision === "rejected" ? h("span", { class: "pill pill--rej" }, "dismissed") : null)),
       h("span", { class: "al__verdict" }, state.verdicts[a.id] ? stamp(state.verdicts[a.id]) : null));
     if (before && !before.has(a.key)) li.style.outline = "2px solid var(--orange)";
     return li;
   }));
-  if (!list.length) ol.append(h("li", { class: "muted", style: { padding: "20px 6px" } }, "Aucune alerte pour ce filtre."));
+  if (!list.length) ol.append(h("li", { class: "muted", style: { padding: "20px 6px" } }, "No alert for this filter."));
 }
 const markSel = key => $$(".al").forEach(el => el.classList.toggle("sel", el.dataset.key === key));
 
@@ -161,8 +161,8 @@ $("#filters").addEventListener("click", e => {
 function renderDeadline() {
   const dl = state.deadline, box = $("#deadline");
   if (!dl?.anchors?.length) {
-    box.replaceChildren(h("div", { class: "deadline__top" }, h("span", { class: "deadline__label" }, "Délai de nullité"), h("span", { class: "deadline__stamp" }, "à vérifier")),
-      h("p", { class: "deadline__note" }, "Aucune mise en examen au dossier : pas d'ancre pour le délai."));
+    box.replaceChildren(h("div", { class: "deadline__top" }, h("span", { class: "deadline__label" }, "Nullity deadline"), h("span", { class: "deadline__stamp" }, "to verify")),
+      h("p", { class: "deadline__note" }, "No formal charge in the file: no anchor for the deadline."));
     return;
   }
   const a = dl.anchors[0];
@@ -170,14 +170,14 @@ function renderDeadline() {
   const total = (new Date(r4.deadline) - new Date(a.anchor)) / 864e5;
   const pct = Math.min(100, Math.max(0, (1 - r4.days_left / total) * 100));
   box.replaceChildren(
-    h("div", { class: "deadline__top" }, h("span", { class: "deadline__label" }, `Délai de nullité · ${dl.article}`), h("span", { class: "deadline__stamp" }, "à vérifier")),
+    h("div", { class: "deadline__top" }, h("span", { class: "deadline__label" }, `Nullity deadline · ${dl.article}`), h("span", { class: "deadline__stamp" }, "to verify")),
     h("div", { class: "deadline__row" },
-      h("span", { class: "deadline__j" }, r4.days_left >= 0 ? `J-${r4.days_left}` : `J+${-r4.days_left}`),
-      h("span", { class: "deadline__d" }, `${r4.months} mois → ${dmy(r4.deadline)}`, h("small", {}, r4.label)),
-      h("span", { class: "deadline__j alt" }, r6.days_left >= 0 ? `J-${r6.days_left}` : `J+${-r6.days_left}`),
-      h("span", { class: "deadline__d" }, `${r6.months} mois → ${dmy(r6.deadline)}`, h("small", {}, r6.label))),
-    h("div", { class: "deadline__bar", title: `Aujourd'hui : ${dmy(dl.today)}` }, h("i", { style: { width: `${pct}%` } }), h("em", { style: { left: `${pct}%` } })),
-    h("p", { class: "deadline__note" }, `Mise en examen de ${a.person} le ${dmy(a.anchor)}${dl.anchors.length > 1 ? ` (+${dl.anchors.length - 1} autre)` : ""}. ${dl.note}`));
+      h("span", { class: "deadline__j" }, r4.days_left >= 0 ? `D-${r4.days_left}` : `D+${-r4.days_left}`),
+      h("span", { class: "deadline__d" }, `${r4.months} months → ${dmy(r4.deadline)}`, h("small", {}, r4.label)),
+      h("span", { class: "deadline__j alt" }, r6.days_left >= 0 ? `D-${r6.days_left}` : `D+${-r6.days_left}`),
+      h("span", { class: "deadline__d" }, `${r6.months} months → ${dmy(r6.deadline)}`, h("small", {}, r6.label))),
+    h("div", { class: "deadline__bar", title: `Today: ${dmy(dl.today)}` }, h("i", { style: { width: `${pct}%` } }), h("em", { style: { left: `${pct}%` } })),
+    h("p", { class: "deadline__note" }, `${a.person} formally charged on ${dmy(a.anchor)}${dl.anchors.length > 1 ? ` (+${dl.anchors.length - 1} other)` : ""}. ${dl.note}`));
 }
 
 // ------------------------------------------------------------------ node drawer
@@ -195,19 +195,19 @@ function openNode(n) {
         h("h3", {}, n.label), h("span", { class: "mono", style: { color: "var(--ink-3)" } }, `${n.start ? dmy(n.start) + " " + hm(n.start) : "heure ?"}${n.end ? " → " + dmy(n.end) + " " + hm(n.end) : ""} · ${n.doc_ids.join(", ")}`)),
       h("button", { class: "nd__close", onclick: () => { box.hidden = true; }, title: "Fermer" }, "×")),
     h("div", { class: "nd__body" },
-      h("div", { class: "nd__sec" }, `Liste de contrôle — ${CAT_FR[n.category]?.[0] ?? ""}`),
+      h("div", { class: "nd__sec" }, `Checklist — ${CAT_FR[n.category]?.[0] ?? ""}`),
       checks.length ? h("ul", { class: "checklist" }, checks.map(c => h("li", { class: cls[c.status] ?? "" },
         h("span", { class: "ic" }, icon[c.status] ?? "·"), h("b", {}, c.nullity_id),
         h("span", {}, c.statement, " ", c.alert ? h("a", { onclick: () => openAlert(c.alert, { onSimulate: simulate, onReviewed: () => refresh() }) }, "ouvrir →") : null)))) :
-        h("p", { class: "muted" }, "Aucune vérification n'a de sens pour ce type d'acte."),
-      h("div", { class: "nd__sec" }, "Attributs — chacun avec sa page et sa citation"),
+        h("p", { class: "muted" }, "No check applies to this type of act."),
+      h("div", { class: "nd__sec" }, "Attributes — each with its page and quote"),
       h("table", { class: "attrs" }, attrs.map(([k, a]) => h("tr", {},
         h("td", {}, ATTR_FR[k] ?? k),
-        h("td", {}, h("span", { class: "v" }, fmtVal(k, a.value)), a.status !== "explicit" ? h("span", { class: "st" }, ` · ${{ missing: "absent", unreadable: "illisible", inferred: "déduit" }[a.status] ?? a.status}`) : null,
-          a.src ? h("span", { class: "q" }, `« ${a.src.quote} » — ${a.src.doc_id}, p. ${a.src.page}`) : null)))),
+        h("td", {}, h("span", { class: "v" }, fmtVal(k, a.value)), a.status !== "explicit" ? h("span", { class: "st" }, ` · ${{ missing: "missing", unreadable: "unreadable", inferred: "inferred" }[a.status] ?? a.status}`) : null,
+          a.src ? h("span", { class: "q" }, `“${a.src.quote}” — ${a.src.doc_id}, p. ${a.src.page}`) : null)))),
       h("div", { class: "nd__actions" },
-        h("button", { class: "btn btn--primary btn--sm", onclick: () => simulate(n.id) }, "Simuler l'impact"),
-        h("button", { class: "btn btn--sm", onclick: () => { box.hidden = true; timeline.resetDomino(); $("#domino-sticker").hidden = true; } }, "Rétablir"))));
+        h("button", { class: "btn btn--primary btn--sm", onclick: () => simulate(n.id) }, "Simulate impact"),
+        h("button", { class: "btn btn--sm", onclick: () => { box.hidden = true; timeline.resetDomino(); $("#domino-sticker").hidden = true; } }, "Restore"))));
   box.hidden = false;
 }
 
@@ -215,23 +215,23 @@ async function simulate(nodeId) {
   location.hash = "#graph";
   route();
   const sim = await api.simulate(state.caseId, nodeId);
-  if (!sim.count) { toast("Aucun acte ne dépend de celui-ci dans le graphe."); return; }
+  if (!sim.count) { toast("No act depends on this one in the graph."); return; }
   $("#node-drawer").hidden = true;
   await timeline.domino(sim, $("#domino-sticker"), $("#domino-n"));
   const n = state.graph.nodes.find(x => x.id === nodeId);
   const box = $("#node-drawer");
   box.classList.add("node-drawer--right");
   box.replaceChildren(
-    h("div", { class: "nd__head" }, h("div", {}, h("span", { class: "mono", style: { color: "var(--red)" } }, "Effet domino · art. 174 CPP (logique)"),
-      h("h3", {}, `${sim.count} acte(s) potentiellement affecté(s)`), h("span", { class: "mono", style: { color: "var(--ink-3)" } }, `si « ${n?.label ?? nodeId} » tombe — ${sim.waves} vague(s)`)),
+    h("div", { class: "nd__head" }, h("div", {}, h("span", { class: "mono", style: { color: "var(--red)" } }, "Domino effect · art. 174 CPP (logic)"),
+      h("h3", {}, `${sim.count} act(s) potentially affected`), h("span", { class: "mono", style: { color: "var(--ink-3)" } }, `if “${n?.label ?? nodeId}” falls — ${sim.waves} wave(s)`)),
       h("button", { class: "nd__close", onclick: resetSim }, "×")),
     h("div", { class: "nd__body" },
-      h("div", { class: "nd__sec" }, "Actes à viser nommément dans la requête"),
+      h("div", { class: "nd__sec" }, "Acts to name in the request"),
       h("ol", { class: "casc" }, sim.affected.map(x => h("li", { class: x.origin === "llm_inferred" ? "llm" : "" },
-        h("span", {}, h("span", { class: "depth", style: { "--d": x.depth - 1 } }), x.label, h("span", { class: "via" }, x.via || "dépendance")),
+        h("span", {}, h("span", { class: "depth", style: { "--d": x.depth - 1 } }), x.label, h("span", { class: "via" }, x.via || "dependency")),
         h("span", { class: "mono" }, x.doc_ids.join(", "))))),
-      h("p", { class: "muted" }, "« Potentiellement » : le caractère de support nécessaire relève du juge. Liens structurels et cités en traits pleins, liens déduits par un modèle en pointillés."),
-      h("div", { class: "nd__actions" }, h("button", { class: "btn btn--sm", onclick: resetSim }, "Rétablir le dossier"))));
+      h("p", { class: "muted" }, "\"Potentially\": whether an act is a necessary support is for the judge. Structural and cited links are solid; links inferred by a model are dashed."),
+      h("div", { class: "nd__actions" }, h("button", { class: "btn btn--sm", onclick: resetSim }, "Restore the case file"))));
   box.hidden = false;
 }
 
@@ -248,7 +248,7 @@ $("#mode-seg").addEventListener("click", async e => {
   $$("#mode-seg button").forEach(x => { x.classList.toggle("is-on", x === b); x.setAttribute("aria-checked", x === b); });
   $("#mode-seg").dataset.mode = b.dataset.mode;
   set({ mode: b.dataset.mode });
-  toast(b.dataset.mode === "parquet" ? "Mode parquet : le même graphe, lu comme un audit de régularité avant clôture." : "Mode défense : moyens de nullité à examiner.");
+  toast(b.dataset.mode === "prosecution" ? "Prosecution mode: the same graph, read as a regularity audit before closing the investigation." : "Defence mode: grounds of nullity to examine.");
   await refresh();
   if (location.hash === "#report") renderReport();
 });
@@ -257,7 +257,7 @@ $("#pseudo-toggle").addEventListener("click", async e => {
   const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
   e.currentTarget.setAttribute("aria-pressed", on);
   set({ pseudo: on });
-  toast(on ? "Pseudonymisation : noms, adresses, dates de naissance masqués à l'écran — et avant tout appel externe." : "Affichage en clair.");
+  toast(on ? "Pseudonymisation: names, addresses and dates of birth hidden on screen — and before any external call." : "Showing names in clear.");
   await refresh();
 });
 
@@ -281,7 +281,7 @@ function setupTimeTravel() {
       const n0 = state.alerts.filter(a => a.status === "possible_nullity").length;
       await refresh();
       const n1 = state.alerts.filter(a => a.status === "possible_nullity").length;
-      if (n0 !== n1) toast(`Droit au ${dmy(state.asOf)} : ${n1} nullité(s) possible(s) (${n1 - n0 > 0 ? "+" : ""}${n1 - n0}).`);
+      if (n0 !== n1) toast(`Law as of ${dmy(state.asOf)}: ${n1} possible nullit${n1 === 1 ? "y" : "ies"} (${n1 - n0 > 0 ? "+" : ""}${n1 - n0}).`);
     }, 220);
   };
   $("#asof-seg").onclick = async e => {
@@ -307,10 +307,10 @@ $("#timeline-scroll").addEventListener("wheel", e => {
 // ------------------------------------------------------------------ dense list
 function renderDense() {
   const t = $("#dense");
-  $("#alerts-eyebrow").textContent = state.mode === "parquet" ? "Audit de régularité" : "Moyens à examiner";
-  $("#alerts-h1").textContent = state.mode === "parquet" ? "Points de régularité à corriger" : "Toutes les alertes, classées";
+  $("#alerts-eyebrow").textContent = state.mode === "prosecution" ? "Regularity audit" : "Grounds to examine";
+  $("#alerts-h1").textContent = state.mode === "prosecution" ? "Regularity issues to fix" : "All alerts, ranked";
   t.replaceChildren(
-    h("thead", {}, h("tr", {}, ["", "#", "Règle", "Constat", "Pages", "Certitude", "Affectés", "Article", "Décision"].map(x => h("th", {}, x)))),
+    h("thead", {}, h("tr", {}, ["", "#", "Rule", "Finding", "Pages", "Certainty", "Affected", "Article", "Decision"].map(x => h("th", {}, x)))),
     h("tbody", {}, state.alerts.map((a, i) => h("tr", { onclick: () => openAlert(a.key, { onSimulate: simulate, onReviewed: () => refresh() }) },
       h("td", { class: `st ${a.status === "needs_reading" ? "nr" : "pn"}` }),
       h("td", { class: "mono" }, String(i + 1).padStart(2, "0")),
@@ -320,7 +320,7 @@ function renderDense() {
       h("td", {}, h("span", { class: `pill ${CERT[a.certainty][1]}` }, CERT[a.certainty][0])),
       h("td", { class: "mono" }, a.why.affected_count || "—"),
       h("td", { class: "mono" }, a.why.article),
-      h("td", {}, a.review?.decision === "accepted" ? "retenu" : a.review?.decision === "rejected" ? "écarté" : "—")))));
+      h("td", {}, a.review?.decision === "accepted" ? "accepted" : a.review?.decision === "rejected" ? "dismissed" : "—")))));
 }
 
 // ------------------------------------------------------------------ routing
@@ -334,5 +334,5 @@ function route() {
 }
 window.addEventListener("hashchange", () => { if (!$("#main").hidden) route(); });
 
-boot().catch(e => { console.error(e); toast(`Erreur : ${e.message}`); });
+boot().catch(e => { console.error(e); toast(`Error: ${e.message}`); });
 void REDUCED;

@@ -1,6 +1,6 @@
 """Propagation — what falls with it (ARCHITECTURE §4, art. 174 CPP logic: acts potentially affected).
 
-Walks SUPPORTS edges from a node. The UI says « potentiellement affectés » — the necessary-support
+Walks SUPPORTS edges from a node. The UI says "potentially affected" — the necessary-support
 question is for the judge.
 """
 

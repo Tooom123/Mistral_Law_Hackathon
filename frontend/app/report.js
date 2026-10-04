@@ -5,10 +5,10 @@ import { $, esc } from "./ui.js";
 
 export async function renderReport() {
   const o = { mode: state.mode, as_of: state.asOf, pseudo: state.pseudo };
-  $("#report-mode").textContent = state.mode === "parquet" ? "audit de régularité (parquet)" : "défense";
+  $("#report-mode").textContent = state.mode === "prosecution" ? "regularity audit (prosecution)" : "defence";
   $("#dl-md").href = api.reportUrl(state.caseId, { ...o, format: "md" });
   $("#dl-pdf").href = api.reportUrl(state.caseId, { ...o, format: "pdf" });
-  $("#report").innerHTML = "<p class='muted'>Rédaction…</p>";
+  $("#report").innerHTML = "<p class='muted'>Writing…</p>";
   const md = await api.report(state.caseId, { ...o, format: "md" });
   $("#report").innerHTML = markdown(md);
 }

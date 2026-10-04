@@ -1,6 +1,6 @@
 """Alert cards — the four questions (ARCHITECTURE §5): what · where · why it matters · what next.
 
-`mode="parquet"` reframes the same graph as a pre-trial regularity audit (equality of arms).
+`mode="prosecution"` reframes the same graph as a pre-trial regularity audit (equality of arms).
 """
 
 from __future__ import annotations
@@ -12,14 +12,14 @@ from casebreak.privacy.pseudonymize import mask_value
 from casebreak.schemas import CaseGraph, Check, Node, PageRec
 from casebreak.text import norm
 
-CERTAINTY_FR = {"documented": "documenté", "inferred": "déduit", "needs_reading": "à lire"}
-STATUS_FR = {"possible_nullity": "nullité possible", "needs_reading": "à instruire", "satisfied": "conforme",
-             "not_applicable": "sans objet"}
+CERTAINTY_LABEL = {"documented": "documented", "inferred": "inferred", "needs_reading": "needs reading"}
+STATUS_LABEL = {"possible_nullity": "possible nullity", "needs_reading": "to investigate", "satisfied": "compliant",
+             "not_applicable": "not applicable"}
 PARQUET_STEPS = {
-    "default": "Vérifier la pièce et, si possible, régulariser ou documenter avant la clôture de l'enquête.",
-    "missing_mention": "Rechercher la mention manquante et verser la pièce correspondante au dossier.",
-    "contradiction": "Faire rectifier l'erreur matérielle par un PV de constatation ; recalculer les délais.",
-    "graph": "Verser au dossier la pièce visée mais absente.",
+    "default": "Check the document and, where possible, regularise or document it before the investigation closes.",
+    "missing_mention": "Find the missing entry and add the corresponding document to the file.",
+    "contradiction": "Have the clerical error corrected by a report; recompute the time limits.",
+    "graph": "Add the cited but missing document to the file.",
 }
 
 
@@ -93,15 +93,15 @@ def card(c: Check, g: CaseGraph, reviews: dict, mode: str = "defense", pseudo: b
         sources.append({"doc_id": s.doc_id, "page": s.page, "quote": m(s.quote),
                         "piece": {"number": pc.number, "title": pc.title, "type": pc.type} if pc else None})
     rv = reviews.get(review_key(c), {"decision": "pending"})
-    is_parquet = mode == "parquet"
-    headline = ("Point de régularité à corriger" if is_parquet else
-                {"possible_nullity": "Nullité possible — moyen à examiner", "needs_reading": "À instruire — lecture nécessaire"}
-                .get(c.status, STATUS_FR.get(c.status, c.status)))
+    is_parquet = mode == "prosecution"
+    headline = ("Regularity issue to fix" if is_parquet else
+                {"possible_nullity": "Possible nullity — ground to examine", "needs_reading": "To investigate — reading needed"}
+                .get(c.status, STATUS_LABEL.get(c.status, c.status)))
     next_steps = ([PARQUET_STEPS.get(c.kind, PARQUET_STEPS["default"])] if is_parquet else list(c.next_steps))
     return {
         "id": c.id, "key": review_key(c), "nullity_id": c.nullity_id, "title": c.title, "headline": headline,
-        "status": c.status, "status_fr": STATUS_FR.get(c.status, c.status), "certainty": c.certainty,
-        "certainty_fr": CERTAINTY_FR[c.certainty], "kind": c.kind, "rank": c.rank, "confidence": c.confidence,
+        "status": c.status, "status_label": STATUS_LABEL.get(c.status, c.status), "certainty": c.certainty,
+        "certainty_label": CERTAINTY_LABEL[c.certainty], "kind": c.kind, "rank": c.rank, "confidence": c.confidence,
         "category": node.category if node else None,
         "node": {"id": c.node_id, "label": m(node.label) if node else "", "start": node.start.isoformat() if node and node.start else None,
                  "subtype": node.subtype if node else ""},
@@ -110,7 +110,7 @@ def card(c: Check, g: CaseGraph, reviews: dict, mode: str = "defense", pseudo: b
         "why": {"article": c.article, "law_version": c.law_version, "rights_at_stake": c.rights_at_stake,
                 "affected": acts, "affected_count": len(acts),
                 "legal_todo": nl.legal_todo if nl else [], "validated_by": c.validated_by,
-                "grief_note": "Pas de nullité sans grief (art. 171 et 802 CPP) : le grief n'est jamais apprécié par l'outil."},
+                "grief_note": "No nullity without prejudice (art. 171 and 802 CPP): prejudice is never assessed by the tool."},
         "next": next_steps,
         "judge": c.judge, "details": {k: v for k, v in c.details.items() if k not in ("cascade",)},
         "review": rv, "mode": mode,

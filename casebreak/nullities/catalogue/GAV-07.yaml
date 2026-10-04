@@ -1,6 +1,6 @@
 id: GAV-07
 category: GARDE_A_VUE
-title: Entretien confidentiel avec l'avocat (30 min)
+title: Confidential meeting with the lawyer (30 min)
 article: art. 63-4 CPP
 applies_to: [garde_a_vue]
 condition_type: measurable
@@ -8,8 +8,8 @@ confidence: M
 versions:
   - label: art. 63-4 CPP
     check: lawyer_meeting
-rights_at_stake: [droits de la défense]
+rights_at_stake: [rights of the defence]
 next_steps:
-  - Vérifier qu'aucun refus d'entretien n'est mentionné.
+  - Check that no refusal of the meeting is recorded.
 judilibre_query: garde à vue entretien confidentiel avocat
 weight: 0.6

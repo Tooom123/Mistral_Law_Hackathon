@@ -1,16 +1,16 @@
 id: GAV-03
 category: GARDE_A_VUE
-title: Régime dérogatoire invoqué (criminalité organisée, stupéfiants, terrorisme)
-article: art. 706-88 s. CPP
+title: Special custody regime invoked (organised crime, drugs, terrorism)
+article: art. 706-88 et seq. CPP
 applies_to: [garde_a_vue]
 condition_type: open_textured
 confidence: M
 versions:
-  - label: art. 706-88 et s. CPP
+  - label: art. 706-88 et seq. CPP
     check: special_regime
-rights_at_stake: [liberté individuelle]
+rights_at_stake: [personal liberty]
 next_steps:
-  - Vérifier les autorisations spécifiques exigées par le régime invoqué. TODO(legal)
+  - Check the specific authorisations required by the invoked regime. TODO(legal)
 judilibre_query: garde à vue régime dérogatoire criminalité organisée prolongation
 weight: 0.6
-legal_todo: [Durées et autorisations par régime à valider (96 h / 144 h, confiance M).]
+legal_todo: [Durations and authorisations per regime to be validated (96 h / 144 h, confidence M).]

@@ -1,25 +1,25 @@
 id: GAV-08
 category: GARDE_A_VUE
-title: Audition sur les faits hors la présence de l'avocat demandé
+title: Questioned on the facts without the lawyer who was requested
 article: art. 63-4-2 CPP
 applies_to: [hearing]
 needs: [lawyer_requested, lawyer_present]
 condition_type: measurable
 confidence: H
 versions:
-  - valid_to: 2024-07-01   # TODO(legal): date d'entrée en vigueur de la loi du 22 avril 2024 à confirmer
-    label: art. 63-4-2 CPP, version antérieure à la loi du 22 avril 2024 (audition possible après 2 h d'attente)
+  - valid_to: 2024-07-01   # TODO(legal): confirm the entry into force of the law of 22 April 2024
+    label: art. 63-4-2 CPP, version before the law of 22 April 2024 (questioning allowed after a 2 h wait)
     check: hearing_lawyer
     params: {regime: before_2024, wait_minutes: 120}
   - valid_from: 2024-07-01
-    label: art. 63-4-2 CPP, version issue de la loi du 22 avril 2024 (plus de délai de carence)
+    label: art. 63-4-2 CPP, version from the law of 22 April 2024 (no more waiting period)
     check: hearing_lawyer
     params: {regime: since_2024}
-rights_at_stake: [droit à l'assistance d'un avocat, droit de ne pas s'auto-incriminer]
+rights_at_stake: [right to a lawyer, privilege against self-incrimination]
 next_steps:
-  - Vérifier l'absence de renonciation expresse ou d'autorisation écrite du procureur.
-  - Lister les déclarations recueillies lors de cette audition et leur usage ultérieur.
-prosecution_hints: [renonciation, autorisation_procureur, grief]
+  - Check that there is no express waiver or written authorisation from the prosecutor.
+  - List the statements taken during this hearing and how they were used later.
+prosecution_hints: [waiver, prosecutor_authorisation, no_prejudice]
 judilibre_query: garde à vue audition sans avocat délai de carence
 weight: 1.0
-legal_todo: [Détails de la réforme 2024 (confiance M) et date d'entrée en vigueur à confirmer.]
+legal_todo: [Details of the 2024 reform (confidence M) and date of entry into force to be confirmed.]

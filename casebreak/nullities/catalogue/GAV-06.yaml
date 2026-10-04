@@ -1,6 +1,6 @@
 id: GAV-06
 category: GARDE_A_VUE
-title: Procureur de la République non avisé dès le début de la mesure
+title: Public prosecutor not informed at the start of custody
 article: art. 63 CPP
 applies_to: [garde_a_vue]
 needs: [prosecutor_informed_at]
@@ -10,10 +10,10 @@ confidence: L
 versions:
   - label: art. 63 CPP
     check: prosecutor_informed
-rights_at_stake: [contrôle de la mesure par l'autorité judiciaire]
+rights_at_stake: [judicial oversight of the measure]
 next_steps:
-  - Rechercher un avis au parquet dans les autres pièces (main courante, PV de synthèse).
-prosecution_hints: [avis_ailleurs, grief]
+  - Look for a notice to the prosecutor in other documents (logbook, summary report).
+prosecution_hints: [notice_elsewhere, no_prejudice]
 judilibre_query: garde à vue avis procureur de la République dès le début
 weight: 0.7
-legal_todo: [Règle de confiance L — à confirmer avant toute démo.]
+legal_todo: [Confidence-L rule — confirm before any demo.]

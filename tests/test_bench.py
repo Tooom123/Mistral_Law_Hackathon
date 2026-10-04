@@ -6,5 +6,5 @@ def test_bench_two_dossiers():
     o = res["casebreak"]["overall"]
     assert o["tp"] + o["fn"] > 0 and o["recall"] is not None
     assert res["baseline"]["status"] == "not_run"
-    assert "synthétique" in res["honesty"]
+    assert "synthetic" in res["honesty"]
     assert export_zip()[:2] == b"PK"

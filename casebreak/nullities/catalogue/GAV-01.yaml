@@ -1,19 +1,19 @@
 id: GAV-01
 category: GARDE_A_VUE
-title: Placement décidé par un OPJ, objectifs légaux énoncés
+title: Custody decided by a judicial police officer, legal objectives stated
 article: art. 62-2 CPP
 applies_to: [garde_a_vue]
 needs: [objectives_text]
 condition_type: open_textured
 confidence: H
 versions:
-  - label: art. 62-2 CPP (version en vigueur à la date de l'acte)
+  - label: art. 62-2 CPP (version in force on the date of the act)
     check: objectives_stated
     grey_zone: {judge_questions: [objective_stated]}
-rights_at_stake: [liberté individuelle, contrôle de la nécessité de la mesure]
+rights_at_stake: [personal liberty, review of the necessity of the measure]
 next_steps:
-  - Lire la motivation du placement et la confronter aux objectifs énumérés par la loi.
-prosecution_hints: [motivation_suffisante]
+  - Read the stated grounds for custody and compare them with the objectives listed in the law.
+prosecution_hints: [sufficient_grounds]
 judilibre_query: garde à vue objectifs motivation placement
 weight: 0.8
-legal_todo: [Coller le texte de l'art. 62-2 CPP depuis Légifrance (rules/GAV-01.md).]
+legal_todo: [Paste the text of art. 62-2 CPP from Légifrance (rules/GAV-01.md).]

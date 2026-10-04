@@ -1,14 +1,14 @@
 id: DLN-02
 category: INSTRUCTION
-title: Date butoir pour les mémoires en nullité (chambre de l'instruction, tribunal correctionnel)
+title: Cut-off date for nullity briefs (investigating chamber, criminal court)
 article: art. 198, 221-3, 385 CPP
 applies_to: [chamber_ruling]
 condition_type: procedural
 confidence: H
 versions:
-  - label: art. 198, 221-3, 385 CPP (loi n° 2026-651)
+  - label: art. 198, 221-3, 385 CPP (law no. 2026-651)
     check: info_only
-rights_at_stake: [forclusion]
-next_steps: [Modalités exactes à vérifier. TODO(legal)]
+rights_at_stake: [time bar]
+next_steps: [Exact rules to be checked. TODO(legal)]
 weight: 0
-legal_todo: [Modalités de la date butoir (confiance M).]
+legal_todo: [Details of the cut-off date (confidence M).]

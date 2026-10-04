@@ -151,7 +151,7 @@ def _dt(a: Attr | None) -> datetime | None:
 
 
 def _interpellation(c: Ctx) -> list[Draft]:
-    n = c.node("interpellation", "INTERPELLATION", "Interpellation")
+    n = c.node("interpellation", "INTERPELLATION", "Arrest")
     n.attrs["arrest_time"] = c.opener_attr()
     pa = c.time_attr(r"place en garde a vue (a [^,.;]{2,40}?)(?: par|[,.;])")
     if pa:
@@ -168,7 +168,7 @@ def _interpellation(c: Ctx) -> list[Draft]:
 
 
 def _placement(c: Ctx) -> list[Draft]:
-    n = c.node("placement_gav", "GARDE_A_VUE", "Placement en garde à vue")
+    n = c.node("placement_gav", "GARDE_A_VUE", "Placed in custody")
     a = c.time_attr(r"decidons de placer en garde a vue .{0,80}?a compter de ([^.,;]{2,40})")
     n.attrs["custody_start"] = a if a and a.value else c.opener_attr()
     obj = c.hit(r"aux motifs? que [^.]{20,400}")
@@ -194,7 +194,7 @@ def _placement(c: Ctx) -> list[Draft]:
 
 
 def _notification(c: Ctx) -> list[Draft]:
-    n = c.node("rights_notification", "GARDE_A_VUE", "Notification des droits")
+    n = c.node("rights_notification", "GARDE_A_VUE", "Rights notification")
     n.attrs["notified_at"] = c.opener_attr()
     st = c.time_attr(r"place en garde a vue ce jour (a [^,.;]{2,40})")
     if st:
@@ -237,7 +237,7 @@ def _simple(subtype: str, label: str, key: str):
 
 
 def _prolongation(c: Ctx) -> list[Draft]:
-    n = c.node("extension", "GARDE_A_VUE", "Autorisation de prolongation")
+    n = c.node("extension", "GARDE_A_VUE", "Extension authorisation")
     n.attrs["authorized_at"] = c.opener_attr()
     a = c.hit(r"autorisons la prolongation de la garde a vue[^.]{0,200}")
     if a:
@@ -250,7 +250,7 @@ def _prolongation(c: Ctx) -> list[Draft]:
 
 
 def _fin(c: Ctx) -> list[Draft]:
-    n = c.node("custody_end", "GARDE_A_VUE", "Fin de garde à vue")
+    n = c.node("custody_end", "GARDE_A_VUE", "End of custody")
     end = c.time_attr(r"mettons fin a la (?:mesure de )?garde a vue de [a-z' -]{3,50}? (a [^.]{2,40})")
     if end is None or end.value is None:
         end = c.opener_attr() if c.opener_dt else end
@@ -266,7 +266,7 @@ def _fin(c: Ctx) -> list[Draft]:
 def _audition(c: Ctx) -> list[Draft]:
     witness = c.piece.type == "PV_AUDITION_TEMOIN"
     n = c.node("hearing_witness" if witness else "hearing", "AUDITION",
-               "Audition de témoin" if witness else "Audition en garde à vue")
+               "Witness hearing" if witness else "Custody hearing")
     n.attrs["start"] = c.opener_attr()
     e = c.time_attr(r"fin de l'audition (a [^.]{2,40})")
     if e:
@@ -303,7 +303,7 @@ def _audition(c: Ctx) -> list[Draft]:
 
 
 def _perquisition(c: Ctx) -> list[Draft]:
-    n = c.node("search", "PERQUISITION_SAISIE", "Perquisition")
+    n = c.node("search", "PERQUISITION_SAISIE", "Search")
     n.attrs["start"] = c.opener_attr()
     e = c.time_attr(r"fin des operations (a [^.]{2,40})")
     if e:
@@ -338,40 +338,40 @@ def _perquisition(c: Ctx) -> list[Draft]:
     for k, h in enumerate(c.pt.find_all(r"- ([^;]{4,120}?), (place sous scelle n[o0]\s?" + SEAL + r"|saisi)\s?;")):
         desc = squash(c.pt.raw(h, 1))
         seal = f"S{h.group(3)}" if h.group(3) else None
-        s = c.node("seizure", "PERQUISITION_SAISIE", f"Saisie — {desc[:40]}", suffix=f":{k}")
+        s = c.node("seizure", "PERQUISITION_SAISIE", f"Seizure — {desc[:40]}", suffix=f":{k}")
         s.attrs["item"] = Attr(value=desc, src=h.src)
         s.attrs["seal_number"] = Attr(value=seal, src=h.src) if seal else Attr(value=None, src=h.src, status="missing")
         s.start = n.start or (n.end - timedelta(minutes=1) if n.end else None)
-        s.label = f"Saisie {seal}" if seal else "Saisie sans scellé"
+        s.label = f"Seizure {seal}" if seal else "Seizure without seal"
         drafts.append(Draft(s, seals_seized=[seal] if seal else []))
     return drafts
 
 
 def _exploitation(c: Ctx) -> list[Draft]:
-    n = c.node("seal_analysis", "EXPERTISE", "Exploitation de scellé")
+    n = c.node("seal_analysis", "EXPERTISE", "Seal analysis")
     n.attrs["start"] = c.opener_attr()
     seals = [(f"S{h.group(1)}", h.src) for h in c.pt.find_all(r"scelles? n[o0]\s?" + SEAL)]
     if seals:
-        n.label = f"Exploitation {seals[0][0]}"
+        n.label = f"Analysis of {seals[0][0]}"
     n.start = _dt(n.attrs["start"])
     return [Draft(n, cites=c.cites(), seals_used=seals)]
 
 
 def _expertise(c: Ctx) -> list[Draft]:
-    n = c.node("lab_report", "EXPERTISE", "Rapport d'expertise")
+    n = c.node("lab_report", "EXPERTISE", "Expert report")
     n.attrs["start"] = c.opener_attr()
     h = c.hit(r"analyse genetique des scelles ([^.]{3,80})")
     seals = []
     if h:
         seals = [(f"S{m}", h.src) for m in re.findall(SEAL, h.group(1))]
-        n.label = "Expertise ADN " + ", ".join(s for s, _ in seals)
+        n.label = "DNA analysis " + ", ".join(s for s, _ in seals)
     n.attrs["seals_analysed"] = Attr(value=", ".join(s for s, _ in seals) or None, src=h.src if h else None)
     n.start = _dt(n.attrs["start"])
     return [Draft(n, cites=c.cites(), seals_used=seals)]
 
 
 def _geoloc(c: Ctx) -> list[Draft]:
-    n = c.node("geolocation", "GEOLOCALISATION", "Pose d'une balise de géolocalisation")
+    n = c.node("geolocation", "GEOLOCALISATION", "GPS tracker fitted")
     n.attrs["start"] = c.opener_attr()
     a = c.hit(r"en execution de l'autorisation( n[o0]\s?(\d{4}/\d{3,6}/\d{1,3}))? delivree par [^,]{5,80} en date du (\d{2}/\d{2}/\d{4})")
     if a:
@@ -393,15 +393,19 @@ def _court(subtype: str, category: str, label: str):
         if subtype == "interception":
             o = c.hit(r"en execution de l'ordonnance" + r"(?: n[o0]\s?(\d{4}/\d{3,6}/\d{1,3}))?[^,]{0,60}")
             if o:
-                n.attrs["authorization_ref"] = Attr(value=o.group(1) or "visée", src=o.src)
+                n.attrs["authorization_ref"] = Attr(value=o.group(1) or "cited", src=o.src)
         if subtype == "geolocation_authorization":
             n.attrs["authorizes"] = Attr(value=True, src=c.opener_src)
         return [Draft(n, cites=c.cites())]
     return f
 
 
+OTHER_LABELS = {"PV_PLAINTE": "Complaint", "PV_CONSTATATIONS": "Findings report", "PV_VIDEOPROTECTION": "CCTV review",
+                "PV_REQUISITION": "Information request", "PV_ANNEXE": "Annex", "INCONNU": "Document"}
+
+
 def _other(c: Ctx) -> list[Draft]:
-    label = c.piece.title.capitalize()[:60] or "Pièce"
+    label = OTHER_LABELS.get(c.piece.type) or c.piece.title.capitalize()[:60] or "Document"
     n = c.node("other", c.piece.category if c.piece.category != "AUTRE" else "AUTRE", label)
     n.attrs["date"] = c.opener_attr()
     n.start = _dt(n.attrs["date"])
@@ -410,7 +414,7 @@ def _other(c: Ctx) -> list[Draft]:
 
 def _photo(c: Ctx) -> list[Draft]:
     pg = c.pages[c.piece.pages[0]]
-    n = c.node("photo", "PERQUISITION_SAISIE", "Photographie")
+    n = c.node("photo", "PERQUISITION_SAISIE", "Photograph")
     stamp = pg.exif.get("DateTimeOriginal") or pg.exif.get("DateTime")
     if stamp:
         try:
@@ -424,7 +428,7 @@ def _photo(c: Ctx) -> list[Draft]:
     if m:
         seal = f"S{m.group(1)}"
         n.attrs["seal_label"] = Attr(value=seal, src=m.src)
-        n.label = f"Photo du scellé {seal}"
+        n.label = f"Photo of seal {seal}"
         seals = [(seal, m.src)]
     return [Draft(n, seals_used=seals)]
 
@@ -433,9 +437,9 @@ EXTRACTORS = {
     "PV_INTERPELLATION": _interpellation,
     "PV_PLACEMENT_GAV": _placement,
     "PV_NOTIFICATION_DROITS": _notification,
-    "PV_AVIS_AVOCAT": _simple("lawyer_notice", "Avis à avocat", "lawyer_notified_at"),
-    "PV_AVIS_FAMILLE": _simple("family_notice", "Avis à famille", "family_notified_at"),
-    "PV_EXAMEN_MEDICAL": _simple("medical_exam", "Examen médical", "exam_at"),
+    "PV_AVIS_AVOCAT": _simple("lawyer_notice", "Lawyer notified", "lawyer_notified_at"),
+    "PV_AVIS_FAMILLE": _simple("family_notice", "Relative informed", "family_notified_at"),
+    "PV_EXAMEN_MEDICAL": _simple("medical_exam", "Medical examination", "exam_at"),
     "AUTORISATION_PROLONGATION": _prolongation,
     "PV_FIN_GAV": _fin,
     "PV_AUDITION_GAV": _audition,
@@ -444,13 +448,13 @@ EXTRACTORS = {
     "PV_EXPLOITATION": _exploitation,
     "RAPPORT_EXPERTISE": _expertise,
     "PV_GEOLOCALISATION": _geoloc,
-    "AUTORISATION_GEOLOC": _court("geolocation_authorization", "GEOLOCALISATION", "Autorisation de géolocalisation"),
-    "ORDONNANCE_INTERCEPTION": _court("interception_order", "INTERCEPTIONS", "Ordonnance d'interception"),
-    "PV_INTERCEPTION": _court("interception", "INTERCEPTIONS", "Interceptions — retranscription"),
-    "REQUISITOIRE_INTRODUCTIF": _court("opening", "INSTRUCTION", "Réquisitoire introductif"),
-    "PV_MISE_EN_EXAMEN": _court("mise_en_examen", "INSTRUCTION", "Mise en examen"),
-    "ORDONNANCE_EXPERTISE": _court("expert_order", "INSTRUCTION", "Commission d'expert"),
-    "ARRET_CHAMBRE_INSTRUCTION": _court("chamber_ruling", "INSTRUCTION", "Arrêt de la chambre de l'instruction"),
+    "AUTORISATION_GEOLOC": _court("geolocation_authorization", "GEOLOCALISATION", "Geolocation authorisation"),
+    "ORDONNANCE_INTERCEPTION": _court("interception_order", "INTERCEPTIONS", "Interception order"),
+    "PV_INTERCEPTION": _court("interception", "INTERCEPTIONS", "Interceptions — transcript"),
+    "REQUISITOIRE_INTRODUCTIF": _court("opening", "INSTRUCTION", "Opening of judicial investigation"),
+    "PV_MISE_EN_EXAMEN": _court("mise_en_examen", "INSTRUCTION", "Formal charge"),
+    "ORDONNANCE_EXPERTISE": _court("expert_order", "INSTRUCTION", "Expert appointment"),
+    "ARRET_CHAMBRE_INSTRUCTION": _court("chamber_ruling", "INSTRUCTION", "Investigating chamber ruling"),
     "PHOTO": _photo,
 }
 
@@ -470,15 +474,15 @@ def _llm_extract(c: Ctx) -> list[Draft]:
     masked, mapping = pseudonymize.mask(pages_txt) if settings.pseudonymize else (pages_txt, {})
     try:
         out = mistral.chat_json(
-            "Tu extrais les actes de procédure d'une pièce de dossier pénal français. Tu ne qualifies rien "
-            "juridiquement. Chaque attribut doit citer un passage recopié mot pour mot. Réponds en JSON : " + LLM_SCHEMA,
+            "You extract the procedural acts from a document of a French criminal case file. You make no legal "
+            "qualification. Every attribute must quote a passage copied word for word. Answer in JSON: " + LLM_SCHEMA,
             masked, model=settings.extract_model)
     except mistral.MistralUnavailable as e:
         log.warning("LLM extraction skipped: %s", e)
         return []
     drafts = []
     for k, a in enumerate(out.get("acts", [])[:6]):
-        n = c.node(slug(a.get("subtype", "act")) or "act", a.get("category", "AUTRE"), a.get("label", "Acte")[:60], suffix=f":llm{k}")
+        n = c.node(slug(a.get("subtype", "act")) or "act", a.get("category", "AUTRE"), a.get("label", "Act")[:60], suffix=f":llm{k}")
         for name, v in (a.get("attrs") or {}).items():
             q = pseudonymize.unmask(str(v.get("quote", "")), mapping) if mapping else str(v.get("quote", ""))
             page = v.get("page") if v.get("page") in c.piece.pages else c.piece.pages[0]
