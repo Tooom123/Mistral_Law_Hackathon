@@ -316,8 +316,30 @@ h1, h2 { font-weight: 500; }
   text-decoration: underline; text-decoration-color: var(--orange);
   text-decoration-thickness: 2px; text-underline-offset: 3px;
 }
+.demo-toggle {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin: 22px auto 0; width: fit-content; max-width: 100%;
+  padding: 4px 10px; background: var(--paper);
+  font-size: 14px; font-weight: 500; cursor: pointer; user-select: none;
+}
+.demo-toggle small { font-weight: 400; color: var(--ink-3); margin-left: 4px; }
+.demo-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.demo-toggle__box {
+  width: 18px; height: 18px; flex: none;
+  border: 1.5px solid var(--ink); background: var(--paper);
+  display: grid; place-items: center;
+  transition: background-color .15s;
+}
+.demo-toggle__box::after {
+  content: ""; width: 8px; height: 8px; background: #fff; scale: 0;
+  transition: scale .2s var(--bounce);
+}
+.demo-toggle input:checked + .demo-toggle__box { background: var(--orange); border-color: var(--orange); }
+.demo-toggle input:checked + .demo-toggle__box::after { scale: 1; }
+.demo-toggle input:focus-visible + .demo-toggle__box { outline: 3px solid var(--yellow); outline-offset: 3px; }
+.file--sim .file__name { font-style: italic; color: var(--ink-2); }
 .demo-link {
-  margin: 26px auto 0; width: fit-content; max-width: 100%;
+  margin: 12px auto 0; width: fit-content; max-width: 100%;
   padding: 4px 10px; background: var(--paper);
   color: var(--ink-2); font-size: 14px; text-align: center;
 }

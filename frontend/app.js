@@ -164,6 +164,7 @@
   }
 
   function addFiles(fileList) {
+    if (demoMode) { $("#demo-mode").checked = false; setDemoMode(false); }
     const known = new Set(items.map(it => it.file.name + ":" + it.file.size));
     const fresh = [...fileList].filter(f => !known.has(f.name + ":" + f.size));
     for (const file of fresh) {
@@ -177,12 +178,68 @@
     render();
   }
 
+  /* Demo mode: simulates a large case file (thousands of documents) without uploading anything.
+     Everything shown is labeled "simulated"; "Run" opens the built-in synthetic case. */
+  const DEMO_FAKE = { docs: 7342, pages: 48215, bytes: 3.1 * 1024 ** 3 };
+  const DEMO_SAMPLE = [
+    ["pdf", "Hearing transcript — session 14.pdf", 212, 9.4e6],
+    ["pdf", "Contract MC-2019-0381.pdf", 64, 3.1e6],
+    ["pdf", "Declaration of interests — scan.pdf", 6, 1.2e6],
+    ["img", "Meeting notes — photo.jpg", 1, 2.4e6],
+  ];
+  let demoMode = false, demoShown = 0, demoTimer = 0;
+
+  function setDemoMode(on) {
+    demoMode = on;
+    clearInterval(demoTimer);
+    demoShown = 0;
+    if (on) {
+      items = [];
+      const t0 = performance.now();
+      demoTimer = setInterval(() => {                      // quick count-up, as if files were being read
+        const k = Math.min(1, (performance.now() - t0) / 1400);
+        demoShown = Math.round(DEMO_FAKE.docs * (1 - Math.pow(1 - k, 3)));
+        render();
+        if (k >= 1) clearInterval(demoTimer);
+      }, 60);
+    }
+    render();
+  }
+
+  function renderDemo() {
+    const frac = demoShown / DEMO_FAKE.docs;
+    card.classList.add("has-files");
+    filesEl.hidden = false;
+    $(".dropzone__title").textContent = "Demo mode on";
+    const rows = DEMO_SAMPLE.map(([kind, name, pages, bytes]) => {
+      const li = document.createElement("li");
+      li.className = "file file--sim";
+      li.innerHTML = `<span class="file__kind file__kind--${kind}">${KINDS[kind].label}</span>
+        <span class="file__name"></span><span class="file__meta">${pages} p. · ${fmtSize(bytes)}</span><span></span>`;
+      $(".file__name", li).textContent = name;
+      return li;
+    });
+    const more = document.createElement("li");
+    more.className = "file file--sim";
+    more.innerHTML = `<span class="file__kind file__kind--other">…</span>
+      <span class="file__name">+ ${(Math.max(0, demoShown - DEMO_SAMPLE.length)).toLocaleString("en-US")} more documents</span>
+      <span class="file__meta">simulated</span><span></span>`;
+    listEl.replaceChildren(...rows, more);
+    statsEl.innerHTML = [
+      `<span><b>${demoShown.toLocaleString("en-US")}</b> docs</span>`,
+      `<span><b>${Math.round(DEMO_FAKE.pages * frac).toLocaleString("en-US")}</b> pages</span>`,
+      `<span><b>${fmtSize(DEMO_FAKE.bytes * frac)}</b></span>`,
+      `<span>simulated</span>`,
+    ].join("");
+  }
+
   function removeFile(id) {
     items = items.filter(it => it.id !== id);
     render();
   }
 
   function render() {
+    if (demoMode) return renderDemo();
     const has = items.length > 0;
     card.classList.toggle("has-files", has);
     filesEl.hidden = !has;
@@ -350,9 +407,15 @@
     else toast("The timeline screen doesn’t exist yet.");
   });
 
-  $("#analyze").addEventListener("click", startPipeline);
+  $("#demo-mode").addEventListener("change", e => setDemoMode(e.target.checked));
+  $("#analyze").addEventListener("click", () => {
+    if (demoMode) { location.href = "app.html?demo"; return; }   // simulated case file → built-in synthetic case
+    startPipeline();
+  });
   $("#reset").addEventListener("click", () => {
     items = [];
+    $("#demo-mode").checked = false;
+    setDemoMode(false);
     render();
     openTimeline.classList.add("is-disabled");
     openTimeline.setAttribute("aria-disabled", "true");
