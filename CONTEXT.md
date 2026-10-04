@@ -109,7 +109,7 @@ ACT             deadline clock + draft list of "moyens" for the lawyer
 
 ## 5. Architecture
 
-> **Full architecture lives in `ARCHITECTURE.md`** (Fact Bank × Law Bank, two-way matcher, judge, certainty, API, repo layout, build plan). The overview below is kept for context; if they differ, `ARCHITECTURE.md` wins.
+> **Full architecture lives in `ARCHITECTURE.md`** (one case file = one graph in time × category, nullity checklists per category, judge, cascade, API, ambition ladder). The overview below is kept for context; if they differ, `ARCHITECTURE.md` wins.
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────┐
