@@ -1,0 +1,98 @@
+# Conflict-of-interest rules. One entry per detector in rules.py: the code finds the facts, this file says what
+# the finding means, which texts frame it, which precedent patterns it is compared with and what to check next.
+# Wording rule: a flag is always "potential conflict of interest — to review"; the qualification is the lawyer's.
+
+COI-01:
+  title: Dual mandate — advising the State and an affected company at the same time
+  pattern: dual_role
+  patterns: [dual_role, information_barrier, beneficiary_link]
+  severity: high
+  query: consultant advises public authority and private company affected by the same decision simultaneously dual mandate vaccine allocation
+  legal:
+    - ref: Framework agreement DITP-2018-AC01, art. 7.2 and 7.4
+      text: Duty to report any actual or potential conflict; no assignment of a consultant who worked for an affected company in the previous twelve months without written consent.
+    - ref: Code de la commande publique, art. L2141-10
+      text: A person taking part in the procedure, or able to influence its outcome, with a direct or indirect interest that could compromise impartiality.
+    - ref: Directive 2014/24/EU, art. 24
+      text: Member States ensure contracting authorities prevent, identify and remedy conflicts of interest.
+  next:
+    - Obtain the full staffing history of the person on both engagements (time reports, calendars).
+    - Check whether the firm reported the situation under art. 7.2 and whether the buyer consented under art. 7.4.
+    - Compare the recommendation with the alternatives and with the information supplied by the private client.
+
+COI-02:
+  title: Declaration of interests contradicted by another document
+  pattern: undeclared_interest
+  patterns: [undeclared_interest, false_statement]
+  severity: high
+  query: declaration of interests omitted engagement false declaration consultant contradicted by engagement letter
+  legal:
+    - ref: Framework agreement DITP-2018-AC01, art. 7.3
+      text: Each consultant assigned files a declaration of interests before the start of the order.
+    - ref: Loi n° 2013-907 du 11 octobre 2013, art. 2
+      text: Conflict of interest — any interference between a public interest and public or private interests likely to influence, or appear to influence, the independent, impartial and objective exercise of a function.
+  next:
+    - Put the declaration and the contradicting document side by side to the declarant.
+    - Establish what the declarant knew on the declaration date (engagement start, staffing confirmation).
+    - Check who at the administration received and reviewed the declaration.
+
+COI-03:
+  title: Required declarations of interests missing from the file
+  pattern: missing_declaration
+  patterns: [missing_declaration, undeclared_interest]
+  severity: medium
+  query: declarations of interests not filed consultants assigned public contract control mechanism ineffective
+  legal:
+    - ref: Framework agreement DITP-2018-AC01, art. 7.3
+      text: Each consultant assigned files a declaration of interests before the start of the order.
+  next:
+    - Request the missing declarations from the firm and the administration, with their filing date.
+    - Cross-check each missing person against the firm's other engagements over the same period.
+
+COI-04:
+  title: Signatory recently employed by the firm that receives the order
+  pattern: revolving_door
+  patterns: [revolving_door, appearance_of_bias]
+  severity: high
+  query: public official former employee of consulting firm signs contract awarded to former employer revolving door recusal
+  window_years: 3
+  legal:
+    - ref: Loi n° 2013-907 du 11 octobre 2013, art. 2
+      text: A person in a situation of conflict of interest abstains from taking part in the decision (déport).
+    - ref: Code pénal, art. 432-12
+      text: Prise illégale d'intérêts — taking or keeping an interest in an operation one is in charge of supervising.
+    - ref: Loi n° 2019-828 du 6 août 2019
+      text: Ethics control of officials appointed after a private-sector activity during the previous three years.
+  next:
+    - Ask whether the signatory recused, informed a superior, or received an ethics opinion on appointment.
+    - Check any continuing tie with the firm (pension, deferred compensation, alumni arrangements).
+    - Identify who else validated the order and the decision memo.
+
+COI-05:
+  title: Close relative tied to the company that benefited from the recommendation
+  pattern: family_tie
+  patterns: [family_tie, beneficiary_link]
+  severity: medium
+  query: consultant spouse employed by parent company of selected provider recommendation family tie
+  legal:
+    - ref: Framework agreement DITP-2018-AC01, art. 7.2
+      text: Duty to report any actual or potential conflict affecting a member of the team.
+    - ref: Code de la commande publique, art. L2141-10
+      text: Direct or indirect interest of a person able to influence the outcome.
+  next:
+    - Confirm the relative's position and remuneration at the group level.
+    - Check whether the declared interest was assessed and whether the consultant was kept on the selection workstream.
+
+COI-06:
+  title: Statement under oath contradicted by the case file
+  pattern: false_statement
+  patterns: [false_statement, missing_declaration, dual_role]
+  severity: high
+  query: statement under oath parliamentary inquiry contradicted by documents false testimony consulting firm
+  legal:
+    - ref: Ordonnance n° 58-1100 du 17 novembre 1958, art. 6
+      text: Witnesses before a parliamentary inquiry committee testify under oath; false testimony is punishable.
+  next:
+    - Quote the exact question and answer, then each contradicting page.
+    - Establish what the witness knew or should have known (staffing role, time reports).
+    - Leave the qualification of false testimony to the committee and the prosecutor.

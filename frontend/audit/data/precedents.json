@@ -1,0 +1,1113 @@
+{
+ "stats": {
+  "total": 46,
+  "by_provenance": {
+   "public_record": 16,
+   "synthetic": 30
+  },
+  "by_jurisdiction": {
+   "AU": 1,
+   "BE": 1,
+   "DE": 1,
+   "ES": 1,
+   "EU": 4,
+   "FR": 30,
+   "IT": 1,
+   "UK": 3,
+   "US": 4
+  },
+  "by_kind": {
+   "court decision": 6,
+   "inquiry": 1,
+   "parliamentary report": 2,
+   "regulatory settlement": 1,
+   "statute": 6,
+   "training scenario": 30
+  },
+  "by_pattern": {
+   "dual_role": 19,
+   "undeclared_interest": 8,
+   "missing_declaration": 5,
+   "revolving_door": 12,
+   "family_tie": 5,
+   "beneficiary_link": 12,
+   "preparatory_role": 4,
+   "false_statement": 5,
+   "information_barrier": 5,
+   "appearance_of_bias": 12
+  },
+  "engine": "sqlite-fts5 bm25 + pattern overlap + mistral-embed"
+ },
+ "patterns": {
+  "dual_role": "Dual mandate",
+  "undeclared_interest": "Undeclared / false declaration",
+  "missing_declaration": "Missing declaration",
+  "revolving_door": "Revolving door",
+  "family_tie": "Relative's interest",
+  "beneficiary_link": "Tie to the beneficiary",
+  "preparatory_role": "Preparatory role",
+  "false_statement": "Statement contradicted",
+  "information_barrier": "Confidential information",
+  "appearance_of_bias": "Appearance of bias"
+ },
+ "results": [
+  {
+   "id": "P-001",
+   "provenance": "public_record",
+   "kind": "court decision",
+   "jurisdiction": "UK",
+   "year": 1999,
+   "forum": "House of Lords",
+   "citation": "Prince Jefri Bolkiah v KPMG [1999] 2 AC 222",
+   "title": "Bolkiah v KPMG — advisers acting against a former client",
+   "patterns": [
+    "information_barrier",
+    "dual_role"
+   ],
+   "sector": "professional services",
+   "facts": "A firm of accountants that had provided litigation support to a client, and held his confidential information, accepted a new engagement for a party investigating that same client, relying on an internal information barrier.",
+   "outcome": "Injunction granted. The firm had to show there was no real risk of disclosure; an ad hoc information barrier set up within the same department was not sufficient.",
+   "signals": [
+    "same team on both sides",
+    "confidential information",
+    "information barrier",
+    "former client"
+   ],
+   "lesson": "Where the same people serve two principals with opposing interests, the burden shifts to the adviser to prove the barrier works."
+  },
+  {
+   "id": "P-002",
+   "provenance": "public_record",
+   "kind": "regulatory settlement",
+   "jurisdiction": "US",
+   "year": 2019,
+   "forum": "US Trustee Program (Department of Justice)",
+   "citation": "McKinsey Recovery & Transformation Services — settlement with the US Trustee, February 2019",
+   "title": "McKinsey RTS — incomplete disclosure of connections in bankruptcy cases",
+   "patterns": [
+    "undeclared_interest",
+    "missing_declaration"
+   ],
+   "sector": "restructuring",
+   "facts": "The US Trustee challenged the completeness of the connection disclosures the firm filed when retained as restructuring adviser in Chapter 11 cases, which must list relationships with parties in interest.",
+   "outcome": "The firm agreed to pay USD 15 million and to make supplemental disclosures, without admission of wrongdoing.",
+   "signals": [
+    "disclosure filed but incomplete",
+    "connections with interested parties",
+    "consulting firm"
+   ],
+   "lesson": "A declaration regime fails silently when declarations are filed but incomplete: compare each declaration with the adviser's actual engagements."
+  },
+  {
+   "id": "P-003",
+   "provenance": "public_record",
+   "kind": "parliamentary report",
+   "jurisdiction": "US",
+   "year": 2022,
+   "forum": "US House Committee on Oversight and Reform",
+   "citation": "Majority staff report on McKinsey's work for the FDA and opioid manufacturers, April 2022",
+   "title": "Consultants advising the regulator and the regulated at the same time",
+   "patterns": [
+    "dual_role",
+    "undeclared_interest",
+    "information_barrier"
+   ],
+   "sector": "health — pharmaceuticals",
+   "facts": "The committee found that consultants of the firm worked for the Food and Drug Administration while also working for opioid manufacturers, on overlapping subjects, without the potential conflicts being disclosed to the agency.",
+   "outcome": "Report published; recommendations on conflict-of-interest disclosure by federal contractors.",
+   "signals": [
+    "same consultant on public and private engagement",
+    "regulator and regulated",
+    "overlapping period",
+    "no disclosure to the agency"
+   ],
+   "lesson": "Match staffing lists of public engagements against the firm's private engagements in the same sector and period."
+  },
+  {
+   "id": "P-004",
+   "provenance": "public_record",
+   "kind": "parliamentary report",
+   "jurisdiction": "FR",
+   "year": 2022,
+   "forum": "Sénat — commission d'enquête",
+   "citation": "Rapport « Un phénomène tentaculaire : l'influence croissante des cabinets de conseil sur les politiques publiques », mars 2022",
+   "title": "French Senate inquiry into consulting firms",
+   "patterns": [
+    "missing_declaration",
+    "dual_role",
+    "false_statement"
+   ],
+   "sector": "public administration",
+   "facts": "The committee examined the use of consulting firms by the State, including during the COVID-19 crisis; it obtained a very limited number of declarations of interests compared with the number of consultants involved in some missions.",
+   "outcome": "Report with recommendations on transparency and ethics of consulting missions; a referral to the prosecutor concerning a statement made under oath.",
+   "signals": [
+    "few declarations of interests",
+    "many consultants",
+    "framework agreement",
+    "statement under oath"
+   ],
+   "lesson": "Count declarations against the staffing list: the gap is a finding in itself."
+  },
+  {
+   "id": "P-005",
+   "provenance": "public_record",
+   "kind": "court decision",
+   "jurisdiction": "EU",
+   "year": 2015,
+   "forum": "Court of Justice of the EU",
+   "citation": "Case C-538/13 eVigilo, 12 March 2015",
+   "title": "eVigilo — evaluators with ties to a bidder",
+   "patterns": [
+    "appearance_of_bias",
+    "beneficiary_link"
+   ],
+   "sector": "public procurement",
+   "facts": "Experts who evaluated tenders had professional links with the specialists who prepared the winning bid, and had not disclosed them.",
+   "outcome": "The contracting authority must check for conflicts of interest; objective evidence of partiality of an expert can lead to the annulment of the award, without proof of actual effect on the outcome.",
+   "signals": [
+    "evaluator linked to bidder",
+    "undisclosed professional ties",
+    "award decision"
+   ],
+   "lesson": "The buyer has a duty to verify, not only to receive, declarations from people who shape the award."
+  },
+  {
+   "id": "P-006",
+   "provenance": "public_record",
+   "kind": "court decision",
+   "jurisdiction": "EU",
+   "year": 2005,
+   "forum": "Court of Justice of the EU",
+   "citation": "Joined Cases C-21/03 and C-34/03 Fabricom, 3 March 2005",
+   "title": "Fabricom — firms involved in the preparatory work",
+   "patterns": [
+    "preparatory_role",
+    "beneficiary_link"
+   ],
+   "sector": "public procurement",
+   "facts": "National rules automatically excluded from a tender any firm that had carried out research or development work for the contract.",
+   "outcome": "Automatic exclusion is disproportionate: the firm must be able to show that its prior involvement did not distort competition, but the advantage it may have gained is a legitimate concern.",
+   "signals": [
+    "adviser drafted the specifications",
+    "same firm benefits",
+    "information advantage"
+   ],
+   "lesson": "Prior involvement is a red flag to examine, not an automatic disqualification."
+  },
+  {
+   "id": "P-007",
+   "provenance": "public_record",
+   "kind": "court decision",
+   "jurisdiction": "FR",
+   "year": 2015,
+   "forum": "Conseil d'État",
+   "citation": "CE, 14 octobre 2015, Société Applicam, n° 390968",
+   "title": "Applicam — impartiality of the buyer's side",
+   "patterns": [
+    "revolving_door",
+    "appearance_of_bias"
+   ],
+   "sector": "public procurement",
+   "facts": "A person who took part in the buyer's procurement procedure had recently held senior responsibilities at the company that won the contract.",
+   "outcome": "The procedure was annulled for breach of the principle of impartiality, which covers the appearance of partiality.",
+   "signals": [
+    "former employee of winner on buyer side",
+    "recent move",
+    "procurement decision"
+   ],
+   "lesson": "A recent move from the winning company to the buyer is enough to raise impartiality, without proof of favouritism."
+  },
+  {
+   "id": "P-008",
+   "provenance": "public_record",
+   "kind": "court decision",
+   "jurisdiction": "UK",
+   "year": 2001,
+   "forum": "House of Lords",
+   "citation": "Porter v Magill [2001] UKHL 67",
+   "title": "Porter v Magill — the fair-minded and informed observer",
+   "patterns": [
+    "appearance_of_bias"
+   ],
+   "sector": "local government",
+   "facts": "Challenge to the impartiality of a public auditor who had announced provisional findings before hearing the parties.",
+   "outcome": "The test for apparent bias is whether a fair-minded and informed observer, having considered the facts, would conclude there was a real possibility of bias.",
+   "signals": [
+    "appearance",
+    "decision-maker",
+    "public function"
+   ],
+   "lesson": "Frame the flag as what an informed observer would see, not as proof of actual bias."
+  },
+  {
+   "id": "P-009",
+   "provenance": "public_record",
+   "kind": "court decision",
+   "jurisdiction": "US",
+   "year": 2009,
+   "forum": "US Supreme Court",
+   "citation": "Caperton v. A.T. Massey Coal Co., 556 U.S. 868 (2009)",
+   "title": "Caperton — decision-maker and a party's financial support",
+   "patterns": [
+    "appearance_of_bias",
+    "beneficiary_link"
+   ],
+   "sector": "judiciary",
+   "facts": "A state supreme court justice declined to recuse himself in an appeal involving a company whose chief executive had contributed heavily to his election campaign.",
+   "outcome": "Due process required recusal: the probability of bias was too high to be constitutionally tolerable.",
+   "signals": [
+    "decision-maker benefited from a party",
+    "no recusal",
+    "timing"
+   ],
+   "lesson": "The absence of recusal, combined with a strong tie and close timing, is what turns a tie into a conflict."
+  },
+  {
+   "id": "P-010",
+   "provenance": "public_record",
+   "kind": "statute",
+   "jurisdiction": "US",
+   "year": 2002,
+   "forum": "US Congress",
+   "citation": "Sarbanes-Oxley Act of 2002, s. 201",
+   "title": "Auditor independence after Enron",
+   "patterns": [
+    "dual_role"
+   ],
+   "sector": "audit",
+   "facts": "After the collapse of Enron and its auditor, the law addressed the provision of lucrative consulting services by auditors to the companies they audited.",
+   "outcome": "Registered audit firms are prohibited from providing a list of non-audit services to their audit clients.",
+   "signals": [
+    "same firm in two roles",
+    "fees from the audited party",
+    "independence"
+   ],
+   "lesson": "Two simultaneous roles toward the same party are a structural conflict, independent of individual intent."
+  },
+  {
+   "id": "P-011",
+   "provenance": "public_record",
+   "kind": "inquiry",
+   "jurisdiction": "AU",
+   "year": 2023,
+   "forum": "Australian Senate / Tax Practitioners Board",
+   "citation": "PwC Australia confidential tax information affair, 2023",
+   "title": "Adviser to the government, information used for private clients",
+   "patterns": [
+    "information_barrier",
+    "dual_role"
+   ],
+   "sector": "tax",
+   "facts": "A partner who advised the Treasury on anti-avoidance legislation under confidentiality agreements shared confidential information within the firm, where it was used to market services to private clients.",
+   "outcome": "Professional sanction of the partner, parliamentary inquiry, leadership changes at the firm and reforms of government consulting procurement.",
+   "signals": [
+    "confidential government information",
+    "private clients",
+    "same firm advises both"
+   ],
+   "lesson": "Check whether the people who advised the State also worked, in the same period, for those affected by the advice."
+  },
+  {
+   "id": "P-012",
+   "provenance": "public_record",
+   "kind": "statute",
+   "jurisdiction": "FR",
+   "year": 2013,
+   "forum": "Parlement",
+   "citation": "Loi n° 2013-907 du 11 octobre 2013 relative à la transparence de la vie publique, art. 2",
+   "title": "Statutory definition of a conflict of interest (France)",
+   "patterns": [
+    "undeclared_interest",
+    "revolving_door",
+    "family_tie",
+    "appearance_of_bias"
+   ],
+   "sector": "public administration",
+   "facts": "Defines a conflict of interest as any situation of interference between a public interest and public or private interests likely to influence, or appear to influence, the independent, impartial and objective exercise of a function.",
+   "outcome": "Persons concerned must prevent or put an end to the conflict, including by abstaining from the decision.",
+   "signals": [
+    "appearance suffices",
+    "duty to abstain",
+    "private interest"
+   ],
+   "lesson": "The definition covers the appearance: a documented tie plus participation is enough to flag."
+  },
+  {
+   "id": "P-013",
+   "provenance": "public_record",
+   "kind": "statute",
+   "jurisdiction": "FR",
+   "year": 1992,
+   "forum": "Code pénal",
+   "citation": "Code pénal, art. 432-12 et 432-13",
+   "title": "Prise illégale d'intérêts and pantouflage",
+   "patterns": [
+    "revolving_door",
+    "beneficiary_link"
+   ],
+   "sector": "public administration",
+   "facts": "Art. 432-12 punishes a public official who takes or keeps an interest in an operation they are in charge of supervising; art. 432-13 controls moves to companies the official supervised or contracted with, within three years.",
+   "outcome": "Criminal offences; the three-year window structures revolving-door checks.",
+   "signals": [
+    "three-year window",
+    "contract with former employer",
+    "supervision"
+   ],
+   "lesson": "Measure the gap between the move and the decision; inside three years, look for a recusal."
+  },
+  {
+   "id": "P-014",
+   "provenance": "public_record",
+   "kind": "statute",
+   "jurisdiction": "FR",
+   "year": 1958,
+   "forum": "Ordonnance",
+   "citation": "Ordonnance n° 58-1100 du 17 novembre 1958, art. 6",
+   "title": "Testimony under oath before parliamentary inquiry committees",
+   "patterns": [
+    "false_statement"
+   ],
+   "sector": "parliament",
+   "facts": "Persons heard by a parliamentary inquiry committee testify under oath; false testimony is a criminal offence.",
+   "outcome": "Committees may refer statements to the prosecutor.",
+   "signals": [
+    "statement under oath",
+    "contradicted by documents",
+    "inquiry committee"
+   ],
+   "lesson": "Quote the exact question and answer; contradiction is for the reviewer, qualification for the prosecutor."
+  },
+  {
+   "id": "P-015",
+   "provenance": "public_record",
+   "kind": "statute",
+   "jurisdiction": "EU",
+   "year": 2014,
+   "forum": "European Parliament and Council",
+   "citation": "Directive 2014/24/EU, art. 24",
+   "title": "Conflicts of interest in public procurement (EU)",
+   "patterns": [
+    "dual_role",
+    "beneficiary_link",
+    "preparatory_role",
+    "appearance_of_bias"
+   ],
+   "sector": "public procurement",
+   "facts": "Covers situations where staff of the contracting authority or a service provider acting on its behalf, involved in the procedure or able to influence it, have an interest that might compromise impartiality.",
+   "outcome": "Member States must ensure contracting authorities prevent, identify and remedy conflicts of interest.",
+   "signals": [
+    "service provider acting for the buyer",
+    "able to influence the outcome",
+    "indirect interest"
+   ],
+   "lesson": "Consultants acting for the buyer are inside the scope: their interests count as the buyer's."
+  },
+  {
+   "id": "P-016",
+   "provenance": "public_record",
+   "kind": "statute",
+   "jurisdiction": "FR",
+   "year": 2019,
+   "forum": "Parlement",
+   "citation": "Loi n° 2019-828 du 6 août 2019 de transformation de la fonction publique",
+   "title": "Ethics control of arrivals from the private sector",
+   "patterns": [
+    "revolving_door"
+   ],
+   "sector": "public administration",
+   "facts": "Organises an ethics control when certain public posts are filled by people who carried out a private activity during the previous three years.",
+   "outcome": "Opinion of the ethics authority, possibly with reservations such as abstaining from decisions involving the former employer.",
+   "signals": [
+    "arrival from the private sector",
+    "three years",
+    "reservations"
+   ],
+   "lesson": "Ask for the ethics opinion on appointment and its reservations: they say what the official should have stayed out of."
+  },
+  {
+   "id": "S-101",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-101",
+   "title": "Hospital IT master plan — adviser staffed for the software vendor",
+   "patterns": [
+    "dual_role",
+    "beneficiary_link"
+   ],
+   "sector": "health — hospital IT",
+   "facts": "A consultant drafting a regional hospital group's IT master plan was staffed in parallel on a market-entry engagement for one of the two shortlisted software vendors. The master plan scored that vendor first.",
+   "outcome": "Master plan re-run by a different team; vendor shortlist re-opened.",
+   "signals": [
+    "same consultant on public and private engagement",
+    "overlapping period",
+    "recommendation favours client"
+   ],
+   "lesson": "The overlap plus authorship of the recommending deliverable is the strongest configuration."
+  },
+  {
+   "id": "S-102",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2020,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-102",
+   "title": "Declaration ticked “No” while staffed for an affected company",
+   "patterns": [
+    "undeclared_interest",
+    "dual_role"
+   ],
+   "sector": "energy",
+   "facts": "An engagement manager declared no engagement with energy-sector companies when joining a ministry mission on grid tariffs, three weeks after being staffed for a distribution operator.",
+   "outcome": "Declaration found inaccurate; firm suspended from the framework for six months.",
+   "signals": [
+    "declaration answered No",
+    "engagement letter predates declaration",
+    "affected company"
+   ],
+   "lesson": "Compare the declaration date with the start of every engagement of the declarant."
+  },
+  {
+   "id": "S-103",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2019,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-103",
+   "title": "Missing declarations on a regional transport study",
+   "patterns": [
+    "missing_declaration"
+   ],
+   "sector": "transport",
+   "facts": "Of eleven consultants listed in the order's staffing annex, four filed declarations of interests. Two of the missing consultants had worked for a rolling-stock manufacturer the year before.",
+   "outcome": "Payment suspended until declarations were filed; one consultant removed from the team.",
+   "signals": [
+    "few declarations",
+    "staffing annex",
+    "prior work for affected company"
+   ],
+   "lesson": "Missing declarations matter most for the people who also have private engagements in the sector."
+  },
+  {
+   "id": "S-104",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2022,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-104",
+   "title": "Deputy director signs an order to her former firm",
+   "patterns": [
+    "revolving_door",
+    "appearance_of_bias"
+   ],
+   "sector": "public administration",
+   "facts": "A deputy director appointed from a consulting firm signed, fourteen months later, an order awarded to that firm under a framework agreement. Her ethics opinion on appointment asked her to abstain from matters involving the firm.",
+   "outcome": "Order upheld but signature delegation withdrawn; internal ethics procedure strengthened.",
+   "signals": [
+    "former employer",
+    "within three years",
+    "no recusal",
+    "ethics opinion reservation"
+   ],
+   "lesson": "An ethics reservation on appointment that is not followed is the decisive document."
+  },
+  {
+   "id": "S-105",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-105",
+   "title": "Spouse at the parent company of the selected supplier",
+   "patterns": [
+    "family_tie",
+    "beneficiary_link"
+   ],
+   "sector": "logistics",
+   "facts": "A consultant who declared that his spouse worked for a logistics group led the workstream that recommended a subsidiary of that group as provider. The declaration was filed but never reviewed.",
+   "outcome": "Selection re-examined; no annulment because two independent evaluators had reached the same ranking.",
+   "signals": [
+    "declared relative interest",
+    "subsidiary selected",
+    "declaration not reviewed"
+   ],
+   "lesson": "A declared interest is not a managed interest: look for the decision taken on the declaration."
+  },
+  {
+   "id": "S-106",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2022,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-106",
+   "title": "Partner's sworn answer contradicted by time reports",
+   "patterns": [
+    "false_statement",
+    "dual_role"
+   ],
+   "sector": "public administration",
+   "facts": "Before a parliamentary committee, a partner stated under oath that no team member worked for companies in the sector. Time reports produced later showed two team members billing a sector client the same months.",
+   "outcome": "Referral to the prosecutor by the committee.",
+   "signals": [
+    "statement under oath",
+    "time reports",
+    "same months"
+   ],
+   "lesson": "Time reports are the most precise evidence of concurrent work; quote the days."
+  },
+  {
+   "id": "S-107",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "EU",
+   "year": 2020,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-107",
+   "title": "Evaluation committee member formerly employed by a bidder",
+   "patterns": [
+    "revolving_door",
+    "appearance_of_bias"
+   ],
+   "sector": "EU funds",
+   "facts": "A member of an evaluation committee for a structural-funds programme had left one of the bidders eighteen months earlier and did not declare it.",
+   "outcome": "Award annulled; programme authority required new evaluation.",
+   "signals": [
+    "former employee of bidder",
+    "undeclared",
+    "evaluation"
+   ],
+   "lesson": "The obligation covers people who score bids, not only those who sign."
+  },
+  {
+   "id": "S-108",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2018,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-108",
+   "title": "Adviser drafted the specifications, then bid",
+   "patterns": [
+    "preparatory_role",
+    "beneficiary_link"
+   ],
+   "sector": "public procurement",
+   "facts": "A consulting firm drafted the specifications for a digital platform for a city, then bid for the build contract through a subsidiary.",
+   "outcome": "Firm allowed to bid after the city shared all preparatory documents with every bidder and extended the deadline.",
+   "signals": [
+    "adviser drafted specifications",
+    "subsidiary bids",
+    "information advantage remedied"
+   ],
+   "lesson": "Remedies exist: equal information and extended deadlines can neutralise a preparatory role."
+  },
+  {
+   "id": "S-109",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-109",
+   "title": "Vaccine supply study — no overlap found",
+   "patterns": [
+    "dual_role"
+   ],
+   "sector": "health — vaccines",
+   "facts": "A consultant on a ministry vaccine supply study had worked for a manufacturer, but the engagement ended twenty months before the study and the manufacturer was not among the affected suppliers.",
+   "outcome": "No conflict retained: tie outside the twelve-month window and company not affected.",
+   "signals": [
+    "prior engagement ended",
+    "outside window",
+    "not affected"
+   ],
+   "lesson": "Clearing a person is part of the audit: show the dates that clear them."
+  },
+  {
+   "id": "S-110",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "BE",
+   "year": 2019,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-110",
+   "title": "Defence procurement adviser with a pension from a contractor",
+   "patterns": [
+    "revolving_door",
+    "undeclared_interest"
+   ],
+   "sector": "defence",
+   "facts": "A procurement adviser to a defence ministry received a deferred bonus from a former employer, a bidder in the programme he advised on. The bonus was not declared.",
+   "outcome": "Adviser removed from the programme; disciplinary proceedings.",
+   "signals": [
+    "deferred compensation",
+    "former employer bids",
+    "undeclared"
+   ],
+   "lesson": "Ask about continuing financial ties to the former employer, not only the end date of employment."
+  },
+  {
+   "id": "S-111",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2020,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-111",
+   "title": "Pandemic logistics dashboard — consultant on the carrier's account",
+   "patterns": [
+    "dual_role",
+    "information_barrier"
+   ],
+   "sector": "logistics",
+   "facts": "A supply-chain specialist building the State's pandemic logistics dashboard, with access to regional demand data, was also staffed on pricing work for a carrier bidding for regional deliveries.",
+   "outcome": "Specialist removed; data access logs reviewed; no evidence of transfer found.",
+   "signals": [
+    "confidential public data",
+    "private client in the same market",
+    "overlapping period"
+   ],
+   "lesson": "Access to confidential public data turns a dual role into an information-barrier issue."
+  },
+  {
+   "id": "S-112",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2023,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-112",
+   "title": "Mayor's brother-in-law at the winning builder",
+   "patterns": [
+    "family_tie",
+    "appearance_of_bias"
+   ],
+   "sector": "local government",
+   "facts": "A mayor took part in the council vote awarding a school construction contract to a builder employing his brother-in-law as site director.",
+   "outcome": "Council deliberation annulled; criminal complaint for prise illégale d'intérêts dismissed for lack of intent.",
+   "signals": [
+    "relative employed by winner",
+    "participated in vote",
+    "no recusal"
+   ],
+   "lesson": "Participation in the vote is the act to document; the family tie alone is not enough."
+  },
+  {
+   "id": "S-113",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "UK",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-113",
+   "title": "Health agency adviser seconded from a diagnostics company",
+   "patterns": [
+    "dual_role",
+    "revolving_door"
+   ],
+   "sector": "health — diagnostics",
+   "facts": "An adviser seconded to a health agency from a diagnostics company, and still paid by it, sat on the panel that set test procurement criteria.",
+   "outcome": "Criteria reviewed by an independent panel; secondment policy amended.",
+   "signals": [
+    "secondment",
+    "paid by private company",
+    "sets criteria"
+   ],
+   "lesson": "Secondments are concurrent mandates: treat them as dual roles."
+  },
+  {
+   "id": "S-114",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-114",
+   "title": "Declarations filed after the order started",
+   "patterns": [
+    "missing_declaration",
+    "undeclared_interest"
+   ],
+   "sector": "public administration",
+   "facts": "All consultants eventually filed declarations of interests, but seven of nine were dated after the start of the order and after the first deliverable.",
+   "outcome": "Contractual penalty applied to the firm.",
+   "signals": [
+    "late declarations",
+    "after first deliverable",
+    "framework clause"
+   ],
+   "lesson": "Check the date of each declaration against the start of the order, not only its existence."
+  },
+  {
+   "id": "S-115",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2022,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-115",
+   "title": "Pro bono work followed by a paid order without competition",
+   "patterns": [
+    "beneficiary_link",
+    "appearance_of_bias"
+   ],
+   "sector": "public administration",
+   "facts": "A firm carried out free work for a ministry cabinet, then received a paid order on the same subject under a framework agreement, without mini-competition.",
+   "outcome": "No breach of procurement rules, but the inspectorate recommended banning pro bono work by framework holders.",
+   "signals": [
+    "pro bono",
+    "followed by paid order",
+    "no competition"
+   ],
+   "lesson": "Sequence matters: free work that shapes a later paid order is a beneficiary link."
+  },
+  {
+   "id": "S-116",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "DE",
+   "year": 2020,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-116",
+   "title": "Ministry consultant advising a bidder on the same tender",
+   "patterns": [
+    "dual_role",
+    "preparatory_role"
+   ],
+   "sector": "defence",
+   "facts": "A firm advising a ministry on a tender's evaluation grid was, through another office, advising one bidder on its offer.",
+   "outcome": "Tender cancelled and re-launched; firm excluded from the new procedure.",
+   "signals": [
+    "same firm on buyer and bidder side",
+    "different offices",
+    "evaluation grid"
+   ],
+   "lesson": "Firm-level conflicts are not cured by assigning different offices."
+  },
+  {
+   "id": "S-117",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2019,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-117",
+   "title": "Regulator's director formerly at an incumbent operator",
+   "patterns": [
+    "revolving_door"
+   ],
+   "sector": "telecoms",
+   "facts": "A director at a sector regulator, who had left an incumbent operator two years earlier, chaired a working group on wholesale prices affecting that operator.",
+   "outcome": "No conflict retained: the director had recused from decisions and the working group had no decision power.",
+   "signals": [
+    "former employer",
+    "within three years",
+    "recusal on file"
+   ],
+   "lesson": "A recusal record on file clears what would otherwise be flagged."
+  },
+  {
+   "id": "S-118",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2022,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-118",
+   "title": "Hearing answer on declarations contradicted by the ministry's own answer",
+   "patterns": [
+    "false_statement",
+    "missing_declaration"
+   ],
+   "sector": "public administration",
+   "facts": "A firm representative told an inquiry that every consultant filed a declaration; the ministry's written answer listed declarations for only a third of the staffing annex.",
+   "outcome": "Committee hearing of the ministry; finding recorded in the report.",
+   "signals": [
+    "statement under oath",
+    "administration answer",
+    "count mismatch"
+   ],
+   "lesson": "The administration's own count is the cleanest contradiction of a blanket statement."
+  },
+  {
+   "id": "S-119",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "IT",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-119",
+   "title": "University procurement — professor's spin-off selected",
+   "patterns": [
+    "family_tie",
+    "beneficiary_link"
+   ],
+   "sector": "higher education",
+   "facts": "A professor on a laboratory equipment committee held shares through his partner in a spin-off that won the supply contract.",
+   "outcome": "Contract terminated; professor sanctioned.",
+   "signals": [
+    "shares held by partner",
+    "committee member",
+    "winner"
+   ],
+   "lesson": "Indirect holdings through a partner are interests of the person."
+  },
+  {
+   "id": "S-120",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2020,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-120",
+   "title": "Sports federation — board member's agency wins sponsorship tender",
+   "patterns": [
+    "dual_role",
+    "appearance_of_bias"
+   ],
+   "sector": "sport",
+   "facts": "A federation board member who owned a marketing agency voted on the selection of a sponsorship agent; his agency was subcontractor to the winner.",
+   "outcome": "Board decision withdrawn; ethics committee warning.",
+   "signals": [
+    "subcontractor of winner",
+    "board vote",
+    "ownership"
+   ],
+   "lesson": "Look one level down: subcontracting chains hide beneficiaries."
+  },
+  {
+   "id": "S-121",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-121",
+   "title": "Water utility audit — auditor also advising on the tariff review",
+   "patterns": [
+    "dual_role"
+   ],
+   "sector": "utilities",
+   "facts": "The firm auditing a water utility's accounts was also engaged by the utility to prepare its tariff review submission to the local authority.",
+   "outcome": "Audit mandate not renewed; local authority commissioned a second opinion.",
+   "signals": [
+    "audit and advisory",
+    "same client",
+    "submission to authority"
+   ],
+   "lesson": "Audit plus advocacy for the same party is a structural conflict."
+  },
+  {
+   "id": "S-122",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2023,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-122",
+   "title": "Consultant cleared — declared and removed from the workstream",
+   "patterns": [
+    "family_tie"
+   ],
+   "sector": "health",
+   "facts": "A consultant declared that her father sat on the board of a medical device maker; the buyer removed her from the procurement workstream the same week, as recorded in a steering committee minute.",
+   "outcome": "No conflict: interest declared and managed.",
+   "signals": [
+    "declared relative interest",
+    "removed from workstream",
+    "minute on file"
+   ],
+   "lesson": "A minute recording the management of the interest is what closes the flag."
+  },
+  {
+   "id": "S-123",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "ES",
+   "year": 2022,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-123",
+   "title": "Regional health service — strategy firm also advising the private hospital group",
+   "patterns": [
+    "dual_role",
+    "information_barrier"
+   ],
+   "sector": "health — hospitals",
+   "facts": "A strategy firm advised a regional health service on outsourcing surgery while advising a private hospital group on its expansion in that region.",
+   "outcome": "Report withdrawn; firm barred from regional tenders for two years.",
+   "signals": [
+    "public and private engagement",
+    "same region",
+    "outsourcing decision"
+   ],
+   "lesson": "Geography plus sector is enough to make two engagements conflicting."
+  },
+  {
+   "id": "S-124",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-124",
+   "title": "Cabinet adviser negotiates with a former client",
+   "patterns": [
+    "revolving_door",
+    "appearance_of_bias"
+   ],
+   "sector": "industry",
+   "facts": "A ministerial adviser, recruited from a consulting firm, led negotiations on State aid with a company he had advised at the firm eleven months earlier.",
+   "outcome": "Adviser withdrew from the file after press reports; ethics authority issued an opinion.",
+   "signals": [
+    "former client",
+    "negotiation",
+    "eleven months"
+   ],
+   "lesson": "Former clients of the adviser count, not only former employers."
+  },
+  {
+   "id": "S-125",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2020,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-125",
+   "title": "Inaccurate declaration discovered through invoices",
+   "patterns": [
+    "undeclared_interest"
+   ],
+   "sector": "IT",
+   "facts": "A consultant's declaration listed no activity for software vendors; invoices of the firm showed her hours billed to a vendor that later won a ministry contract she advised on.",
+   "outcome": "Declaration found false; firm terminated her assignment and repaid fees.",
+   "signals": [
+    "declaration answered No",
+    "invoices show hours",
+    "vendor won contract"
+   ],
+   "lesson": "Billing records are the independent source that tests a declaration."
+  },
+  {
+   "id": "S-126",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2022,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-126",
+   "title": "Mission steering by the firm's alumnus — no flag",
+   "patterns": [
+    "revolving_door"
+   ],
+   "sector": "public administration",
+   "facts": "A head of department had left a consulting firm six years before steering a mission awarded to it.",
+   "outcome": "No conflict: well outside the three-year window, no continuing tie.",
+   "signals": [
+    "former employer",
+    "outside window",
+    "no continuing tie"
+   ],
+   "lesson": "Alumni status alone, outside the window, is not a flag."
+  },
+  {
+   "id": "S-127",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-127",
+   "title": "Consultant shapes a decision benefiting the client of his partner",
+   "patterns": [
+    "dual_role",
+    "beneficiary_link"
+   ],
+   "sector": "health — vaccines",
+   "facts": "A partner reviewed a deliverable recommending a vaccine delivery schedule while leading, for the same weeks, an engagement for the manufacturer whose deliveries the schedule prioritised.",
+   "outcome": "Inspection report found a conflict of interest; recommendation re-examined.",
+   "signals": [
+    "reviewed the deliverable",
+    "led private engagement",
+    "recommendation favours client",
+    "same weeks"
+   ],
+   "lesson": "Reviewing a deliverable is participation; partners are inside the scope."
+  },
+  {
+   "id": "S-128",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2019,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-128",
+   "title": "Prefecture — environmental consultant also working for the operator",
+   "patterns": [
+    "dual_role",
+    "beneficiary_link"
+   ],
+   "sector": "environment",
+   "facts": "A consultancy assisting a prefecture in reviewing an industrial permit had produced the operator's impact study two years earlier.",
+   "outcome": "Permit annulled by the administrative court for lack of impartiality of the review.",
+   "signals": [
+    "reviewer of own work",
+    "permit",
+    "operator"
+   ],
+   "lesson": "Reviewing one's own earlier work for the other side is a dual role across time."
+  },
+  {
+   "id": "S-129",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2022,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-129",
+   "title": "Statement to the regulator contradicted by the firm's own staffing",
+   "patterns": [
+    "false_statement",
+    "undeclared_interest"
+   ],
+   "sector": "finance",
+   "facts": "A firm certified to a financial regulator that no partner had a relationship with a bank under review; staffing records showed a partner leading a transformation programme at the bank.",
+   "outcome": "Regulator sanction for inaccurate certification.",
+   "signals": [
+    "certification",
+    "staffing records",
+    "regulated entity"
+   ],
+   "lesson": "Blanket statements are tested person by person against staffing lists."
+  },
+  {
+   "id": "S-130",
+   "provenance": "synthetic",
+   "kind": "training scenario",
+   "jurisdiction": "FR",
+   "year": 2021,
+   "forum": "Simulated audit corpus",
+   "citation": "Scenario S-130",
+   "title": "Order signed by an official on leave from the firm",
+   "patterns": [
+    "revolving_door",
+    "dual_role"
+   ],
+   "sector": "public administration",
+   "facts": "An official on unpaid leave from a consulting firm, with a right to return, signed orders awarded to that firm.",
+   "outcome": "Orders annulled; official returned to the firm; criminal investigation opened.",
+   "signals": [
+    "right to return",
+    "signs orders",
+    "current tie"
+   ],
+   "lesson": "A right to return is a current interest, worse than a past employment."
+  }
+ ]
+}

@@ -1,0 +1,3346 @@
+{
+ "case": {
+  "id": "mckinsey",
+  "title": "Consulting firms & the State — McKinsey",
+  "subtitle": "Vaccination logistics mission, 2018–2022 · synthetic reconstruction",
+  "jurisdiction": "FR"
+ },
+ "lanes": [
+  {
+   "id": "procurement",
+   "label": "Public procurement"
+  },
+  {
+   "id": "private",
+   "label": "Firm ↔ private clients"
+  },
+  {
+   "id": "declarations",
+   "label": "Declarations of interests"
+  },
+  {
+   "id": "decisions",
+   "label": "Deliverables & decisions"
+  },
+  {
+   "id": "scrutiny",
+   "label": "Scrutiny"
+  }
+ ],
+ "documents": [
+  {
+   "id": "D01",
+   "date": "2018-05-15",
+   "precision": "day",
+   "lane": "procurement",
+   "kind": "framework_agreement",
+   "title": "Framework agreement DITP-2018-AC01 — strategy & transformation consulting",
+   "issuer": "DITP",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "contract"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "FRAMEWORK AGREEMENT DITP-2018-AC01\nInterministerial Directorate for Public Transformation (DITP)\nLot 1 — Strategy and transformation consulting\n\nHolder: McKinsey & Company Inc. France, Paris office\nDuration: four years from notification\nDate of notification: 15/05/2018\n\nArticle 1 — Object\nThe holder supports ministries in the design and execution of transformation programmes.\n\nArticle 3 — Orders\nOrders are placed by purchase orders signed by the competent authority of the ordering ministry.\nEach purchase order specifies the object, the period, the price and the team assigned.\n",
+     "marks": []
+    },
+    {
+     "n": 2,
+     "text": "Article 7 — Ethics and conflicts of interest\n7.1 The holder acts with independence and impartiality towards the administration.\n7.2 The holder shall inform the buyer without delay of any situation of conflict of interest, actual or potential, affecting the firm or a member of the team.\n7.3 Before the start of any order, each consultant assigned shall file a declaration of interests with the ordering administration.\n7.4 A consultant who, during the twelve months preceding the order, worked for a company whose interests may be affected by the order shall not be assigned without the buyer's written consent.\n\nArticle 9 — Confidentiality\nInformation received in the course of an order shall not be used for the benefit of any other client.\n",
+     "marks": [
+      {
+       "start": 287,
+       "end": 418,
+       "flag": "F7",
+       "role": "requirement",
+       "label": "Each consultant files a declaration before the order starts",
+       "severity": "medium"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F7"
+   ],
+   "severity": "medium"
+  },
+  {
+   "id": "D02",
+   "date": "2020-03-16",
+   "precision": "day",
+   "lane": "declarations",
+   "kind": "official_declaration",
+   "title": "Declaration of interests — Mathilde Rousseau, on appointment",
+   "issuer": "Ministry of Solidarity and Health",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "declaration"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "DECLARATION OF INTERESTS\nOn appointment as Deputy Director, Vaccine and Health Products Policy\nMinistry of Solidarity and Health — Directorate General for Health\n\nDeclarant: Mathilde Rousseau\nDate: 16/03/2020\n\nSection 1 — Professional activities during the last five years\nPrevious activity: McKinsey & Company, Paris — Engagement manager — 09/2014 to 09/2019\nPrevious activity: Ministry of Solidarity and Health — Project director, vaccine policy — 10/2019 to 02/2020\n\nSection 2 — Consulting activities: none\nSection 3 — Holdings in companies: none\nSection 5 — Interests of a close relative: none\n\nI certify that this declaration is accurate and complete.\n",
+     "marks": [
+      {
+       "start": 273,
+       "end": 359,
+       "flag": "F4",
+       "role": "previous employment",
+       "label": "McKinsey & Company, Paris until 30 Sep 2019",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F4"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D03",
+   "date": "2020-11-09",
+   "precision": "day",
+   "lane": "private",
+   "kind": "engagement_letter",
+   "title": "Engagement letter VX-2020-31 — Vaxellis SA",
+   "issuer": "McKinsey & Company, Paris office",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "private client"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "ENGAGEMENT LETTER\nEngagement: VX-2020-31 · Client: Vaxellis SA · Sector: health — vaccines\nFirm: McKinsey & Company, Paris office\nDate: 09/11/2020\n\nObject: European supply and allocation strategy for the Vaxellis COVID-19 vaccine, including the\npreparation of discussions with national health authorities on delivery schedules.\nPeriod: 09/11/2020 to 31/03/2021\n\nTeam:\nJulien Marchetti — Partner, engagement lead — 20 % — 09/11/2020 to 31/03/2021\nClara Vasseur — Senior associate — 50 % — 09/11/2020 to 31/03/2021\nBenoît Lacroix — Consultant — 100 % — 09/11/2020 to 31/03/2021\n\nFees: fixed fee, see annex. Confidential.\n",
+     "marks": [
+      {
+       "start": 18,
+       "end": 90,
+       "flag": "F1",
+       "role": "client",
+       "label": "Engagement VX-2020-31 — client Vaxellis SA",
+       "severity": "high"
+      },
+      {
+       "start": 18,
+       "end": 90,
+       "flag": "F2",
+       "role": "client",
+       "label": "Engagement VX-2020-31 — client Vaxellis SA",
+       "severity": "high"
+      },
+      {
+       "start": 18,
+       "end": 90,
+       "flag": "F3",
+       "role": "client",
+       "label": "Vaxellis SA — sector: health — vaccines",
+       "severity": "high"
+      },
+      {
+       "start": 368,
+       "end": 445,
+       "flag": "F1",
+       "role": "private engagement",
+       "label": "Julien Marchetti staffed 20 % for Vaxellis SA",
+       "severity": "high"
+      },
+      {
+       "start": 368,
+       "end": 445,
+       "flag": "F6",
+       "role": "private engagement",
+       "label": "Julien Marchetti staffed 20 % for Vaxellis SA",
+       "severity": "high"
+      },
+      {
+       "start": 446,
+       "end": 512,
+       "flag": "F2",
+       "role": "private engagement",
+       "label": "Clara Vasseur staffed 50 % for Vaxellis SA",
+       "severity": "high"
+      },
+      {
+       "start": 446,
+       "end": 512,
+       "flag": "F3",
+       "role": "contradiction",
+       "label": "Staffed on VX-2020-31 for Vaxellis SA from 09 Nov 2020",
+       "severity": "high"
+      },
+      {
+       "start": 446,
+       "end": 512,
+       "flag": "F6",
+       "role": "private engagement",
+       "label": "Clara Vasseur staffed 50 % for Vaxellis SA",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F1",
+    "F2",
+    "F3",
+    "F6"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D04",
+   "date": "2020-12-04",
+   "precision": "day",
+   "lane": "procurement",
+   "kind": "specifications",
+   "title": "Specifications DGS-2020-VAC-04 — logistics strategy of the vaccination campaign",
+   "issuer": "Directorate General for Health",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "contract"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "SPECIFICATIONS\nSupport for the logistics strategy of the COVID-19 vaccination campaign\nOrdering administration: Ministry of Solidarity and Health — Directorate General for Health\nReference: DGS-2020-VAC-04\nFramework: DITP-2018-AC01, Lot 1\nDate: 04/12/2020\n\nScope:\n— allocation of doses between suppliers and delivery schedules by region;\n— selection criteria and scenario analysis for the cold-chain logistics provider;\n— steering dashboard of the campaign.\n\nStakeholders affected by the deliverables: Vaxellis SA; Nordvac AG; LogiFroid SAS; TransMed Logistique.\n",
+     "marks": [
+      {
+       "start": 459,
+       "end": 562,
+       "flag": "F1",
+       "role": "affected company",
+       "label": "Vaxellis SA listed as affected by the order",
+       "severity": "high"
+      },
+      {
+       "start": 459,
+       "end": 562,
+       "flag": "F2",
+       "role": "affected company",
+       "label": "Vaxellis SA listed as affected by the order",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F1",
+    "F2"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D05",
+   "date": "2020-12-14",
+   "precision": "day",
+   "lane": "declarations",
+   "kind": "consultant_declaration",
+   "title": "Declaration of interests — Clara Vasseur",
+   "issuer": "McKinsey & Company, Paris office",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "declaration"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "DECLARATION OF INTERESTS\nConsultant assigned to order DGS-2020-VAC-04\n\nDeclarant: Clara Vasseur\nFirm: McKinsey & Company, Paris office\nDate: 14/12/2020\n\nQ1. Over the last twelve months, have you worked for a company whose interests may be affected by the order? [ ] Yes [X] No\nQ2. Do you currently hold an engagement for a company in the health sector? [ ] Yes [X] No\nQ3. Interests of a close relative: none\n\nI certify that this declaration is accurate and complete.\n",
+     "marks": [
+      {
+       "start": 262,
+       "end": 276,
+       "flag": "F3",
+       "role": "declared",
+       "label": "Q1 answered “No”: Over the last twelve months, have you worked for a company whose interests may be affected by the order?",
+       "severity": "high"
+      },
+      {
+       "start": 353,
+       "end": 367,
+       "flag": "F3",
+       "role": "declared",
+       "label": "Q2 answered “No”: Do you currently hold an engagement for a company in the health sector?",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F3"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D06",
+   "date": "2020-12-14",
+   "precision": "day",
+   "lane": "declarations",
+   "kind": "consultant_declaration",
+   "title": "Declaration of interests — Thomas Le Gall",
+   "issuer": "McKinsey & Company, Paris office",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "declaration"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "DECLARATION OF INTERESTS\nConsultant assigned to order DGS-2020-VAC-04\n\nDeclarant: Thomas Le Gall\nFirm: McKinsey & Company, Paris office\nDate: 14/12/2020\n\nQ1. Over the last twelve months, have you worked for a company whose interests may be affected by the order? [ ] Yes [X] No\nQ2. Do you currently hold an engagement for a company in the health sector? [ ] Yes [X] No\nQ3. Interests of a close relative: spouse employed by Froidis Group as regional director\n\nI certify that this declaration is accurate and complete.\n",
+     "marks": [
+      {
+       "start": 369,
+       "end": 457,
+       "flag": "F8",
+       "role": "declared tie",
+       "label": "Thomas Le Gall: spouse employed by Froidis Group as regional director",
+       "severity": "medium"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F8"
+   ],
+   "severity": "medium"
+  },
+  {
+   "id": "D07",
+   "date": "2020-12-15",
+   "precision": "day",
+   "lane": "declarations",
+   "kind": "consultant_declaration",
+   "title": "Declaration of interests — Inès Haddad",
+   "issuer": "McKinsey & Company, Paris office",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "declaration"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "DECLARATION OF INTERESTS\nConsultant assigned to order DGS-2020-VAC-04\n\nDeclarant: Inès Haddad\nFirm: McKinsey & Company, Paris office\nDate: 15/12/2020\n\nQ1. Over the last twelve months, have you worked for a company whose interests may be affected by the order? [ ] Yes [X] No\nQ2. Do you currently hold an engagement for a company in the health sector? [ ] Yes [X] No\nQ3. Interests of a close relative: none\n\nPrevious activity: Medilab SA — Analyst — 01/2013 to 06/2015\n\nI certify that this declaration is accurate and complete.\n",
+     "marks": []
+    }
+   ],
+   "flags": [],
+   "severity": null
+  },
+  {
+   "id": "D08",
+   "date": "2020-12-22",
+   "precision": "day",
+   "lane": "procurement",
+   "kind": "purchase_order",
+   "title": "Purchase order BC-2020-117",
+   "issuer": "Ministry of Solidarity and Health",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "contract"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "PURCHASE ORDER BC-2020-117\nUnder framework agreement DITP-2018-AC01, Lot 1\n\nHolder: McKinsey & Company Inc. France\nObject: Support for the logistics strategy of the COVID-19 vaccination campaign (specifications DGS-2020-VAC-04)\nPeriod: 04/01/2021 to 30/06/2021\nAmount: EUR 3,960,000 excl. VAT\n\nSigned for the Minister, by delegation: Mathilde Rousseau, Deputy Director, Vaccine and Health Products Policy\nDate: 22/12/2020\n",
+     "marks": [
+      {
+       "start": 294,
+       "end": 404,
+       "flag": "F4",
+       "role": "signature",
+       "label": "Mathilde Rousseau signs order BC-2020-117 on 22 Dec 2020",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F4"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D09",
+   "date": "2020-12-23",
+   "precision": "day",
+   "lane": "procurement",
+   "kind": "staffing_plan",
+   "title": "Annex 1 to BC-2020-117 — team assigned",
+   "issuer": "McKinsey & Company, Paris office",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "staffing"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "ANNEX 1 TO PURCHASE ORDER BC-2020-117 — TEAM\nEngagement: BC-2020-117 · Client: Ministry of Solidarity and Health · Sector: public — health\nDate: 23/12/2020\n\nRaphaël Dumont — Senior partner — 10 % — 04/01/2021 to 30/06/2021\nJulien Marchetti — Partner, engagement lead — 30 % — 04/01/2021 to 30/06/2021\nThomas Le Gall — Engagement manager — 100 % — 04/01/2021 to 30/06/2021\nClara Vasseur — Senior associate — 50 % — 04/01/2021 to 30/06/2021\nInès Haddad — Consultant — 100 % — 04/01/2021 to 30/06/2021\nHugo Ferreira — Consultant — 100 % — 04/01/2021 to 30/06/2021\nLéa Martin — Business analyst — 100 % — 04/01/2021 to 30/06/2021\nNadia Benali — Business analyst — 100 % — 04/01/2021 to 30/06/2021\nPaul Girard — Supply-chain specialist — 50 % — 04/01/2021 to 30/06/2021\n",
+     "marks": [
+      {
+       "start": 157,
+       "end": 222,
+       "flag": "F5",
+       "role": "missing",
+       "label": "Raphaël Dumont — no declaration in the file",
+       "severity": "high"
+      },
+      {
+       "start": 157,
+       "end": 222,
+       "flag": "F7",
+       "role": "missing",
+       "label": "Raphaël Dumont — no declaration in the file",
+       "severity": "medium"
+      },
+      {
+       "start": 223,
+       "end": 300,
+       "flag": "F1",
+       "role": "public engagement",
+       "label": "Julien Marchetti staffed 30 % on order BC-2020-117",
+       "severity": "high"
+      },
+      {
+       "start": 223,
+       "end": 300,
+       "flag": "F5",
+       "role": "missing",
+       "label": "Julien Marchetti — no declaration in the file",
+       "severity": "high"
+      },
+      {
+       "start": 223,
+       "end": 300,
+       "flag": "F7",
+       "role": "missing",
+       "label": "Julien Marchetti — no declaration in the file",
+       "severity": "medium"
+      },
+      {
+       "start": 372,
+       "end": 438,
+       "flag": "F2",
+       "role": "public engagement",
+       "label": "Clara Vasseur staffed 50 % on order BC-2020-117",
+       "severity": "high"
+      },
+      {
+       "start": 499,
+       "end": 560,
+       "flag": "F5",
+       "role": "missing",
+       "label": "Hugo Ferreira — no declaration in the file",
+       "severity": "high"
+      },
+      {
+       "start": 499,
+       "end": 560,
+       "flag": "F7",
+       "role": "missing",
+       "label": "Hugo Ferreira — no declaration in the file",
+       "severity": "medium"
+      },
+      {
+       "start": 561,
+       "end": 625,
+       "flag": "F7",
+       "role": "missing",
+       "label": "Léa Martin — no declaration in the file",
+       "severity": "medium"
+      },
+      {
+       "start": 626,
+       "end": 692,
+       "flag": "F7",
+       "role": "missing",
+       "label": "Nadia Benali — no declaration in the file",
+       "severity": "medium"
+      },
+      {
+       "start": 693,
+       "end": 764,
+       "flag": "F7",
+       "role": "missing",
+       "label": "Paul Girard — no declaration in the file",
+       "severity": "medium"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F1",
+    "F2",
+    "F5",
+    "F7"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D10",
+   "date": "2021-01-19",
+   "precision": "day",
+   "lane": "decisions",
+   "kind": "deliverable",
+   "title": "Deliverable L2 — dose allocation scenarios",
+   "issuer": "McKinsey & Company, Paris office",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "deliverable"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "DELIVERABLE L2 — DOSE ALLOCATION SCENARIOS, Q1–Q2 2021\nOrder BC-2020-117\nPrepared by: Clara Vasseur, Thomas Le Gall\nReviewed by: Julien Marchetti\nDate: 19/01/2021\n\nScenario A — pro rata of the volumes contracted at EU level.\nScenario B (recommended) — front-load deliveries from Vaxellis SA in February–March 2021 and secure an additional regional allocation, on the basis of the delivery schedule presented by the manufacturer.\nScenario C — prioritise the supplier with the shortest cold-chain constraints.\n\nRecommendation: Scenario B.\n",
+     "marks": [
+      {
+       "start": 86,
+       "end": 99,
+       "flag": "F2",
+       "role": "authorship",
+       "label": "Clara Vasseur — prepared the deliverable",
+       "severity": "high"
+      },
+      {
+       "start": 129,
+       "end": 145,
+       "flag": "F1",
+       "role": "authorship",
+       "label": "Julien Marchetti — reviewed the deliverable",
+       "severity": "high"
+      },
+      {
+       "start": 225,
+       "end": 428,
+       "flag": "F1",
+       "role": "recommendation",
+       "label": "Recommended scenario favours Vaxellis SA",
+       "severity": "high"
+      },
+      {
+       "start": 225,
+       "end": 428,
+       "flag": "F2",
+       "role": "recommendation",
+       "label": "Recommended scenario favours Vaxellis SA",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F1",
+    "F2"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D11",
+   "date": "2021-01-26",
+   "precision": "day",
+   "lane": "decisions",
+   "kind": "decision_memo",
+   "title": "Decision memo — allocation scenario and cold-chain provider",
+   "issuer": "Directorate General for Health",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "decision"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "MEMO — DECISION OF THE DIRECTOR GENERAL FOR HEALTH\nOrder BC-2020-117\nDate: 26/01/2021\n\nAllocation scenario retained: Scenario B of deliverable L2.\nSelected provider: LogiFroid SAS, on the basis of deliverable L3 prepared by Thomas Le Gall and Paul Girard.\n\nPrepared for signature by: Mathilde Rousseau, Deputy Director, Vaccine and Health Products Policy\n",
+     "marks": [
+      {
+       "start": 147,
+       "end": 255,
+       "flag": "F8",
+       "role": "benefit",
+       "label": "LogiFroid SAS selected on the basis of work by Thomas Le Gall",
+       "severity": "medium"
+      },
+      {
+       "start": 257,
+       "end": 354,
+       "flag": "F4",
+       "role": "decision",
+       "label": "Mathilde Rousseau prepares the decision memo",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F4",
+    "F8"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D12",
+   "date": "2021-02-01",
+   "precision": "day",
+   "lane": "private",
+   "kind": "registry_extract",
+   "title": "Company registry extract — LogiFroid SAS",
+   "issuer": "Trade and companies register",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "ownership"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "COMPANY REGISTRY EXTRACT\nCompany: LogiFroid SAS\nActivity: temperature-controlled logistics\nDate: 01/02/2021\n\nSole shareholder: Froidis Group (100 %)\nChair: Froidis Group, represented by its chief executive\n",
+     "marks": [
+      {
+       "start": 109,
+       "end": 148,
+       "flag": "F8",
+       "role": "ownership",
+       "label": "LogiFroid SAS is 100 % owned by Froidis Group",
+       "severity": "medium"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F8"
+   ],
+   "severity": "medium"
+  },
+  {
+   "id": "D13",
+   "date": "2021-03-05",
+   "precision": "day",
+   "lane": "private",
+   "kind": "time_report",
+   "title": "Firm time report — February 2021",
+   "issuer": "McKinsey & Company, Paris office",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "time report"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "TIME REPORT — FEBRUARY 2021\nParis office · staffing and time recording\nDate: 05/03/2021\n\nEngagement VX-2020-31 (Vaxellis SA)\nClara Vasseur — 9 days — 01/02/2021 to 26/02/2021\nJulien Marchetti — 3 days — 01/02/2021 to 26/02/2021\n\nEngagement BC-2020-117 (Ministry of Solidarity and Health)\nClara Vasseur — 10 days — 01/02/2021 to 26/02/2021\nJulien Marchetti — 6 days — 01/02/2021 to 26/02/2021\nThomas Le Gall — 19 days — 01/02/2021 to 26/02/2021\n",
+     "marks": [
+      {
+       "start": 125,
+       "end": 174,
+       "flag": "F2",
+       "role": "time recorded",
+       "label": "9 days on VX-2020-31",
+       "severity": "high"
+      },
+      {
+       "start": 125,
+       "end": 174,
+       "flag": "F6",
+       "role": "time recorded",
+       "label": "9 days on VX-2020-31",
+       "severity": "high"
+      },
+      {
+       "start": 175,
+       "end": 227,
+       "flag": "F1",
+       "role": "time recorded",
+       "label": "3 days on VX-2020-31",
+       "severity": "high"
+      },
+      {
+       "start": 175,
+       "end": 227,
+       "flag": "F6",
+       "role": "time recorded",
+       "label": "3 days on VX-2020-31",
+       "severity": "high"
+      },
+      {
+       "start": 288,
+       "end": 338,
+       "flag": "F2",
+       "role": "time recorded",
+       "label": "10 days on BC-2020-117",
+       "severity": "high"
+      },
+      {
+       "start": 339,
+       "end": 391,
+       "flag": "F1",
+       "role": "time recorded",
+       "label": "6 days on BC-2020-117",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F1",
+    "F2",
+    "F6"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D14",
+   "date": "2021-11-01",
+   "precision": "month",
+   "lane": "scrutiny",
+   "kind": "inquiry",
+   "title": "Senate inquiry committee on the influence of consulting firms",
+   "issuer": "French Senate",
+   "provenance": "public_record",
+   "notice": "Public chronology · summary written for the demo, not a verbatim extract",
+   "tags": [
+    "public record"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "SENATE INQUIRY COMMITTEE\nInfluence of private consulting firms on public policy\nDate: 11/2021\n\nThe Senate sets up an inquiry committee on the growing role of consulting firms in public policy.\nIts remit covers the cost of contracts, how they were awarded, the actual role of consultants in\ndecisions, ethical rules and declarations of interests.\n",
+     "marks": []
+    }
+   ],
+   "flags": [],
+   "severity": null
+  },
+  {
+   "id": "D15",
+   "date": "2022-01-18",
+   "precision": "day",
+   "lane": "scrutiny",
+   "kind": "hearing",
+   "title": "Hearing under oath — Raphaël Dumont",
+   "issuer": "Senate inquiry committee",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "hearing",
+    "under oath"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "SENATE INQUIRY COMMITTEE ON THE INFLUENCE OF CONSULTING FIRMS\nHearing under oath\nDate: 18/01/2022\nWitness: Raphaël Dumont, Senior partner, McKinsey & Company Paris (sworn)\n\nThe Rapporteur: Did every consultant assigned to the vaccination mission file a declaration of interests?\nMr Raphaël Dumont: Yes. Every consultant assigned to the vaccination mission filed a declaration of interests before the start of the order.\nThe Rapporteur: Did any of them work at the same time for a vaccine manufacturer?\nMr Raphaël Dumont: No member of the team worked for a vaccine manufacturer during the mission.\n",
+     "marks": [
+      {
+       "start": 279,
+       "end": 419,
+       "flag": "F5",
+       "role": "statement",
+       "label": "Raphaël Dumont, under oath",
+       "severity": "high"
+      },
+      {
+       "start": 502,
+       "end": 596,
+       "flag": "F6",
+       "role": "statement",
+       "label": "Raphaël Dumont, under oath",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F5",
+    "F6"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D16",
+   "date": "2022-02-07",
+   "precision": "day",
+   "lane": "scrutiny",
+   "kind": "administration_answer",
+   "title": "Ministry answer to the committee questionnaire",
+   "issuer": "Directorate General for Health",
+   "provenance": "synthetic",
+   "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
+   "tags": [
+    "answer"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "ANSWER TO THE QUESTIONNAIRE OF THE INQUIRY COMMITTEE\nDirectorate General for Health\nDate: 07/02/2022\n\nQuestion 12 — Declarations of interests for order BC-2020-117.\nThe Directorate holds 3 declarations of interests for order BC-2020-117: Clara Vasseur, Thomas Le Gall, Inès Haddad.\nNo written consent under article 7.4 of the framework agreement was requested or issued for this order.\nNo recusal record exists for the signatory of purchase order BC-2020-117.\n",
+     "marks": [
+      {
+       "start": 165,
+       "end": 281,
+       "flag": "F5",
+       "role": "administration",
+       "label": "The administration holds 3 declarations",
+       "severity": "high"
+      },
+      {
+       "start": 165,
+       "end": 281,
+       "flag": "F7",
+       "role": "administration",
+       "label": "The administration holds 3 declarations",
+       "severity": "medium"
+      },
+      {
+       "start": 282,
+       "end": 385,
+       "flag": "F1",
+       "role": "no consent",
+       "label": "No written consent under art. 7.4",
+       "severity": "high"
+      },
+      {
+       "start": 282,
+       "end": 385,
+       "flag": "F2",
+       "role": "no consent",
+       "label": "No written consent under art. 7.4",
+       "severity": "high"
+      },
+      {
+       "start": 282,
+       "end": 385,
+       "flag": "F8",
+       "role": "no consent",
+       "label": "Declared interest not followed by any decision",
+       "severity": "medium"
+      },
+      {
+       "start": 386,
+       "end": 459,
+       "flag": "F4",
+       "role": "no recusal",
+       "label": "No recusal record for the signatory",
+       "severity": "high"
+      }
+     ]
+    }
+   ],
+   "flags": [
+    "F1",
+    "F2",
+    "F4",
+    "F5",
+    "F7",
+    "F8"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "D17",
+   "date": "2022-03-17",
+   "precision": "day",
+   "lane": "scrutiny",
+   "kind": "report",
+   "title": "Senate inquiry report",
+   "issuer": "French Senate",
+   "provenance": "public_record",
+   "notice": "Public chronology · summary written for the demo, not a verbatim extract",
+   "tags": [
+    "public record"
+   ],
+   "pages": [
+    {
+     "n": 1,
+     "text": "REPORT OF THE INQUIRY COMMITTEE\nDate: 17/03/2022\n\nThe committee reports that it obtained a very limited number of declarations of interests compared\nwith the number of consultants involved in some missions, and questions whether the administration\nhad the information needed to identify potential conflicts of interest.\n",
+     "marks": []
+    }
+   ],
+   "flags": [],
+   "severity": null
+  }
+ ],
+ "context": [
+  {
+   "date": "2020-12-27",
+   "label": "Vaccination campaign starts in France"
+  }
+ ],
+ "periods": [
+  {
+   "person": "Julien Marchetti",
+   "label": "Vaxellis SA · 20 %",
+   "kind": "private",
+   "start": "2020-11-09",
+   "end": "2021-03-31",
+   "doc": "D03",
+   "flags": [
+    "F1"
+   ]
+  },
+  {
+   "person": "Julien Marchetti",
+   "label": "Ministry of Solidarity and Health · 30 %",
+   "kind": "public",
+   "start": "2021-01-04",
+   "end": "2021-06-30",
+   "doc": "D09",
+   "flags": [
+    "F1"
+   ]
+  },
+  {
+   "person": "Clara Vasseur",
+   "label": "Vaxellis SA · 50 %",
+   "kind": "private",
+   "start": "2020-11-09",
+   "end": "2021-03-31",
+   "doc": "D03",
+   "flags": [
+    "F2",
+    "F3"
+   ]
+  },
+  {
+   "person": "Clara Vasseur",
+   "label": "Ministry of Solidarity and Health · 50 %",
+   "kind": "public",
+   "start": "2021-01-04",
+   "end": "2021-06-30",
+   "doc": "D09",
+   "flags": [
+    "F2"
+   ]
+  },
+  {
+   "person": "Mathilde Rousseau",
+   "label": "McKinsey & Company, Paris",
+   "kind": "employment",
+   "start": "2014-09-01",
+   "end": "2019-09-30",
+   "doc": "D02",
+   "flags": [
+    "F4"
+   ]
+  },
+  {
+   "person": "Mathilde Rousseau",
+   "label": "within 3 years of leaving the firm",
+   "kind": "window",
+   "start": "2019-09-30",
+   "end": "2020-12-22",
+   "doc": null,
+   "flags": [
+    "F4"
+   ]
+  },
+  {
+   "person": "Mathilde Rousseau",
+   "label": "Ministry of Solidarity and Health",
+   "kind": "employment",
+   "start": "2019-10-01",
+   "end": "2020-02-29",
+   "doc": "D02",
+   "flags": []
+  },
+  {
+   "person": "Thomas Le Gall",
+   "label": "Ministry of Solidarity and Health · 100 %",
+   "kind": "public",
+   "start": "2021-01-04",
+   "end": "2021-06-30",
+   "doc": "D09",
+   "flags": []
+  }
+ ],
+ "flags": [
+  {
+   "rule": "COI-01",
+   "persons": [
+    "Julien Marchetti"
+   ],
+   "companies": [
+    "Vaxellis SA"
+   ],
+   "certainty": "documented",
+   "headline": "Julien Marchetti advised the Ministry and Vaxellis SA at the same time",
+   "summary": "Julien Marchetti was staffed 30 % on order BC-2020-117 for the Ministry while staffed 20 % on engagement VX-2020-31 for Vaxellis SA, a company listed as affected by that order. Overlap: 04 Jan 2021 → 31 Mar 2021.",
+   "aggravating": [
+    "Time reports confirm work on both engagements in the same weeks.",
+    "Julien Marchetti reviewed the deliverable whose recommended scenario favours Vaxellis SA.",
+    "The administration states that no consent under art. 7.4 was requested or issued."
+   ],
+   "window": [
+    "2021-01-04",
+    "2021-03-31"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Julien Marchetti",
+      "kind": "person"
+     },
+     {
+      "id": "Vaxellis SA",
+      "kind": "company"
+     },
+     {
+      "id": "Order BC-2020-117",
+      "kind": "public"
+     }
+    ],
+    "links": [
+     {
+      "s": "Julien Marchetti",
+      "t": "Vaxellis SA",
+      "label": "staffed 20 % · VX-2020-31",
+      "doc": "D03"
+     },
+     {
+      "s": "Julien Marchetti",
+      "t": "Order BC-2020-117",
+      "label": "staffed 30 %",
+      "doc": "D09"
+     },
+     {
+      "s": "Order BC-2020-117",
+      "t": "Vaxellis SA",
+      "label": "affects",
+      "doc": "D04"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 368,
+     "end": 445,
+     "quote": "Julien Marchetti — Partner, engagement lead — 20 % — 09/11/2020 to 31/03/2021",
+     "role": "private engagement",
+     "label": "Julien Marchetti staffed 20 % for Vaxellis SA"
+    },
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 18,
+     "end": 90,
+     "quote": "Engagement: VX-2020-31 · Client: Vaxellis SA · Sector: health — vaccines",
+     "role": "client",
+     "label": "Engagement VX-2020-31 — client Vaxellis SA"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 223,
+     "end": 300,
+     "quote": "Julien Marchetti — Partner, engagement lead — 30 % — 04/01/2021 to 30/06/2021",
+     "role": "public engagement",
+     "label": "Julien Marchetti staffed 30 % on order BC-2020-117"
+    },
+    {
+     "doc": "D04",
+     "page": 1,
+     "start": 459,
+     "end": 562,
+     "quote": "Stakeholders affected by the deliverables: Vaxellis SA; Nordvac AG; LogiFroid SAS; TransMed Logistique.",
+     "role": "affected company",
+     "label": "Vaxellis SA listed as affected by the order"
+    },
+    {
+     "doc": "D13",
+     "page": 1,
+     "start": 175,
+     "end": 227,
+     "quote": "Julien Marchetti — 3 days — 01/02/2021 to 26/02/2021",
+     "role": "time recorded",
+     "label": "3 days on VX-2020-31"
+    },
+    {
+     "doc": "D13",
+     "page": 1,
+     "start": 339,
+     "end": 391,
+     "quote": "Julien Marchetti — 6 days — 01/02/2021 to 26/02/2021",
+     "role": "time recorded",
+     "label": "6 days on BC-2020-117"
+    },
+    {
+     "doc": "D10",
+     "page": 1,
+     "start": 129,
+     "end": 145,
+     "quote": "Julien Marchetti",
+     "role": "authorship",
+     "label": "Julien Marchetti — reviewed the deliverable"
+    },
+    {
+     "doc": "D10",
+     "page": 1,
+     "start": 225,
+     "end": 428,
+     "quote": "Scenario B (recommended) — front-load deliveries from Vaxellis SA in February–March 2021 and secure an additional regional allocation, on the basis of the delivery schedule presented by the manufacturer.",
+     "role": "recommendation",
+     "label": "Recommended scenario favours Vaxellis SA"
+    },
+    {
+     "doc": "D16",
+     "page": 1,
+     "start": 282,
+     "end": 385,
+     "quote": "No written consent under article 7.4 of the framework agreement was requested or issued for this order.",
+     "role": "no consent",
+     "label": "No written consent under art. 7.4"
+    }
+   ],
+   "title": "Dual mandate — advising the State and an affected company at the same time",
+   "pattern": "dual_role",
+   "patterns": [
+    "dual_role",
+    "information_barrier",
+    "beneficiary_link"
+   ],
+   "severity": "high",
+   "legal": [
+    {
+     "ref": "Framework agreement DITP-2018-AC01, art. 7.2 and 7.4",
+     "text": "Duty to report any actual or potential conflict; no assignment of a consultant who worked for an affected company in the previous twelve months without written consent."
+    },
+    {
+     "ref": "Code de la commande publique, art. L2141-10",
+     "text": "A person taking part in the procedure, or able to influence its outcome, with a direct or indirect interest that could compromise impartiality."
+    },
+    {
+     "ref": "Directive 2014/24/EU, art. 24",
+     "text": "Member States ensure contracting authorities prevent, identify and remedy conflicts of interest."
+    }
+   ],
+   "next": [
+    "Obtain the full staffing history of the person on both engagements (time reports, calendars).",
+    "Check whether the firm reported the situation under art. 7.2 and whether the buyer consented under art. 7.4.",
+    "Compare the recommendation with the alternatives and with the information supplied by the private client."
+   ],
+   "pattern_label": "Dual mandate",
+   "id": "F1",
+   "docs": [
+    "D03",
+    "D04",
+    "D09",
+    "D10",
+    "D13",
+    "D16"
+   ],
+   "precedents": [
+    {
+     "id": "S-127",
+     "title": "Consultant shapes a decision benefiting the client of his partner",
+     "citation": "Scenario S-127",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2021,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Inspection report found a conflict of interest; recommendation re-examined.",
+     "lesson": "Reviewing a deliverable is participation; partners are inside the scope.",
+     "patterns": [
+      "dual_role",
+      "beneficiary_link"
+     ],
+     "score": 0.829,
+     "why": {
+      "patterns": [
+       "Dual mandate",
+       "Tie to the beneficiary"
+      ],
+      "signals": [
+       "reviewed the deliverable",
+       "led private engagement",
+       "recommendation favours client",
+       "same weeks"
+      ],
+      "terms": [
+       "client",
+       "consultant",
+       "decision",
+       "deliverable",
+       "engagement",
+       "favours",
+       "private",
+       "reviewed"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "S-101",
+     "title": "Hospital IT master plan — adviser staffed for the software vendor",
+     "citation": "Scenario S-101",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2021,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Master plan re-run by a different team; vendor shortlist re-opened.",
+     "lesson": "The overlap plus authorship of the recommending deliverable is the strongest configuration.",
+     "patterns": [
+      "dual_role",
+      "beneficiary_link"
+     ],
+     "score": 0.7,
+     "why": {
+      "patterns": [
+       "Dual mandate",
+       "Tie to the beneficiary"
+      ],
+      "signals": [
+       "same consultant on public and private engagement",
+       "recommendation favours client"
+      ],
+      "terms": [
+       "client",
+       "consultant",
+       "engagement",
+       "favours",
+       "private",
+       "public",
+       "staffed"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-011",
+     "title": "Adviser to the government, information used for private clients",
+     "citation": "PwC Australia confidential tax information affair, 2023",
+     "forum": "Australian Senate / Tax Practitioners Board",
+     "jurisdiction": "AU",
+     "year": 2023,
+     "kind": "inquiry",
+     "provenance": "public_record",
+     "outcome": "Professional sanction of the partner, parliamentary inquiry, leadership changes at the firm and reforms of government consulting procurement.",
+     "lesson": "Check whether the people who advised the State also worked, in the same period, for those affected by the advice.",
+     "patterns": [
+      "information_barrier",
+      "dual_role"
+     ],
+     "score": 0.676,
+     "why": {
+      "patterns": [
+       "Confidential information",
+       "Dual mandate"
+      ],
+      "signals": [
+       "private clients",
+       "same firm advises both"
+      ],
+      "terms": [
+       "advised",
+       "advises",
+       "both",
+       "private",
+       "under"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This flag raises a **potential dual mandate conflict** where Julien Marchetti simultaneously advised the Ministry (30% on BC-2020-117) and Vaxellis SA (20% on VX-2020-31), a company directly affected by the order. The overlap period (Jan–Mar 2021) includes **authorship of a key recommendation** («Scenario B (recommended) — front-load deliveries from Vaxellis SA in February–March 2021...») and no recorded consent under article 7.4. Review first the **authorship evidence (D10 p.1)** and **overlap timing (D03 p.1, D09 p.1)** to assess proximity to decision-making.",
+    "quotes": [
+     "No written consent under article 7.4 of the framework agreement was requested or issued for this order."
+    ],
+    "model": "ministral-14b-latest",
+    "verified": false
+   }
+  },
+  {
+   "rule": "COI-01",
+   "persons": [
+    "Clara Vasseur"
+   ],
+   "companies": [
+    "Vaxellis SA"
+   ],
+   "certainty": "documented",
+   "headline": "Clara Vasseur advised the Ministry and Vaxellis SA at the same time",
+   "summary": "Clara Vasseur was staffed 50 % on order BC-2020-117 for the Ministry while staffed 50 % on engagement VX-2020-31 for Vaxellis SA, a company listed as affected by that order. Overlap: 04 Jan 2021 → 31 Mar 2021.",
+   "aggravating": [
+    "Time reports confirm work on both engagements in the same weeks.",
+    "Clara Vasseur prepared the deliverable whose recommended scenario favours Vaxellis SA.",
+    "The administration states that no consent under art. 7.4 was requested or issued."
+   ],
+   "window": [
+    "2021-01-04",
+    "2021-03-31"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Clara Vasseur",
+      "kind": "person"
+     },
+     {
+      "id": "Vaxellis SA",
+      "kind": "company"
+     },
+     {
+      "id": "Order BC-2020-117",
+      "kind": "public"
+     }
+    ],
+    "links": [
+     {
+      "s": "Clara Vasseur",
+      "t": "Vaxellis SA",
+      "label": "staffed 50 % · VX-2020-31",
+      "doc": "D03"
+     },
+     {
+      "s": "Clara Vasseur",
+      "t": "Order BC-2020-117",
+      "label": "staffed 50 %",
+      "doc": "D09"
+     },
+     {
+      "s": "Order BC-2020-117",
+      "t": "Vaxellis SA",
+      "label": "affects",
+      "doc": "D04"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 446,
+     "end": 512,
+     "quote": "Clara Vasseur — Senior associate — 50 % — 09/11/2020 to 31/03/2021",
+     "role": "private engagement",
+     "label": "Clara Vasseur staffed 50 % for Vaxellis SA"
+    },
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 18,
+     "end": 90,
+     "quote": "Engagement: VX-2020-31 · Client: Vaxellis SA · Sector: health — vaccines",
+     "role": "client",
+     "label": "Engagement VX-2020-31 — client Vaxellis SA"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 372,
+     "end": 438,
+     "quote": "Clara Vasseur — Senior associate — 50 % — 04/01/2021 to 30/06/2021",
+     "role": "public engagement",
+     "label": "Clara Vasseur staffed 50 % on order BC-2020-117"
+    },
+    {
+     "doc": "D04",
+     "page": 1,
+     "start": 459,
+     "end": 562,
+     "quote": "Stakeholders affected by the deliverables: Vaxellis SA; Nordvac AG; LogiFroid SAS; TransMed Logistique.",
+     "role": "affected company",
+     "label": "Vaxellis SA listed as affected by the order"
+    },
+    {
+     "doc": "D13",
+     "page": 1,
+     "start": 125,
+     "end": 174,
+     "quote": "Clara Vasseur — 9 days — 01/02/2021 to 26/02/2021",
+     "role": "time recorded",
+     "label": "9 days on VX-2020-31"
+    },
+    {
+     "doc": "D13",
+     "page": 1,
+     "start": 288,
+     "end": 338,
+     "quote": "Clara Vasseur — 10 days — 01/02/2021 to 26/02/2021",
+     "role": "time recorded",
+     "label": "10 days on BC-2020-117"
+    },
+    {
+     "doc": "D10",
+     "page": 1,
+     "start": 86,
+     "end": 99,
+     "quote": "Clara Vasseur",
+     "role": "authorship",
+     "label": "Clara Vasseur — prepared the deliverable"
+    },
+    {
+     "doc": "D10",
+     "page": 1,
+     "start": 225,
+     "end": 428,
+     "quote": "Scenario B (recommended) — front-load deliveries from Vaxellis SA in February–March 2021 and secure an additional regional allocation, on the basis of the delivery schedule presented by the manufacturer.",
+     "role": "recommendation",
+     "label": "Recommended scenario favours Vaxellis SA"
+    },
+    {
+     "doc": "D16",
+     "page": 1,
+     "start": 282,
+     "end": 385,
+     "quote": "No written consent under article 7.4 of the framework agreement was requested or issued for this order.",
+     "role": "no consent",
+     "label": "No written consent under art. 7.4"
+    }
+   ],
+   "title": "Dual mandate — advising the State and an affected company at the same time",
+   "pattern": "dual_role",
+   "patterns": [
+    "dual_role",
+    "information_barrier",
+    "beneficiary_link"
+   ],
+   "severity": "high",
+   "legal": [
+    {
+     "ref": "Framework agreement DITP-2018-AC01, art. 7.2 and 7.4",
+     "text": "Duty to report any actual or potential conflict; no assignment of a consultant who worked for an affected company in the previous twelve months without written consent."
+    },
+    {
+     "ref": "Code de la commande publique, art. L2141-10",
+     "text": "A person taking part in the procedure, or able to influence its outcome, with a direct or indirect interest that could compromise impartiality."
+    },
+    {
+     "ref": "Directive 2014/24/EU, art. 24",
+     "text": "Member States ensure contracting authorities prevent, identify and remedy conflicts of interest."
+    }
+   ],
+   "next": [
+    "Obtain the full staffing history of the person on both engagements (time reports, calendars).",
+    "Check whether the firm reported the situation under art. 7.2 and whether the buyer consented under art. 7.4.",
+    "Compare the recommendation with the alternatives and with the information supplied by the private client."
+   ],
+   "pattern_label": "Dual mandate",
+   "id": "F2",
+   "docs": [
+    "D03",
+    "D04",
+    "D09",
+    "D10",
+    "D13",
+    "D16"
+   ],
+   "precedents": [
+    {
+     "id": "S-127",
+     "title": "Consultant shapes a decision benefiting the client of his partner",
+     "citation": "Scenario S-127",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2021,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Inspection report found a conflict of interest; recommendation re-examined.",
+     "lesson": "Reviewing a deliverable is participation; partners are inside the scope.",
+     "patterns": [
+      "dual_role",
+      "beneficiary_link"
+     ],
+     "score": 0.827,
+     "why": {
+      "patterns": [
+       "Dual mandate",
+       "Tie to the beneficiary"
+      ],
+      "signals": [
+       "reviewed the deliverable",
+       "led private engagement",
+       "recommendation favours client",
+       "same weeks"
+      ],
+      "terms": [
+       "client",
+       "consultant",
+       "decision",
+       "deliverable",
+       "engagement",
+       "favours",
+       "private",
+       "vaccine"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "S-101",
+     "title": "Hospital IT master plan — adviser staffed for the software vendor",
+     "citation": "Scenario S-101",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2021,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Master plan re-run by a different team; vendor shortlist re-opened.",
+     "lesson": "The overlap plus authorship of the recommending deliverable is the strongest configuration.",
+     "patterns": [
+      "dual_role",
+      "beneficiary_link"
+     ],
+     "score": 0.715,
+     "why": {
+      "patterns": [
+       "Dual mandate",
+       "Tie to the beneficiary"
+      ],
+      "signals": [
+       "same consultant on public and private engagement",
+       "recommendation favours client"
+      ],
+      "terms": [
+       "client",
+       "consultant",
+       "engagement",
+       "favours",
+       "private",
+       "public",
+       "staffed"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-011",
+     "title": "Adviser to the government, information used for private clients",
+     "citation": "PwC Australia confidential tax information affair, 2023",
+     "forum": "Australian Senate / Tax Practitioners Board",
+     "jurisdiction": "AU",
+     "year": 2023,
+     "kind": "inquiry",
+     "provenance": "public_record",
+     "outcome": "Professional sanction of the partner, parliamentary inquiry, leadership changes at the firm and reforms of government consulting procurement.",
+     "lesson": "Check whether the people who advised the State also worked, in the same period, for those affected by the advice.",
+     "patterns": [
+      "information_barrier",
+      "dual_role"
+     ],
+     "score": 0.69,
+     "why": {
+      "patterns": [
+       "Confidential information",
+       "Dual mandate"
+      ],
+      "signals": [
+       "private clients",
+       "same firm advises both"
+      ],
+      "terms": [
+       "advised",
+       "advises",
+       "both",
+       "private",
+       "under"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This flag raises a **potential conflict of interest** due to Clara Vasseur’s simultaneous 50% staffing on a public order (BC-2020-117) and a private engagement (VX-2020-31) for **Vaxellis SA**, a company directly affected by the deliverables. The overlap (Jan–Mar 2021) and her authorship of a **recommendation** («Scenario B (recommended) — front-load deliveries from Vaxellis SA...») warrant immediate review, particularly given the lack of written consent («No written consent under article 7.4...»). Focus first on **D10 (authorship/recommendation)** and **D16 (consent)** to assess proximity to decision-making.",
+    "quotes": [
+     "No written consent under article 7.4 of the framework agreement was requested or issued for this order."
+    ],
+    "model": "ministral-14b-latest",
+    "verified": false
+   }
+  },
+  {
+   "rule": "COI-02",
+   "persons": [
+    "Clara Vasseur"
+   ],
+   "companies": [
+    "Vaxellis SA"
+   ],
+   "certainty": "documented",
+   "headline": "Clara Vasseur declared no health-sector engagement — the engagement letter says otherwise",
+   "summary": "On 14 Dec 2020 Clara Vasseur answered “No” to Q1 and Q2 of the declaration of interests, while staffed since 09 Nov 2020 on engagement VX-2020-31 for Vaxellis SA (health — vaccines).",
+   "aggravating": [],
+   "window": [
+    "2020-11-09",
+    "2020-12-14"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Clara Vasseur",
+      "kind": "person"
+     },
+     {
+      "id": "Declaration",
+      "kind": "doc"
+     },
+     {
+      "id": "Vaxellis SA",
+      "kind": "company"
+     }
+    ],
+    "links": [
+     {
+      "s": "Clara Vasseur",
+      "t": "Declaration",
+      "label": "“No” · 14 Dec 2020",
+      "doc": "D05"
+     },
+     {
+      "s": "Clara Vasseur",
+      "t": "Vaxellis SA",
+      "label": "staffed since 09 Nov 2020",
+      "doc": "D03"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D05",
+     "page": 1,
+     "start": 262,
+     "end": 276,
+     "quote": "[ ] Yes [X] No",
+     "role": "declared",
+     "label": "Q1 answered “No”: Over the last twelve months, have you worked for a company whose interests may be affected by the order?"
+    },
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 446,
+     "end": 512,
+     "quote": "Clara Vasseur — Senior associate — 50 % — 09/11/2020 to 31/03/2021",
+     "role": "contradiction",
+     "label": "Staffed on VX-2020-31 for Vaxellis SA from 09 Nov 2020"
+    },
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 18,
+     "end": 90,
+     "quote": "Engagement: VX-2020-31 · Client: Vaxellis SA · Sector: health — vaccines",
+     "role": "client",
+     "label": "Vaxellis SA — sector: health — vaccines"
+    },
+    {
+     "doc": "D05",
+     "page": 1,
+     "start": 353,
+     "end": 367,
+     "quote": "[ ] Yes [X] No",
+     "role": "declared",
+     "label": "Q2 answered “No”: Do you currently hold an engagement for a company in the health sector?"
+    }
+   ],
+   "title": "Declaration of interests contradicted by another document",
+   "pattern": "undeclared_interest",
+   "patterns": [
+    "undeclared_interest",
+    "false_statement"
+   ],
+   "severity": "high",
+   "legal": [
+    {
+     "ref": "Framework agreement DITP-2018-AC01, art. 7.3",
+     "text": "Each consultant assigned files a declaration of interests before the start of the order."
+    },
+    {
+     "ref": "Loi n° 2013-907 du 11 octobre 2013, art. 2",
+     "text": "Conflict of interest — any interference between a public interest and public or private interests likely to influence, or appear to influence, the independent, impartial and objective exercise of a function."
+    }
+   ],
+   "next": [
+    "Put the declaration and the contradicting document side by side to the declarant.",
+    "Establish what the declarant knew on the declaration date (engagement start, staffing confirmation).",
+    "Check who at the administration received and reviewed the declaration."
+   ],
+   "pattern_label": "Undeclared / false declaration",
+   "id": "F3",
+   "docs": [
+    "D03",
+    "D05"
+   ],
+   "precedents": [
+    {
+     "id": "S-102",
+     "title": "Declaration ticked “No” while staffed for an affected company",
+     "citation": "Scenario S-102",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2020,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Declaration found inaccurate; firm suspended from the framework for six months.",
+     "lesson": "Compare the declaration date with the start of every engagement of the declarant.",
+     "patterns": [
+      "undeclared_interest",
+      "dual_role"
+     ],
+     "score": 0.728,
+     "why": {
+      "patterns": [
+       "Undeclared / false declaration"
+      ],
+      "signals": [
+       "declaration answered No",
+       "engagement letter predates declaration",
+       "affected company"
+      ],
+      "terms": [
+       "affected",
+       "answered",
+       "company",
+       "declaration",
+       "declared",
+       "engagement",
+       "letter",
+       "sector"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "S-129",
+     "title": "Statement to the regulator contradicted by the firm's own staffing",
+     "citation": "Scenario S-129",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2022,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Regulator sanction for inaccurate certification.",
+     "lesson": "Blanket statements are tested person by person against staffing lists.",
+     "patterns": [
+      "false_statement",
+      "undeclared_interest"
+     ],
+     "score": 0.686,
+     "why": {
+      "patterns": [
+       "Statement contradicted",
+       "Undeclared / false declaration"
+      ],
+      "signals": [],
+      "terms": [
+       "contradicted"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-014",
+     "title": "Testimony under oath before parliamentary inquiry committees",
+     "citation": "Ordonnance n° 58-1100 du 17 novembre 1958, art. 6",
+     "forum": "Ordonnance",
+     "jurisdiction": "FR",
+     "year": 1958,
+     "kind": "statute",
+     "provenance": "public_record",
+     "outcome": "Committees may refer statements to the prosecutor.",
+     "lesson": "Quote the exact question and answer; contradiction is for the reviewer, qualification for the prosecutor.",
+     "patterns": [
+      "false_statement"
+     ],
+     "score": 0.611,
+     "why": {
+      "patterns": [
+       "Statement contradicted"
+      ],
+      "signals": [
+       "contradicted by documents"
+      ],
+      "terms": [
+       "contradicted",
+       "false"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This potential conflict warrants review due to a direct contradiction in Clara Vasseur’s declaration of interests, where she answered « No » to Q1 and Q2 on 14 Dec 2020, yet was staffed on engagement **VX-2020-31** for **Vaxellis SA** (health—vaccines) since **09 Nov 2020**. Focus first on cross-referencing the exact questions (Q1/Q2) in **D05 p.1** with the engagement details in **D03 p.1** to assess intent or oversight.",
+    "quotes": [],
+    "model": "ministral-14b-latest",
+    "verified": false
+   }
+  },
+  {
+   "rule": "COI-04",
+   "persons": [
+    "Mathilde Rousseau"
+   ],
+   "companies": [
+    "McKinsey & Company Inc. France"
+   ],
+   "certainty": "documented",
+   "headline": "Mathilde Rousseau signed the firm's order 14 months after leaving the firm",
+   "summary": "Mathilde Rousseau signed purchase order BC-2020-117 awarded to McKinsey & Company Inc. France on 22 Dec 2020. The signatory's declaration on appointment lists McKinsey & Company, Paris as employer until 30 Sep 2019 — 14 months earlier, within the 3-year window. No recusal record exists.",
+   "aggravating": [
+    "14 months between leaving the firm and signing its order.",
+    "The signatory also prepared the decision memo adopting the firm's recommendations."
+   ],
+   "window": [
+    "2019-09-30",
+    "2020-12-22"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Mathilde Rousseau",
+      "kind": "person"
+     },
+     {
+      "id": "McKinsey & Company Inc. France",
+      "kind": "company"
+     },
+     {
+      "id": "Order BC-2020-117",
+      "kind": "public"
+     }
+    ],
+    "links": [
+     {
+      "s": "Mathilde Rousseau",
+      "t": "McKinsey & Company Inc. France",
+      "label": "employee until 30 Sep 2019",
+      "doc": "D02"
+     },
+     {
+      "s": "Mathilde Rousseau",
+      "t": "Order BC-2020-117",
+      "label": "signs · 22 Dec 2020",
+      "doc": "D08"
+     },
+     {
+      "s": "Order BC-2020-117",
+      "t": "McKinsey & Company Inc. France",
+      "label": "awarded to",
+      "doc": "D08"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D08",
+     "page": 1,
+     "start": 294,
+     "end": 404,
+     "quote": "Signed for the Minister, by delegation: Mathilde Rousseau, Deputy Director, Vaccine and Health Products Policy",
+     "role": "signature",
+     "label": "Mathilde Rousseau signs order BC-2020-117 on 22 Dec 2020"
+    },
+    {
+     "doc": "D02",
+     "page": 1,
+     "start": 273,
+     "end": 359,
+     "quote": "Previous activity: McKinsey & Company, Paris — Engagement manager — 09/2014 to 09/2019",
+     "role": "previous employment",
+     "label": "McKinsey & Company, Paris until 30 Sep 2019"
+    },
+    {
+     "doc": "D11",
+     "page": 1,
+     "start": 257,
+     "end": 354,
+     "quote": "Prepared for signature by: Mathilde Rousseau, Deputy Director, Vaccine and Health Products Policy",
+     "role": "decision",
+     "label": "Mathilde Rousseau prepares the decision memo"
+    },
+    {
+     "doc": "D16",
+     "page": 1,
+     "start": 386,
+     "end": 459,
+     "quote": "No recusal record exists for the signatory of purchase order BC-2020-117.",
+     "role": "no recusal",
+     "label": "No recusal record for the signatory"
+    }
+   ],
+   "title": "Signatory recently employed by the firm that receives the order",
+   "pattern": "revolving_door",
+   "patterns": [
+    "revolving_door",
+    "appearance_of_bias"
+   ],
+   "severity": "high",
+   "legal": [
+    {
+     "ref": "Loi n° 2013-907 du 11 octobre 2013, art. 2",
+     "text": "A person in a situation of conflict of interest abstains from taking part in the decision (déport)."
+    },
+    {
+     "ref": "Code pénal, art. 432-12",
+     "text": "Prise illégale d'intérêts — taking or keeping an interest in an operation one is in charge of supervising."
+    },
+    {
+     "ref": "Loi n° 2019-828 du 6 août 2019",
+     "text": "Ethics control of officials appointed after a private-sector activity during the previous three years."
+    }
+   ],
+   "next": [
+    "Ask whether the signatory recused, informed a superior, or received an ethics opinion on appointment.",
+    "Check any continuing tie with the firm (pension, deferred compensation, alumni arrangements).",
+    "Identify who else validated the order and the decision memo."
+   ],
+   "pattern_label": "Revolving door",
+   "id": "F4",
+   "docs": [
+    "D02",
+    "D08",
+    "D11",
+    "D16"
+   ],
+   "precedents": [
+    {
+     "id": "S-104",
+     "title": "Deputy director signs an order to her former firm",
+     "citation": "Scenario S-104",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2022,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Order upheld but signature delegation withdrawn; internal ethics procedure strengthened.",
+     "lesson": "An ethics reservation on appointment that is not followed is the decisive document.",
+     "patterns": [
+      "revolving_door",
+      "appearance_of_bias"
+     ],
+     "score": 0.874,
+     "why": {
+      "patterns": [
+       "Revolving door",
+       "Appearance of bias"
+      ],
+      "signals": [
+       "former employer",
+       "no recusal"
+      ],
+      "terms": [
+       "awarded",
+       "consulting",
+       "employer",
+       "firm",
+       "former",
+       "months",
+       "order",
+       "recusal"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "S-107",
+     "title": "Evaluation committee member formerly employed by a bidder",
+     "citation": "Scenario S-107",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "EU",
+     "year": 2020,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Award annulled; programme authority required new evaluation.",
+     "lesson": "The obligation covers people who score bids, not only those who sign.",
+     "patterns": [
+      "revolving_door",
+      "appearance_of_bias"
+     ],
+     "score": 0.788,
+     "why": {
+      "patterns": [
+       "Revolving door",
+       "Appearance of bias"
+      ],
+      "signals": [
+       "former employee of bidder"
+      ],
+      "terms": [
+       "employee",
+       "former",
+       "months"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-007",
+     "title": "Applicam — impartiality of the buyer's side",
+     "citation": "CE, 14 octobre 2015, Société Applicam, n° 390968",
+     "forum": "Conseil d'État",
+     "jurisdiction": "FR",
+     "year": 2015,
+     "kind": "court decision",
+     "provenance": "public_record",
+     "outcome": "The procedure was annulled for breach of the principle of impartiality, which covers the appearance of partiality.",
+     "lesson": "A recent move from the winning company to the buyer is enough to raise impartiality, without proof of favouritism.",
+     "patterns": [
+      "revolving_door",
+      "appearance_of_bias"
+     ],
+     "score": 0.679,
+     "why": {
+      "patterns": [
+       "Revolving door",
+       "Appearance of bias"
+      ],
+      "signals": [
+       "former employee of winner on buyer side",
+       "procurement decision"
+      ],
+      "terms": [
+       "company",
+       "contract",
+       "decision",
+       "employee",
+       "former"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This flag raises a **potential conflict of interest** due to Mathilde Rousseau’s prior employment at McKinsey & Company, the firm awarded the purchase order, within the 3-year window. The lack of a recusal record and her role in both signing and preparing the decision warrant immediate review, particularly in light of precedent S-107 (covering bid scorers) and the *Applicam* case, which establishes that a recent move alone can trigger impartiality concerns.",
+    "quotes": [
+     "Previous activity: McKinsey & Company, Paris — Engagement manager — 09/2014 to 09/2019",
+     "Signed for the Minister, by delegation: Mathilde Rousseau, Deputy Director, Vaccine and Health Products Policy",
+     "Prepared for signature by: Mathilde Rousseau, Deputy Director, Vaccine and Health Products Policy"
+    ],
+    "model": "ministral-14b-latest",
+    "verified": false
+   }
+  },
+  {
+   "rule": "COI-06",
+   "persons": [
+    "Raphaël Dumont"
+   ],
+   "companies": [],
+   "certainty": "documented",
+   "headline": "Under oath: “every consultant filed a declaration of interests” — the file says otherwise",
+   "summary": "On 18 Jan 2022, under oath, Raphaël Dumont stated that every consultant filed a declaration of interests. 9 consultants were assigned; the file holds 3 declarations.",
+   "aggravating": [
+    "The witness is on the team and filed no declaration."
+   ],
+   "window": [
+    "2021-01-04",
+    "2022-01-18"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Raphaël Dumont",
+      "kind": "person"
+     },
+     {
+      "id": "Sworn statement",
+      "kind": "doc"
+     },
+     {
+      "id": "Case file",
+      "kind": "doc"
+     }
+    ],
+    "links": [
+     {
+      "s": "Raphaël Dumont",
+      "t": "Sworn statement",
+      "label": "18 Jan 2022",
+      "doc": "D15"
+     },
+     {
+      "s": "Sworn statement",
+      "t": "Case file",
+      "label": "contradicted by",
+      "doc": "D16"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D15",
+     "page": 1,
+     "start": 279,
+     "end": 419,
+     "quote": "Mr Raphaël Dumont: Yes. Every consultant assigned to the vaccination mission filed a declaration of interests before the start of the order.",
+     "role": "statement",
+     "label": "Raphaël Dumont, under oath"
+    },
+    {
+     "doc": "D16",
+     "page": 1,
+     "start": 165,
+     "end": 281,
+     "quote": "The Directorate holds 3 declarations of interests for order BC-2020-117: Clara Vasseur, Thomas Le Gall, Inès Haddad.",
+     "role": "administration",
+     "label": "The administration holds 3 declarations"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 157,
+     "end": 222,
+     "quote": "Raphaël Dumont — Senior partner — 10 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Raphaël Dumont — no declaration in the file"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 223,
+     "end": 300,
+     "quote": "Julien Marchetti — Partner, engagement lead — 30 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Julien Marchetti — no declaration in the file"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 499,
+     "end": 560,
+     "quote": "Hugo Ferreira — Consultant — 100 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Hugo Ferreira — no declaration in the file"
+    }
+   ],
+   "title": "Statement under oath contradicted by the case file",
+   "pattern": "false_statement",
+   "patterns": [
+    "false_statement",
+    "missing_declaration",
+    "dual_role"
+   ],
+   "severity": "high",
+   "legal": [
+    {
+     "ref": "Ordonnance n° 58-1100 du 17 novembre 1958, art. 6",
+     "text": "Witnesses before a parliamentary inquiry committee testify under oath; false testimony is punishable."
+    }
+   ],
+   "next": [
+    "Quote the exact question and answer, then each contradicting page.",
+    "Establish what the witness knew or should have known (staffing role, time reports).",
+    "Leave the qualification of false testimony to the committee and the prosecutor."
+   ],
+   "pattern_label": "Statement contradicted",
+   "id": "F5",
+   "docs": [
+    "D09",
+    "D15",
+    "D16"
+   ],
+   "precedents": [
+    {
+     "id": "S-118",
+     "title": "Hearing answer on declarations contradicted by the ministry's own answer",
+     "citation": "Scenario S-118",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2022,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Committee hearing of the ministry; finding recorded in the report.",
+     "lesson": "The administration's own count is the cleanest contradiction of a blanket statement.",
+     "patterns": [
+      "false_statement",
+      "missing_declaration"
+     ],
+     "score": 0.78,
+     "why": {
+      "patterns": [
+       "Statement contradicted",
+       "Missing declaration"
+      ],
+      "signals": [
+       "statement under oath",
+       "administration answer"
+      ],
+      "terms": [
+       "administration",
+       "consultant",
+       "contradicted",
+       "declaration",
+       "declarations",
+       "every",
+       "filed",
+       "firm"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-004",
+     "title": "French Senate inquiry into consulting firms",
+     "citation": "Rapport « Un phénomène tentaculaire : l'influence croissante des cabinets de conseil sur les politiques publiques », mars 2022",
+     "forum": "Sénat — commission d'enquête",
+     "jurisdiction": "FR",
+     "year": 2022,
+     "kind": "parliamentary report",
+     "provenance": "public_record",
+     "outcome": "Report with recommendations on transparency and ethics of consulting missions; a referral to the prosecutor concerning a statement made under oath.",
+     "lesson": "Count declarations against the staffing list: the gap is a finding in itself.",
+     "patterns": [
+      "missing_declaration",
+      "dual_role",
+      "false_statement"
+     ],
+     "score": 0.752,
+     "why": {
+      "patterns": [
+       "Missing declaration",
+       "Dual mandate",
+       "Statement contradicted"
+      ],
+      "signals": [
+       "few declarations of interests",
+       "statement under oath"
+      ],
+      "terms": [
+       "consulting",
+       "declarations",
+       "inquiry",
+       "interests",
+       "oath",
+       "statement",
+       "under"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-014",
+     "title": "Testimony under oath before parliamentary inquiry committees",
+     "citation": "Ordonnance n° 58-1100 du 17 novembre 1958, art. 6",
+     "forum": "Ordonnance",
+     "jurisdiction": "FR",
+     "year": 1958,
+     "kind": "statute",
+     "provenance": "public_record",
+     "outcome": "Committees may refer statements to the prosecutor.",
+     "lesson": "Quote the exact question and answer; contradiction is for the reviewer, qualification for the prosecutor.",
+     "patterns": [
+      "false_statement"
+     ],
+     "score": 0.743,
+     "why": {
+      "patterns": [
+       "Statement contradicted"
+      ],
+      "signals": [
+       "statement under oath",
+       "contradicted by documents",
+       "inquiry committee"
+      ],
+      "terms": [
+       "contradicted",
+       "documents",
+       "false",
+       "inquiry",
+       "oath",
+       "parliamentary",
+       "statement",
+       "testimony"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This discrepancy between Raphaël Dumont’s sworn statement that *‘every consultant assigned to the vaccination mission filed a declaration of interests’* and the administration’s record of only 3 declarations out of 9 consultants raises a **potential** conflict worth reviewing. Focus first on cross-referencing the missing declarations (D09) with the staffing list to assess whether the gap is procedural or intentional, as precedents treat such inconsistencies as a standalone finding.",
+    "quotes": [],
+    "model": "ministral-14b-latest",
+    "verified": false
+   }
+  },
+  {
+   "rule": "COI-06",
+   "persons": [
+    "Raphaël Dumont"
+   ],
+   "companies": [
+    "Vaxellis SA"
+   ],
+   "certainty": "documented",
+   "headline": "Under oath: “no team member worked for a vaccine manufacturer during the mission” — the file says otherwise",
+   "summary": "On 18 Jan 2022, under oath, Raphaël Dumont stated that no team member worked for a vaccine manufacturer during the mission. Julien Marchetti and Clara Vasseur were staffed for Vaxellis SA during the mission.",
+   "aggravating": [],
+   "window": [
+    "2021-01-04",
+    "2022-01-18"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Raphaël Dumont",
+      "kind": "person"
+     },
+     {
+      "id": "Sworn statement",
+      "kind": "doc"
+     },
+     {
+      "id": "Case file",
+      "kind": "doc"
+     }
+    ],
+    "links": [
+     {
+      "s": "Raphaël Dumont",
+      "t": "Sworn statement",
+      "label": "18 Jan 2022",
+      "doc": "D15"
+     },
+     {
+      "s": "Sworn statement",
+      "t": "Case file",
+      "label": "contradicted by",
+      "doc": "D03"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D15",
+     "page": 1,
+     "start": 502,
+     "end": 596,
+     "quote": "Mr Raphaël Dumont: No member of the team worked for a vaccine manufacturer during the mission.",
+     "role": "statement",
+     "label": "Raphaël Dumont, under oath"
+    },
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 368,
+     "end": 445,
+     "quote": "Julien Marchetti — Partner, engagement lead — 20 % — 09/11/2020 to 31/03/2021",
+     "role": "private engagement",
+     "label": "Julien Marchetti staffed 20 % for Vaxellis SA"
+    },
+    {
+     "doc": "D13",
+     "page": 1,
+     "start": 175,
+     "end": 227,
+     "quote": "Julien Marchetti — 3 days — 01/02/2021 to 26/02/2021",
+     "role": "time recorded",
+     "label": "3 days on VX-2020-31"
+    },
+    {
+     "doc": "D03",
+     "page": 1,
+     "start": 446,
+     "end": 512,
+     "quote": "Clara Vasseur — Senior associate — 50 % — 09/11/2020 to 31/03/2021",
+     "role": "private engagement",
+     "label": "Clara Vasseur staffed 50 % for Vaxellis SA"
+    },
+    {
+     "doc": "D13",
+     "page": 1,
+     "start": 125,
+     "end": 174,
+     "quote": "Clara Vasseur — 9 days — 01/02/2021 to 26/02/2021",
+     "role": "time recorded",
+     "label": "9 days on VX-2020-31"
+    }
+   ],
+   "title": "Statement under oath contradicted by the case file",
+   "pattern": "false_statement",
+   "patterns": [
+    "false_statement",
+    "missing_declaration",
+    "dual_role"
+   ],
+   "severity": "high",
+   "legal": [
+    {
+     "ref": "Ordonnance n° 58-1100 du 17 novembre 1958, art. 6",
+     "text": "Witnesses before a parliamentary inquiry committee testify under oath; false testimony is punishable."
+    }
+   ],
+   "next": [
+    "Quote the exact question and answer, then each contradicting page.",
+    "Establish what the witness knew or should have known (staffing role, time reports).",
+    "Leave the qualification of false testimony to the committee and the prosecutor."
+   ],
+   "pattern_label": "Statement contradicted",
+   "id": "F6",
+   "docs": [
+    "D03",
+    "D13",
+    "D15"
+   ],
+   "precedents": [
+    {
+     "id": "S-106",
+     "title": "Partner's sworn answer contradicted by time reports",
+     "citation": "Scenario S-106",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2022,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Referral to the prosecutor by the committee.",
+     "lesson": "Time reports are the most precise evidence of concurrent work; quote the days.",
+     "patterns": [
+      "false_statement",
+      "dual_role"
+     ],
+     "score": 0.755,
+     "why": {
+      "patterns": [
+       "Statement contradicted",
+       "Dual mandate"
+      ],
+      "signals": [
+       "statement under oath"
+      ],
+      "terms": [
+       "contradicted",
+       "member",
+       "oath",
+       "parliamentary",
+       "statement",
+       "team",
+       "under",
+       "worked"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-004",
+     "title": "French Senate inquiry into consulting firms",
+     "citation": "Rapport « Un phénomène tentaculaire : l'influence croissante des cabinets de conseil sur les politiques publiques », mars 2022",
+     "forum": "Sénat — commission d'enquête",
+     "jurisdiction": "FR",
+     "year": 2022,
+     "kind": "parliamentary report",
+     "provenance": "public_record",
+     "outcome": "Report with recommendations on transparency and ethics of consulting missions; a referral to the prosecutor concerning a statement made under oath.",
+     "lesson": "Count declarations against the staffing list: the gap is a finding in itself.",
+     "patterns": [
+      "missing_declaration",
+      "dual_role",
+      "false_statement"
+     ],
+     "score": 0.751,
+     "why": {
+      "patterns": [
+       "Missing declaration",
+       "Dual mandate",
+       "Statement contradicted"
+      ],
+      "signals": [
+       "statement under oath"
+      ],
+      "terms": [
+       "consulting",
+       "inquiry",
+       "oath",
+       "statement",
+       "under"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-014",
+     "title": "Testimony under oath before parliamentary inquiry committees",
+     "citation": "Ordonnance n° 58-1100 du 17 novembre 1958, art. 6",
+     "forum": "Ordonnance",
+     "jurisdiction": "FR",
+     "year": 1958,
+     "kind": "statute",
+     "provenance": "public_record",
+     "outcome": "Committees may refer statements to the prosecutor.",
+     "lesson": "Quote the exact question and answer; contradiction is for the reviewer, qualification for the prosecutor.",
+     "patterns": [
+      "false_statement"
+     ],
+     "score": 0.74,
+     "why": {
+      "patterns": [
+       "Statement contradicted"
+      ],
+      "signals": [
+       "statement under oath",
+       "contradicted by documents",
+       "inquiry committee"
+      ],
+      "terms": [
+       "contradicted",
+       "documents",
+       "false",
+       "inquiry",
+       "oath",
+       "parliamentary",
+       "statement",
+       "testimony"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This flag raises a **potential conflict of interest** due to a direct contradiction between Raphaël Dumont’s sworn statement and documented evidence of team members’ engagements with a vaccine manufacturer. The time records and private engagements for Julien Marchetti and Clara Vasseur during the mission period (« *Julien Marchetti — 3 days — 01/02/2021 to 26/02/2021* », « *Clara Vasseur — 9 days — 01/02/2021 to 26/02/2021* ») undermine the sworn declaration (« *No member of the team worked for a vaccine manufacturer during the mission* »). Review the **time reports** (Scenario S-106) and cross-check the **staffing list** against declarations (Rapport 2022) to assess the scope of the discrepancy.",
+    "quotes": [
+     "No member of the team worked for a vaccine manufacturer during the mission.",
+     "Julien Marchetti — 3 days — 01/02/2021 to 26/02/2021",
+     "Clara Vasseur — 9 days — 01/02/2021 to 26/02/2021"
+    ],
+    "model": "ministral-14b-latest",
+    "verified": true
+   }
+  },
+  {
+   "rule": "COI-03",
+   "persons": [
+    "Raphaël Dumont",
+    "Julien Marchetti",
+    "Hugo Ferreira",
+    "Léa Martin",
+    "Nadia Benali",
+    "Paul Girard"
+   ],
+   "companies": [],
+   "stats": {
+    "team": 9,
+    "declared": 3
+   },
+   "certainty": "documented",
+   "headline": "6 of 9 consultants on order BC-2020-117 have no declaration of interests",
+   "summary": "Art. 7.3 requires a declaration from each consultant before the order starts. 9 consultants are assigned to BC-2020-117; the file holds 3 declarations. Missing: Raphaël Dumont, Julien Marchetti, Hugo Ferreira, Léa Martin, Nadia Benali, Paul Girard.",
+   "aggravating": [
+    "Julien Marchetti is also staffed on a private engagement."
+   ],
+   "window": [
+    "2021-01-04",
+    "2021-06-30"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Order BC-2020-117",
+      "kind": "public"
+     },
+     {
+      "id": "9 consultants",
+      "kind": "person"
+     },
+     {
+      "id": "3 declarations",
+      "kind": "doc"
+     }
+    ],
+    "links": [
+     {
+      "s": "Order BC-2020-117",
+      "t": "9 consultants",
+      "label": "assigned",
+      "doc": "D09"
+     },
+     {
+      "s": "9 consultants",
+      "t": "3 declarations",
+      "label": "filed",
+      "doc": "D16"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D01",
+     "page": 2,
+     "start": 287,
+     "end": 418,
+     "quote": "7.3 Before the start of any order, each consultant assigned shall file a declaration of interests with the ordering administration.",
+     "role": "requirement",
+     "label": "Each consultant files a declaration before the order starts"
+    },
+    {
+     "doc": "D16",
+     "page": 1,
+     "start": 165,
+     "end": 281,
+     "quote": "The Directorate holds 3 declarations of interests for order BC-2020-117: Clara Vasseur, Thomas Le Gall, Inès Haddad.",
+     "role": "administration",
+     "label": "The administration holds 3 declarations"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 157,
+     "end": 222,
+     "quote": "Raphaël Dumont — Senior partner — 10 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Raphaël Dumont — no declaration in the file"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 223,
+     "end": 300,
+     "quote": "Julien Marchetti — Partner, engagement lead — 30 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Julien Marchetti — no declaration in the file"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 499,
+     "end": 560,
+     "quote": "Hugo Ferreira — Consultant — 100 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Hugo Ferreira — no declaration in the file"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 561,
+     "end": 625,
+     "quote": "Léa Martin — Business analyst — 100 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Léa Martin — no declaration in the file"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 626,
+     "end": 692,
+     "quote": "Nadia Benali — Business analyst — 100 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Nadia Benali — no declaration in the file"
+    },
+    {
+     "doc": "D09",
+     "page": 1,
+     "start": 693,
+     "end": 764,
+     "quote": "Paul Girard — Supply-chain specialist — 50 % — 04/01/2021 to 30/06/2021",
+     "role": "missing",
+     "label": "Paul Girard — no declaration in the file"
+    }
+   ],
+   "title": "Required declarations of interests missing from the file",
+   "pattern": "missing_declaration",
+   "patterns": [
+    "missing_declaration",
+    "undeclared_interest"
+   ],
+   "severity": "medium",
+   "legal": [
+    {
+     "ref": "Framework agreement DITP-2018-AC01, art. 7.3",
+     "text": "Each consultant assigned files a declaration of interests before the start of the order."
+    }
+   ],
+   "next": [
+    "Request the missing declarations from the firm and the administration, with their filing date.",
+    "Cross-check each missing person against the firm's other engagements over the same period."
+   ],
+   "pattern_label": "Missing declaration",
+   "id": "F7",
+   "docs": [
+    "D01",
+    "D09",
+    "D16"
+   ],
+   "precedents": [
+    {
+     "id": "S-114",
+     "title": "Declarations filed after the order started",
+     "citation": "Scenario S-114",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2021,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Contractual penalty applied to the firm.",
+     "lesson": "Check the date of each declaration against the start of the order, not only its existence.",
+     "patterns": [
+      "missing_declaration",
+      "undeclared_interest"
+     ],
+     "score": 0.934,
+     "why": {
+      "patterns": [
+       "Missing declaration",
+       "Undeclared / false declaration"
+      ],
+      "signals": [
+       "late declarations"
+      ],
+      "terms": [
+       "consultants",
+       "declarations",
+       "filed",
+       "interests",
+       "order"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "P-002",
+     "title": "McKinsey RTS — incomplete disclosure of connections in bankruptcy cases",
+     "citation": "McKinsey Recovery & Transformation Services — settlement with the US Trustee, February 2019",
+     "forum": "US Trustee Program (Department of Justice)",
+     "jurisdiction": "US",
+     "year": 2019,
+     "kind": "regulatory settlement",
+     "provenance": "public_record",
+     "outcome": "The firm agreed to pay USD 15 million and to make supplemental disclosures, without admission of wrongdoing.",
+     "lesson": "A declaration regime fails silently when declarations are filed but incomplete: compare each declaration with the adviser's actual engagements.",
+     "patterns": [
+      "undeclared_interest",
+      "missing_declaration"
+     ],
+     "score": 0.801,
+     "why": {
+      "patterns": [
+       "Undeclared / false declaration",
+       "Missing declaration"
+      ],
+      "signals": [
+       "disclosure filed but incomplete"
+      ],
+      "terms": [
+       "filed"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "S-103",
+     "title": "Missing declarations on a regional transport study",
+     "citation": "Scenario S-103",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2019,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Payment suspended until declarations were filed; one consultant removed from the team.",
+     "lesson": "Missing declarations matter most for the people who also have private engagements in the sector.",
+     "patterns": [
+      "missing_declaration"
+     ],
+     "score": 0.736,
+     "why": {
+      "patterns": [
+       "Missing declaration"
+      ],
+      "signals": [
+       "few declarations"
+      ],
+      "terms": [
+       "consultants",
+       "declarations",
+       "filed",
+       "interests",
+       "order"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This flag raises a **potential conflict of interest** due to a systemic non-compliance with Art. 7.3, which mandates declarations from *all* consultants before an order begins. Six of nine assigned consultants lack declarations, including key roles like the **Senior Partner (Raphaël Dumont)** and **engagement lead (Julien Marchetti)**—positions with high influence over the order’s direction. Review the **dates of the 3 existing declarations** (per S-114) to confirm they predate the order’s start, and cross-check whether the missing consultants have **private sector engagements** (per S-103) that could create undisclosed conflicts.",
+    "quotes": [],
+    "model": "ministral-14b-latest",
+    "verified": false
+   }
+  },
+  {
+   "rule": "COI-05",
+   "persons": [
+    "Thomas Le Gall"
+   ],
+   "companies": [
+    "LogiFroid SAS",
+    "Froidis Group"
+   ],
+   "certainty": "inferred",
+   "headline": "Thomas Le Gall declared a spouse at the group whose subsidiary was selected",
+   "summary": "Thomas Le Gall declared a spouse employed by Froidis Group. LogiFroid SAS, 100 % owned by Froidis Group, was selected as provider on the basis of a deliverable Thomas Le Gall prepared. The interest was declared but nothing in the file shows it was assessed or managed.",
+   "aggravating": [
+    "Declared — but kept on the workstream that selected the provider."
+   ],
+   "window": [
+    "2020-12-14",
+    "2021-01-26"
+   ],
+   "chain": {
+    "nodes": [
+     {
+      "id": "Thomas Le Gall",
+      "kind": "person"
+     },
+     {
+      "id": "Froidis Group",
+      "kind": "company"
+     },
+     {
+      "id": "LogiFroid SAS",
+      "kind": "company"
+     }
+    ],
+    "links": [
+     {
+      "s": "Thomas Le Gall",
+      "t": "Froidis Group",
+      "label": "spouse employed",
+      "doc": "D06"
+     },
+     {
+      "s": "Froidis Group",
+      "t": "LogiFroid SAS",
+      "label": "owns 100 %",
+      "doc": "D12"
+     },
+     {
+      "s": "Thomas Le Gall",
+      "t": "LogiFroid SAS",
+      "label": "prepared its selection",
+      "doc": "D11"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "doc": "D06",
+     "page": 1,
+     "start": 369,
+     "end": 457,
+     "quote": "Q3. Interests of a close relative: spouse employed by Froidis Group as regional director",
+     "role": "declared tie",
+     "label": "Thomas Le Gall: spouse employed by Froidis Group as regional director"
+    },
+    {
+     "doc": "D12",
+     "page": 1,
+     "start": 109,
+     "end": 148,
+     "quote": "Sole shareholder: Froidis Group (100 %)",
+     "role": "ownership",
+     "label": "LogiFroid SAS is 100 % owned by Froidis Group"
+    },
+    {
+     "doc": "D11",
+     "page": 1,
+     "start": 147,
+     "end": 255,
+     "quote": "Selected provider: LogiFroid SAS, on the basis of deliverable L3 prepared by Thomas Le Gall and Paul Girard.",
+     "role": "benefit",
+     "label": "LogiFroid SAS selected on the basis of work by Thomas Le Gall"
+    },
+    {
+     "doc": "D16",
+     "page": 1,
+     "start": 282,
+     "end": 385,
+     "quote": "No written consent under article 7.4 of the framework agreement was requested or issued for this order.",
+     "role": "no consent",
+     "label": "Declared interest not followed by any decision"
+    }
+   ],
+   "title": "Close relative tied to the company that benefited from the recommendation",
+   "pattern": "family_tie",
+   "patterns": [
+    "family_tie",
+    "beneficiary_link"
+   ],
+   "severity": "medium",
+   "legal": [
+    {
+     "ref": "Framework agreement DITP-2018-AC01, art. 7.2",
+     "text": "Duty to report any actual or potential conflict affecting a member of the team."
+    },
+    {
+     "ref": "Code de la commande publique, art. L2141-10",
+     "text": "Direct or indirect interest of a person able to influence the outcome."
+    }
+   ],
+   "next": [
+    "Confirm the relative's position and remuneration at the group level.",
+    "Check whether the declared interest was assessed and whether the consultant was kept on the selection workstream."
+   ],
+   "pattern_label": "Relative's interest",
+   "id": "F8",
+   "docs": [
+    "D06",
+    "D11",
+    "D12",
+    "D16"
+   ],
+   "precedents": [
+    {
+     "id": "S-105",
+     "title": "Spouse at the parent company of the selected supplier",
+     "citation": "Scenario S-105",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2021,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Selection re-examined; no annulment because two independent evaluators had reached the same ranking.",
+     "lesson": "A declared interest is not a managed interest: look for the decision taken on the declaration.",
+     "patterns": [
+      "family_tie",
+      "beneficiary_link"
+     ],
+     "score": 0.943,
+     "why": {
+      "patterns": [
+       "Relative's interest",
+       "Tie to the beneficiary"
+      ],
+      "signals": [
+       "declared relative interest",
+       "subsidiary selected"
+      ],
+      "terms": [
+       "but",
+       "company",
+       "consultant",
+       "declared",
+       "group",
+       "interest",
+       "parent",
+       "provider"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "S-119",
+     "title": "University procurement — professor's spin-off selected",
+     "citation": "Scenario S-119",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "IT",
+     "year": 2021,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "Contract terminated; professor sanctioned.",
+     "lesson": "Indirect holdings through a partner are interests of the person.",
+     "patterns": [
+      "family_tie",
+      "beneficiary_link"
+     ],
+     "score": 0.643,
+     "why": {
+      "patterns": [
+       "Relative's interest",
+       "Tie to the beneficiary"
+      ],
+      "signals": [],
+      "terms": [
+       "selected"
+      ],
+      "semantic": true
+     }
+    },
+    {
+     "id": "S-122",
+     "title": "Consultant cleared — declared and removed from the workstream",
+     "citation": "Scenario S-122",
+     "forum": "Simulated audit corpus",
+     "jurisdiction": "FR",
+     "year": 2023,
+     "kind": "training scenario",
+     "provenance": "synthetic",
+     "outcome": "No conflict: interest declared and managed.",
+     "lesson": "A minute recording the management of the interest is what closes the flag.",
+     "patterns": [
+      "family_tie"
+     ],
+     "score": 0.536,
+     "why": {
+      "patterns": [
+       "Relative's interest"
+      ],
+      "signals": [
+       "declared relative interest",
+       "removed from workstream"
+      ],
+      "terms": [
+       "consultant",
+       "declared",
+       "interest",
+       "workstream"
+      ],
+      "semantic": true
+     }
+    }
+   ],
+   "note": {
+    "text": "This flag raises a **potential conflict of interest** due to a close relative’s employment with the beneficiary company and the lack of documented assessment or management of the declared interest. Review the **decision on the declaration** (if any) and the **absence of written consent** under article 7.4, as these are critical to determining whether the interest was properly addressed.",
+    "quotes": [
+     "Q3. Interests of a close relative: spouse employed by Froidis Group as regional director",
+     "Selected provider: LogiFroid SAS, on the basis of deliverable L3 prepared by Thomas Le Gall and Paul Girard.",
+     "No written consent under article 7.4 of the framework agreement was requested or issued for this order."
+    ],
+    "model": "ministral-14b-latest",
+    "verified": true
+   }
+  }
+ ],
+ "cleared": [
+  {
+   "rule": "COI-01",
+   "person": "Raphaël Dumont",
+   "text": "Raphaël Dumont: no engagement for an affected company found over the period.",
+   "src": {
+    "doc": "D09",
+    "page": 1,
+    "start": 157,
+    "end": 222,
+    "quote": "Raphaël Dumont — Senior partner — 10 % — 04/01/2021 to 30/06/2021"
+   }
+  },
+  {
+   "rule": "COI-01",
+   "person": "Thomas Le Gall",
+   "text": "Thomas Le Gall: no engagement for an affected company found over the period.",
+   "src": {
+    "doc": "D09",
+    "page": 1,
+    "start": 301,
+    "end": 371,
+    "quote": "Thomas Le Gall — Engagement manager — 100 % — 04/01/2021 to 30/06/2021"
+   }
+  },
+  {
+   "rule": "COI-01",
+   "person": "Inès Haddad",
+   "text": "Inès Haddad: no engagement for an affected company found over the period.",
+   "src": {
+    "doc": "D09",
+    "page": 1,
+    "start": 439,
+    "end": 498,
+    "quote": "Inès Haddad — Consultant — 100 % — 04/01/2021 to 30/06/2021"
+   }
+  },
+  {
+   "rule": "COI-01",
+   "person": "Hugo Ferreira",
+   "text": "Hugo Ferreira: no engagement for an affected company found over the period.",
+   "src": {
+    "doc": "D09",
+    "page": 1,
+    "start": 499,
+    "end": 560,
+    "quote": "Hugo Ferreira — Consultant — 100 % — 04/01/2021 to 30/06/2021"
+   }
+  },
+  {
+   "rule": "COI-01",
+   "person": "Léa Martin",
+   "text": "Léa Martin: no engagement for an affected company found over the period.",
+   "src": {
+    "doc": "D09",
+    "page": 1,
+    "start": 561,
+    "end": 625,
+    "quote": "Léa Martin — Business analyst — 100 % — 04/01/2021 to 30/06/2021"
+   }
+  },
+  {
+   "rule": "COI-01",
+   "person": "Nadia Benali",
+   "text": "Nadia Benali: no engagement for an affected company found over the period.",
+   "src": {
+    "doc": "D09",
+    "page": 1,
+    "start": 626,
+    "end": 692,
+    "quote": "Nadia Benali — Business analyst — 100 % — 04/01/2021 to 30/06/2021"
+   }
+  },
+  {
+   "rule": "COI-01",
+   "person": "Paul Girard",
+   "text": "Paul Girard: no engagement for an affected company found over the period.",
+   "src": {
+    "doc": "D09",
+    "page": 1,
+    "start": 693,
+    "end": 764,
+    "quote": "Paul Girard — Supply-chain specialist — 50 % — 04/01/2021 to 30/06/2021"
+   }
+  },
+  {
+   "rule": "COI-02",
+   "person": "Thomas Le Gall",
+   "text": "Thomas Le Gall: declaration consistent with the engagements found in the file.",
+   "src": {
+    "doc": "D06",
+    "page": 1,
+    "start": 71,
+    "end": 96,
+    "quote": "Declarant: Thomas Le Gall"
+   }
+  },
+  {
+   "rule": "COI-02",
+   "person": "Inès Haddad",
+   "text": "Inès Haddad: declaration consistent with the engagements found in the file.",
+   "src": {
+    "doc": "D07",
+    "page": 1,
+    "start": 71,
+    "end": 93,
+    "quote": "Declarant: Inès Haddad"
+   }
+  },
+  {
+   "rule": "COI-02",
+   "person": "Inès Haddad",
+   "text": "Inès Haddad: previous activity at Medilab SA ended 30 Jun 2015 — not an affected company, outside the 12-month window.",
+   "src": {
+    "doc": "D07",
+    "page": 1,
+    "start": 407,
+    "end": 467,
+    "quote": "Previous activity: Medilab SA — Analyst — 01/2013 to 06/2015"
+   }
+  }
+ ],
+ "entities": {
+  "people": [
+   {
+    "name": "Raphaël Dumont",
+    "roles": [
+     "Senior partner"
+    ],
+    "mentions": 1,
+    "docs": [
+     "D09"
+    ],
+    "flags": [
+     "F5",
+     "F6",
+     "F7"
+    ]
+   },
+   {
+    "name": "Clara Vasseur",
+    "roles": [
+     "Senior associate"
+    ],
+    "mentions": 3,
+    "docs": [
+     "D03",
+     "D05",
+     "D09"
+    ],
+    "flags": [
+     "F2",
+     "F3"
+    ]
+   },
+   {
+    "name": "Julien Marchetti",
+    "roles": [
+     "Partner, engagement lead"
+    ],
+    "mentions": 2,
+    "docs": [
+     "D03",
+     "D09"
+    ],
+    "flags": [
+     "F1",
+     "F7"
+    ]
+   },
+   {
+    "name": "Hugo Ferreira",
+    "roles": [
+     "Consultant"
+    ],
+    "mentions": 1,
+    "docs": [
+     "D09"
+    ],
+    "flags": [
+     "F7"
+    ]
+   },
+   {
+    "name": "Léa Martin",
+    "roles": [
+     "Business analyst"
+    ],
+    "mentions": 1,
+    "docs": [
+     "D09"
+    ],
+    "flags": [
+     "F7"
+    ]
+   },
+   {
+    "name": "Mathilde Rousseau",
+    "roles": [
+     "Deputy Director, Vaccine and Health Products Policy"
+    ],
+    "mentions": 2,
+    "docs": [
+     "D02",
+     "D08"
+    ],
+    "flags": [
+     "F4"
+    ]
+   },
+   {
+    "name": "Nadia Benali",
+    "roles": [
+     "Business analyst"
+    ],
+    "mentions": 1,
+    "docs": [
+     "D09"
+    ],
+    "flags": [
+     "F7"
+    ]
+   },
+   {
+    "name": "Paul Girard",
+    "roles": [
+     "Supply-chain specialist"
+    ],
+    "mentions": 1,
+    "docs": [
+     "D09"
+    ],
+    "flags": [
+     "F7"
+    ]
+   },
+   {
+    "name": "Thomas Le Gall",
+    "roles": [
+     "Engagement manager"
+    ],
+    "mentions": 2,
+    "docs": [
+     "D06",
+     "D09"
+    ],
+    "flags": [
+     "F8"
+    ]
+   },
+   {
+    "name": "Benoît Lacroix",
+    "roles": [
+     "Consultant"
+    ],
+    "mentions": 1,
+    "docs": [
+     "D03"
+    ],
+    "flags": []
+   },
+   {
+    "name": "Inès Haddad",
+    "roles": [
+     "Consultant"
+    ],
+    "mentions": 2,
+    "docs": [
+     "D07",
+     "D09"
+    ],
+    "flags": []
+   }
+  ],
+  "companies": [
+   {
+    "name": "Vaxellis SA",
+    "mentions": 2,
+    "docs": [
+     "D03",
+     "D04"
+    ],
+    "flags": [
+     "F1",
+     "F2",
+     "F3",
+     "F6"
+    ]
+   },
+   {
+    "name": "LogiFroid SAS",
+    "mentions": 1,
+    "docs": [
+     "D04"
+    ],
+    "flags": [
+     "F8"
+    ]
+   },
+   {
+    "name": "Ministry of Solidarity and Health",
+    "mentions": 1,
+    "docs": [
+     "D09"
+    ],
+    "flags": []
+   },
+   {
+    "name": "Nordvac AG",
+    "mentions": 1,
+    "docs": [
+     "D04"
+    ],
+    "flags": []
+   },
+   {
+    "name": "TransMed Logistique",
+    "mentions": 1,
+    "docs": [
+     "D04"
+    ],
+    "flags": []
+   }
+  ]
+ },
+ "stats": {
+  "documents": 17,
+  "pages": 18,
+  "facts": 41,
+  "people": 11,
+  "companies": 5,
+  "cross_references": 48,
+  "flags": 8,
+  "high": 6,
+  "medium": 2,
+  "cleared": 10,
+  "rules": 6,
+  "precedents": 46,
+  "ms": 159
+ },
+ "engine": {
+  "extraction": "line readers + Mistral reader for unknown layouts",
+  "precedents": "sqlite-fts5 bm25 + pattern overlap + mistral-embed",
+  "notes": "mistral"
+ }
+}

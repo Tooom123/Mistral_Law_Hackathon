@@ -18,6 +18,11 @@ def main() -> None:
     s.add_argument("--reload", action="store_true")
     dm = sub.add_parser("demo", help="Generate and analyse a synthetic demo case file")
     dm.add_argument("--case", default="beckham", choices=["beckham", "mathurins"])
+    co = sub.add_parser("coi", help="Conflict-of-interest audit of a case file (default: the McKinsey case)")
+    co.add_argument("--case", default="mckinsey")
+    co.add_argument("--llm", action="store_true", help="add Mistral reviewer notes (needs MISTRAL_API_KEY)")
+    co.add_argument("--export", type=Path, help="write the audit JSON (the front end's offline snapshot)")
+    co.add_argument("--memo", help="print the review memo of one flag, e.g. F1")
     sub.add_parser("doctor", help="Check which engines work with the keys in .env (one tiny call per Mistral path)")
     b = sub.add_parser("bench", help="NullityBench-FR: N synthetic case files, recall/precision")
     b.add_argument("--n", type=int, default=10)
@@ -48,6 +53,30 @@ def main() -> None:
         for c in sorted((c for c in checks if c.rank > 0), key=lambda c: -c.rank):
             print(f"{c.id}  {c.nullity_id:7} {c.status:16} {c.certainty:13} p.{','.join(str(s.page) for s in c.sources):8} "
                   f"{len(c.affected):2} affected  {c.statement_fr}")
+    elif a.cmd == "coi":
+        from casebreak.coi.audit import memo, run_audit
+
+        res = run_audit(a.case, llm=a.llm)
+        if a.memo:
+            print(memo(res, a.memo))
+            return
+        st = res["stats"]
+        print(f"{res['case']['title']} — {st['documents']} documents, {st['pages']} pages, {st['facts']} facts, "
+              f"{st['cross_references']} cross-references, {st['ms']} ms")
+        for f in res["flags"]:
+            pages = ", ".join(sorted({f"{e['doc']} p.{e['page']}" for e in f["evidence"]}))
+            print(f"{f['id']:3} {f['rule']} {f['severity']:6} {f['certainty']:11} {f['headline']}\n"
+                  f"    → {pages}\n    ≈ " + "; ".join(p["citation"] for p in f["precedents"]))
+        print(f"cleared: {st['cleared']} checks")
+        if a.export:
+            a.export.parent.mkdir(parents=True, exist_ok=True)
+            a.export.write_text(json.dumps(res, ensure_ascii=False, indent=1))
+            from casebreak.coi import precedents as P
+
+            db = a.export.with_name("precedents.json")
+            db.write_text(json.dumps({"stats": P.stats(), "patterns": P.PATTERNS, "results": P.load()},
+                                     ensure_ascii=False, indent=1))
+            print(f"written {a.export} and {db}")
     elif a.cmd == "doctor":
         _doctor()
     elif a.cmd == "bench":

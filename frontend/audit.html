@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BREACH — Conflict audit</title>
+  <meta name="description" content="Conflict-of-interest audit: timeline of the case file, flags pointing to the exact lines, comparable past cases.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23FFAF01' d='M0 0h3v1H0zM4 0h2v1H4z'/%3E%3Cpath fill='%23FF8204' d='M0 1h2v1H0zM3 1h3v1H3z'/%3E%3Cpath fill='%23FA500F' d='M0 2h3v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h3v1H3z'/%3E%3Cpath fill='%23E61300' d='M0 4h3v1H0zM4 4h2v1H4z'/%3E%3Cpath fill='%23C4001D' d='M0 5h2v1H0zM3 5h3v1H3z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="audit/audit.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 6 6" shape-rendering="crispEdges">
+      <path fill="#FFAF01" d="M0 0h3v1H0zM4 0h2v1H4z"/><path fill="#FF8204" d="M0 1h2v1H0zM3 1h3v1H3z"/>
+      <path fill="#FA500F" d="M0 2h3v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h3v1H3z"/><path fill="#E61300" d="M0 4h3v1H0zM4 4h2v1H4z"/>
+      <path fill="#C4001D" d="M0 5h2v1H0zM3 5h3v1H3z"/>
+    </symbol>
+  </svg>
+
+  <!-- ============ INTRO: the audit running ============ -->
+  <div class="intro" id="intro" hidden>
+    <div class="intro__box">
+      <p class="intro__eyebrow mono"><span class="rec"></span> Conflict audit</p>
+      <h1 class="intro__title" id="intro-title">Reading the case file</h1>
+      <ol class="intro__steps" id="intro-steps"></ol>
+      <button class="link intro__skip" id="intro-skip" type="button">Skip →</button>
+    </div>
+  </div>
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="top">
+    <a class="brand" href="index.html" title="Home"><svg class="brand__mark"><use href="#mark"/></svg><span>BREACH</span></a>
+    <div class="top__case">
+      <span class="mono top__eyebrow">Case file · conflict-of-interest audit</span>
+      <span class="top__title" id="case-title">—</span>
+    </div>
+    <nav class="tabs" aria-label="Views">
+      <a href="#timeline" data-view="timeline" class="tab is-on">Timeline</a>
+      <a href="#flags" data-view="flags" class="tab">Where to look <b id="tab-flags"></b></a>
+      <a href="#precedents" data-view="precedents" class="tab">Precedents <b id="tab-prec"></b></a>
+    </nav>
+    <div class="top__tools">
+      <span class="engine mono" id="engine" title="Engines used for this audit"></span>
+    </div>
+  </header>
+
+  <!-- ============ SUMMARY STRIP ============ -->
+  <section class="strip" id="strip" aria-label="Audit summary"></section>
+
+  <main class="main">
+    <!-- ============ TIMELINE ============ -->
+    <section class="panel tl" id="view-timeline" aria-label="Timeline">
+      <div class="tl__bar">
+        <div class="tl__title">
+          <h2>Timeline</h2>
+          <p class="muted" id="tl-hint">Click a point to open the document. Select a flag to see where it sits in time.</p>
+        </div>
+        <div class="tl__tools">
+          <label class="switch"><input type="checkbox" id="tl-flagged"><span></span>Flagged only</label>
+          <label class="switch"><input type="checkbox" id="tl-people" checked><span></span>People</label>
+          <div class="zoom" role="group" aria-label="Zoom">
+            <button type="button" id="zoom-out" title="Zoom out">−</button>
+            <button type="button" id="zoom-fit" title="Fit">Fit</button>
+            <button type="button" id="zoom-crisis" title="Zoom on the mission">Mission</button>
+            <button type="button" id="zoom-in" title="Zoom in">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="tl__legend mono" id="tl-legend"></div>
+      <div class="tl__canvas" id="tl-canvas"></div>
+      <div class="tl__flagbar" id="tl-flagbar" hidden></div>
+    </section>
+
+    <!-- ============ FLAGS + DETAIL ============ -->
+    <section class="work" id="view-flags">
+      <aside class="panel flags" aria-label="Flags">
+        <div class="flags__head">
+          <h2>Where to look</h2>
+          <p class="muted">Potential conflicts of interest, ranked. Each one points to the lines to read.</p>
+        </div>
+        <ol class="flags__list" id="flag-list"></ol>
+        <details class="cleared" id="cleared">
+          <summary><span id="cleared-n">0</span> checks cleared</summary>
+          <ul id="cleared-list"></ul>
+        </details>
+      </aside>
+      <article class="panel detail" id="detail" aria-live="polite">
+        <div class="empty">
+          <p class="mono">Select a flag</p>
+          <p class="muted">The chain, the exact lines, comparable past cases and what to check next.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============ PRECEDENTS ============ -->
+    <section class="panel prec" id="view-precedents" aria-label="Precedent database" hidden>
+      <div class="prec__head">
+        <div>
+          <h2>Precedent database</h2>
+          <p class="muted" id="prec-sub">Past conflict-of-interest cases the engine compares each flag with.</p>
+        </div>
+        <div class="prec__search">
+          <input type="search" id="prec-q" placeholder="Search: consultant staffed for a vaccine maker, revolving door…" autocomplete="off">
+        </div>
+      </div>
+      <div class="prec__filters" id="prec-filters"></div>
+      <div class="prec__stats" id="prec-stats"></div>
+      <ol class="prec__list" id="prec-list"></ol>
+    </section>
+  </main>
+
+  <!-- ============ DOCUMENT DRAWER ============ -->
+  <aside class="drawer" id="drawer" aria-label="Document" hidden>
+    <header class="drawer__head">
+      <div class="drawer__meta">
+        <span class="mono" id="doc-ref">—</span>
+        <h3 id="doc-title">—</h3>
+        <span class="muted" id="doc-sub"></span>
+      </div>
+      <div class="drawer__nav">
+        <button type="button" id="doc-prev" title="Previous document in time">←</button>
+        <button type="button" id="doc-next" title="Next document in time">→</button>
+        <button type="button" id="doc-close" title="Close (Esc)">✕</button>
+      </div>
+    </header>
+    <div class="drawer__flags" id="doc-flags"></div>
+    <div class="drawer__body" id="doc-body"></div>
+  </aside>
+
+  <div class="tip" id="tip" hidden></div>
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="audit/audit.js" type="module"></script>
+</body>
+</html>

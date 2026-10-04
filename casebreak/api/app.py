@@ -384,6 +384,65 @@ def export_benchmark() -> Response:
                     headers={"Content-Disposition": 'attachment; filename="NullityBench-FR.zip"'})
 
 
+# ------------------------------------------------------------------ conflict-of-interest audit
+
+_coi_cache: dict[tuple[str, bool], dict] = {}
+
+
+def _coi(case: str, llm: bool) -> dict:
+    from casebreak.coi import audit as coi_audit
+    from casebreak.coi.casefile import CASES as COI_CASES
+
+    if case not in COI_CASES:
+        _404("case")
+    key = (case, llm)
+    if key not in _coi_cache:
+        _coi_cache[key] = coi_audit.run_audit(case, llm=llm)
+    return _coi_cache[key]
+
+
+@app.get("/api/coi/cases")
+def coi_cases() -> list[dict]:
+    from casebreak.coi.casefile import CASES as COI_CASES
+
+    return [{"id": k, "title": (c := f()).title, "subtitle": c.subtitle, "documents": len(c.docs)}
+            for k, f in COI_CASES.items()]
+
+
+@app.get("/api/coi/cases/{case}")
+def coi_case(case: str, llm: bool = False) -> dict:
+    """Full audit: documents with highlighted spans, timeline periods, flags with evidence and precedents."""
+    return _coi(case, llm)
+
+
+@app.get("/api/coi/cases/{case}/flags/{fid}/memo")
+def coi_memo(case: str, fid: str) -> PlainTextResponse:
+    from casebreak.coi.audit import memo
+
+    try:
+        return PlainTextResponse(memo(_coi(case, False), fid), media_type="text/markdown; charset=utf-8")
+    except KeyError:
+        _404("flag")
+
+
+@app.get("/api/coi/precedents")
+def coi_precedents(q: str = "", pattern: list[str] = Query(default=[]), provenance: str | None = None,
+                   k: int = Query(10, ge=1, le=100)) -> dict:
+    from casebreak.coi import precedents as P
+
+    results = P.search(q, pattern, k=k, provenance=provenance) if (q or pattern) else \
+        [p for p in P.load() if not provenance or p["provenance"] == provenance][:k]
+    return {"stats": P.stats(), "patterns": P.PATTERNS, "results": results}
+
+
+@app.get("/api/coi/precedents/{pid}")
+def coi_precedent(pid: str) -> dict:
+    from casebreak.coi import precedents as P
+
+    p = next((x for x in P.load() if x["id"] == pid), None)
+    return p or _404("precedent")
+
+
 # ------------------------------------------------------------------ front
 
 # Compatibility with the landing page's first contract (POST /api/dossiers).

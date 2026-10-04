@@ -183,7 +183,7 @@
   const DEMO_FAKE = { docs: 7342, pages: 48215, bytes: 3.1 * 1024 ** 3 };
   const DEMO_SAMPLE = [
     ["pdf", "Hearing transcript — session 14.pdf", 212, 9.4e6],
-    ["pdf", "Contract MC-2019-0381.pdf", 64, 3.1e6],
+    ["pdf", "Purchase order BC-2020-117.pdf", 64, 3.1e6],
     ["pdf", "Declaration of interests — scan.pdf", 6, 1.2e6],
     ["img", "Meeting notes — photo.jpg", 1, 2.4e6],
   ];
@@ -326,7 +326,7 @@
   });
 
   // synthetic case file (generated server-side, CONTEXT.md §8): straight to the war room
-  $("#demo").addEventListener("click", () => { location.href = "app.html?demo"; });
+  $("#demo").addEventListener("click", () => { location.href = "audit.html?intro"; });
 
   /* ================================================================
      3. Pipeline
@@ -409,7 +409,7 @@
 
   $("#demo-mode").addEventListener("change", e => setDemoMode(e.target.checked));
   $("#analyze").addEventListener("click", () => {
-    if (demoMode) { location.href = "app.html?demo"; return; }   // simulated case file → built-in synthetic case
+    if (demoMode) { location.href = "audit.html?intro"; return; }   // simulated case file → the McKinsey case
     startPipeline();
   });
   $("#reset").addEventListener("click", () => {

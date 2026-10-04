@@ -1,151 +1,165 @@
-# BREACH (code name CASEBREAK)
+# BREACH
 
-> Find the procedural flaw before the deadline does — with the page number.
+> **Don't summarize the case. Audit it.**
+> BREACH reads thousands of documents, rebuilds who did what and when, and tells the lawyer *exactly which lines to read* to find a conflict of interest — with the page, the span, the chain of reasoning and the past cases that look like it.
 
-A French criminal case file becomes **one graph**: every act is a node placed in **time × category**. The
-conditions of the law are checked **on the graph by a generic rules engine** (law in force at the date of the act),
-each possible nullity comes with its **page and verbatim quote**, and the **domino effect** shows what falls with a
-defective act. Architecture: `ARCHITECTURE.md` · law: `CONTEXT.md`.
+Conflicts of interest are never written in one document. A consultant's name sits in a staffing annex; the company she also works for sits in an engagement letter three folders away; the box she ticked "No" sits in a declaration filed a month later; the decision that benefited that company sits in a memo nobody connected to any of the above. Finding it means cross-referencing everything against everything, on a timeline. That is what BREACH does.
+
+```
+            ┌──────────────┐    ┌─────────────────┐    ┌──────────────────────┐    ┌───────────────────┐
+ PDFs ───▶ │  Read         │──▶│  Facts graph     │──▶│  Conflict detectors   │──▶│  Precedent engine  │──▶  Timeline · flags · memo
+ scans      │  Mistral OCR  │    │  people, firms,  │    │  cross-document rules │    │  SQLite FTS5 BM25  │
+ photos     │  + vision     │    │  roles, periods, │    │  6 patterns, each     │    │  + pattern overlap │
+            │  page + span  │    │  declarations,   │    │  with evidence spans, │    │  + mistral-embed   │
+            └──────────────┘    │  signatures …    │    │  chain, window,       │    │  46 past cases     │
+                                 └─────────────────┘    │  certainty level      │    └───────────────────┘
+                                                         └──────────────────────┘           │
+                                                                    │                        ▼
+                                                                    └──────────▶  Mistral reviewer note
+                                                                                  (quotes verified on the page)
+```
+
+---
+
+## The demo: consulting firms & the State — McKinsey
+
+The French Senate's 2022 inquiry into consulting firms showed how hard it is to answer a simple question: *did the people who advised the State also work for the companies affected by that advice?* The committee collected more than 7,000 documents and obtained only a handful of declarations of interests.
+
+The demo case file reconstructs that situation around the vaccination-campaign logistics mission: framework agreement, specifications, purchase order, staffing annex, declarations of interests, an engagement letter for a vaccine manufacturer, time reports, deliverables, a decision memo, a company-registry extract, a hearing under oath and the ministry's answer to the committee. *(Individuals, companies other than the firm, figures and relationships are fictional — every page says so in the viewer. The public chronology is real.)*
+
+**No document states a conflict.** BREACH finds eight, in about 20 ms, and clears ten other checks:
+
+| | Flag | Pattern | Cross-referenced documents |
+|---|---|---|---|
+| F1 | Partner advised the Ministry and Vaxellis SA at the same time, and reviewed the deliverable recommending Vaxellis | Dual mandate | engagement letter · staffing annex · specifications · time report · deliverable · ministry answer |
+| F2 | Same for a senior associate, who also authored that deliverable | Dual mandate | idem |
+| F3 | Her declaration of interests ticks "No" to *current health-sector engagement* — five weeks into the Vaxellis engagement | False declaration | declaration · engagement letter |
+| F4 | The deputy director who signed the €3.96 M order left the firm 14 months earlier; no recusal on record | Revolving door | appointment declaration · purchase order · decision memo · ministry answer |
+| F5 | Under oath: "every consultant filed a declaration" — 3 declarations for 9 consultants | Statement contradicted | hearing · staffing annex · ministry answer |
+| F6 | Under oath: "no team member worked for a vaccine manufacturer" — two did, with the days recorded | Statement contradicted | hearing · engagement letter · time report |
+| F7 | 6 of 9 consultants never filed the declaration art. 7.3 requires | Missing declaration | framework agreement · staffing annex · ministry answer |
+| F8 | A consultant declared a spouse at Froidis Group; Froidis's 100 % subsidiary was selected on his deliverable | Relative's interest *(inferred via ownership)* | declaration · registry extract · decision memo |
+
+…and **cleared**: a consultant whose former employer is not an affected company and whose employment ended six years earlier; seven team members with no private engagement in the sector; two declarations consistent with the rest of the file. Showing what was checked and cleared is half of an audit.
+
+Two counter-tests in `tests/test_coi.py` prove the engine reasons rather than recites: tick "Yes" on the declaration and F3 disappears; move the signatory's departure to 2016 and F4 becomes a cleared check.
+
+---
+
+## The interface (`/audit.html`)
+
+**Timeline first.** Lawyers think in chronology, so the case opens on it.
+
+- **Five document lanes** (procurement · firm ↔ private clients · declarations · deliverables & decisions · scrutiny) and **one lane per person involved**, with their engagements and employment drawn as bars.
+- **Overlaps light up**: where a private engagement and a public one run at the same time for the same person, the period is hatched red — the conflict is *visible* before reading a word.
+- **Adaptive time scale**: busy months get the space, quiet years are compressed; zoom (± / ctrl-scroll), pan, *Fit*, *Mission*.
+- Every point is a document: **click → the document opens** beside the timeline, scrolled to the exact lines, highlighted, with margin notes saying which flag cites them and why. ← / → walks the file in time order.
+- **Select a flag** → its time window appears, its documents pulse, the others fade, and a thread connects the evidence across lanes in the order a lawyer should read it.
+
+**Where to look.** Flags ranked by severity and certainty, each with:
+- the **chain** (person → company → public order) as a diagram whose edges open their source document;
+- **every line to read**, with its role in the reasoning (*declared*, *contradiction*, *time recorded*, *no recusal*…) — one click to the highlighted span;
+- **aggravating elements** (authored the recommendation, no consent under art. 7.4, time reports confirm the overlap);
+- a **Mistral reviewer note**, whose quotes are checked against the page before display;
+- **comparable past cases** from the precedent database, with a similarity score and *why* they match (shared patterns, shared signals);
+- the **framework** (contract clauses, Code de la commande publique, Directive 2014/24/EU, loi 2013-907, Code pénal…) and **next steps** as a checklist;
+- one-click **review memo** in Markdown.
+
+**Precedent database.** Searchable, filterable by pattern and provenance, with the retrieval engine in use.
+
+---
+
+## Architecture
+
+### 1 · Read — every fact keeps its page and its span
+`casebreak/coi/extract.py` turns pages into typed facts — assignments (person, engagement, role, allocation, period), engagements (client, sector), stakeholder lists, purchase orders and signatures, declarations (each answer and its checkbox), prior employment, authorship, recommendations, decisions, ownership, relatives' interests, sworn statements, administration attestations. Each fact carries a `Src(doc, page, start, end, quote)`: the character span on the page, which the viewer highlights and the tests verify (`text[start:end] == quote` for all 48 cross-references).
+
+Scans and photos go through the shared ingestion layer (`casebreak/ingest/ocr.py`): **Mistral OCR** (`mistral-ocr-latest`) with a vision-model fallback and Tesseract offline, page positions preserved.
+
+### 2 · Detect — cross-document conflict rules
+`casebreak/coi/rules.py` + `rules.yaml`. The code finds facts; the YAML says what they mean (title, pattern, severity, legal framing, next steps, retrieval query). Six detectors:
+
+| Rule | Pattern | Logic |
+|---|---|---|
+| COI-01 | dual_role | person staffed on a public order **and** on a private engagement for a company listed as affected, overlapping or within the contractual 12-month look-back; upgraded by time reports, authorship of a deliverable recommending that company, absence of consent |
+| COI-02 | undeclared_interest | declaration answers "No" while an engagement in the file contradicts it at the declaration date |
+| COI-03 | missing_declaration | contractual duty to declare × staffing annex × declarations held (and the administration's own count) |
+| COI-04 | revolving_door | signatory's prior employment at the awarded firm within 3 years of signing, recusal record absent |
+| COI-05 | family_tie | declared relative's employer → ownership chain → company selected on that person's work |
+| COI-06 | false_statement | sworn statements parsed into claims, tested against the flags above |
+
+Each flag ships with a **certainty level** — *documented* (every link is on a page), *inferred* (one link is derived, e.g. through an ownership chain), *needs reading* — never a fake percentage. Each flag also ships with its **time window**, a **chain graph** and the evidence **roles**, which is what drives the timeline and the viewer.
+
+### 3 · Compare — the precedent engine
+`casebreak/coi/precedents.py` · `data/precedents.json` → **SQLite** (`data/cache/precedents.sqlite`), rebuilt automatically when the JSON changes:
+
+- an **FTS5** full-text index (Porter stemming) over title, facts, outcome, signals and lesson;
+- a **pattern table** over a 10-pattern conflict taxonomy (dual mandate, false declaration, missing declaration, revolving door, relative's interest, tie to the beneficiary, preparatory role, statement contradicted, confidential information, appearance of bias);
+- **hybrid ranking**: `0.4 · cosine(mistral-embed) + 0.3 · BM25 + 0.3 · Jaccard(patterns)`; without a key, `0.55 · BM25 + 0.45 · Jaccard`. Embeddings are cached on disk.
+- every hit explains itself: shared patterns, shared signals, matched terms. Each flag is anchored on at least one public-record case.
+
+46 entries across 9 jurisdictions: *Bolkiah v KPMG*, *eVigilo* (CJEU), *Fabricom* (CJEU), *Applicam* (Conseil d'État), *Porter v Magill*, *Caperton*, the US Trustee settlement with McKinsey RTS, the House Oversight report on the FDA and opioid manufacturers, the PwC Australia affair, the French Senate report, Sarbanes-Oxley s.201, Directive 2014/24/EU art. 24, loi 2013-907, Code pénal 432-12/13, ordonnance 58-1100, loi 2019-828 — plus 30 simulated training scenarios (labelled as such) covering health, defence, energy, transport, local government, EU funds, universities and sport, including *negative* cases where the tie is cleared, so the engine learns what does **not** count.
+
+### 4 · Explain — Mistral, on a leash
+With `MISTRAL_API_KEY`, each flag receives a reviewer note written by Mistral from the evidence and the precedents only. Quotes in the note are checked against the evidence; the UI says whether they were verified. Answers are cached by content hash; a workspace that refuses a model falls back through `MISTRAL_FALLBACK_MODELS` automatically. The rules, not the model, decide what is flagged.
+
+### 5 · Serve
+FastAPI (`casebreak/api/app.py`):
+
+```
+GET  /api/coi/cases                         case files available
+GET  /api/coi/cases/{case}?llm=true         full audit: documents + spans, periods, flags, cleared checks, precedents
+GET  /api/coi/cases/{case}/flags/{id}/memo  review memo (Markdown)
+GET  /api/coi/precedents?q=&pattern=&provenance=&k=
+GET  /api/coi/precedents/{id}
+```
+
+The front end is dependency-light vanilla JS + **d3** (zoomable piecewise time scale). It also runs from a static snapshot (`frontend/audit/data/`) when no server is up — useful on a projector with bad Wi-Fi.
+
+---
 
 ## Run
 
 ```bash
 uv sync
-uv run casebreak serve          # http://localhost:8000 → landing ; http://localhost:8000/app.html?demo → live demo (Beckham 2018)
-uv run casebreak demo           # CLI: generate + analyse the demo case (--case mathurins for the French one)
-uv run casebreak doctor         # which engines work with the keys in .env (one tiny call per Mistral path)
-uv run casebreak bench --n 10   # NullityBench-FR: recall / precision vs ground truth
-uv run pytest                   # 40 tests, always offline (keys are blanked in tests/conftest.py)
+uv run casebreak serve                    # http://localhost:8000 → landing → "Open the McKinsey case"
+                                          # http://localhost:8000/audit.html?intro  (straight to the audit)
+uv run casebreak coi                      # the audit in the terminal: flags, pages, comparable cases
+uv run casebreak coi --memo F3            # one review memo
+uv run casebreak coi --llm --export frontend/audit/data/mckinsey.json   # refresh the snapshot with Mistral notes
+uv run casebreak doctor                   # which Mistral paths answer with the keys in .env
+uv run pytest                             # 55 tests, fully offline
 ```
 
-Without any key everything runs offline. With `MISTRAL_API_KEY` in `.env` (copy `.env.example`), the Mistral paths
-switch on — see below. Optional local tools: **Tesseract** (OCR of scans/photos without a key) and **Lean 4** (`elan`,
-kernel-checked proofs).
+Copy `.env.example` to `.env` and set `MISTRAL_API_KEY` to switch on OCR, the Mistral reader, `mistral-embed` retrieval and reviewer notes. Everything else runs offline.
 
-## Demo case: Beckham, speeding, 2018
+---
 
-The demo is the 2018 David Beckham speeding case, which ended with the charge dismissed on a procedural defect.
-Public facts (sources in `casebreak/synth/beckham.py`): a loaned Bentley recorded at 59 mph in a 40 mph zone on the A40,
-Paddington, on 23 Jan 2018; the notice of intended prosecution (NIP) was posted to the registered keeper, Bentley Motors
-Ltd, on 2 Feb and reached its post room on 7 Feb — day 15, one day outside the 14-day window of s.1 Road Traffic
-Offenders Act 1988; on 27 Sep 2018 the district judge dismissed the charge.
+## Guardrails
 
-- **The 8 documents are a synthetic reconstruction** written from those press reports (offence report, keeper enquiry,
-  NIP, post-room register, witness statement, driver identification, summons, court record). Times of day, reference
-  numbers and the witness are invented; every page says so in its footer. No original document, personal data or real
-  registration is reproduced.
-- **The file never states the outcome.** The engine finds it: rule `NIP-01` (data: `catalogue/NIP-01.yaml`) reads the
-  offence date, the posting date and the receipt recorded in the post-room register, computes day 10 vs day 15, flags it
-  `documented` with the source pages, and the domino lists the 3 acts that depend on the notice. `NIP-02` / `NIP-03`
-  (content of the notice, addressed to the registered keeper) are lawful decoys and stay green.
-- The rules are coded from press reports: `legal_todo` lists what a road-traffic lawyer must confirm (wording of s.1
-  RTOA 1988, deemed service by post). `tests/test_beckham_case.py` checks the finding, the cascade, the decoys, that the
-  outcome is not written in the file, and a counter-test (receipt on day 14 → no alert).
+- **No source, no flag.** Every flag points to spans that are verified to be on their page.
+- **"Potential conflict of interest — to review."** BREACH never qualifies; the lawyer does.
+- **No made-up confidence.** Three certainty levels, explained.
+- **No invented relationship.** Derived links (ownership chains) are labelled *inferred*.
+- **Negative space shown.** Every cleared check is listed with its source.
+- **Provenance everywhere.** Public-record precedents and simulated scenarios are badged differently; synthetic pages carry a footer notice.
 
-## Rules are data
+---
 
-There is **no Python function per rule**. Each rule is one YAML file in `casebreak/nullities/catalogue/`, evaluated by
-one generic engine (`casebreak/nullities/dsl.py`):
+## Also in the repo: procedural-defect engine
 
-```yaml
-id: GAV-02
-applies_to: [garde_a_vue]
-versions:
-  - label: art. 63 CPP
-    params: {initial_hours: 24, extension_hours: 24}
-    let:
-      start: t('custody_start')
-      end: t('custody_end')
-      ext: has('extension_authorized')
-      limit: params['initial_hours'] * 60 + (params['extension_hours'] * 60 if ext else 0)
-      total: minutes(start, end)
-    outcomes:                       # ordered, the first `when` that holds wins
-      - when: start is None
-        status: needs_reading
-        say: Custody start time unreadable or missing.
-        cite: [custody_start]
-      - when: total > limit and not ext
-        status: possible_nullity
-        say: "Custody of {name}: {dhm(start)} → {dhm(end)}, i.e. {dur(total)}. No extension authorisation in the file."
-        cite: [custody_start, custody_end]
-        proof: {kind: duration_gt, start: iso(start), end: iso(end), limit_minutes: limit}
-```
+BREACH started as CASEBREAK, an engine that finds procedural defects in criminal case files (`/app.html`): a generic **rules-as-data** DSL (YAML rules evaluated on a case graph, law-as-of-date versions, sandboxed expressions), rule-driven Mistral gap-filling, a 3D case graph, a domino effect showing which acts fall with a defective one, a defence/prosecution/presiding tribunal, Lean-checked deadline proofs and a synthetic benchmark (`casebreak bench`). The demo there is the 2018 Beckham speeding case (notice of intended prosecution received on day 15). Same philosophy — page-level evidence, the lawyer decides — applied to procedure instead of conflicts. See `ARCHITECTURE.md`.
 
-- **Attribute paths are generic over the graph**: `notified_at` (this act), `custody.custody_start` (its custody),
-  `rights_notification.lawyer_requested` (the act of that subtype for the same person),
-  `case:geolocation_authorization.date` (anywhere in the file), `custody.@start` (a node field).
-- Expressions are a **sandboxed** subset of Python (comparisons, arithmetic, `x if c else y`, whitelisted functions:
-  `minutes`, `clock`, `hhmm`, `has`, `missing`, `acts`, …). Every expression is compiled when the catalogue loads: a
-  broken rule fails at startup, not during an analysis.
-- Law-as-of-date: each rule has `versions` with `valid_from` / `valid_to`; the time-travel slider re-runs the engine.
-- Rules are indexed by act subtype, so cost grows with *acts × rules that apply to them*, not with the whole catalogue.
-- **Adding a rule = adding a YAML file.** If it reads a new attribute, describe it in
-  `casebreak/nullities/attributes.yaml` (`tests/test_rules_as_data.py` fails otherwise).
+---
 
-## Rule-driven extraction
+## Roadmap
 
-1. Offline readers (French patterns per document type, `graph/extract.py`) build the first graph.
-2. The engine runs once and **traces every attribute a rule needed and did not find** (absent, unreadable).
-3. For those gaps only, Mistral reads the act's own pages with the attribute's description from
-   `attributes.yaml` (`graph/fill.py`). An answer is kept only if its **quote is found on one of the act's pages**;
-   times are parsed from the quote by our French parser, never taken from the model's value.
-4. Filled attributes are `inferred`: an alert relying on them is never `documented`. The engine runs again.
+- **Scale-out ingestion**: stream thousands of PDFs through Mistral OCR in batches; incremental re-audit when a document is added.
+- **Entity resolution** across spellings, initials and corporate groups (registry APIs: INSEE Sirene, OpenCorporates, GLEIF).
+- **Detectors as data**, like the procedural engine: new conflict patterns as YAML over the facts graph.
+- **Live sources**: HATVP declarations, BOAMP / TED award notices, Judilibre and CJEU case law feeding the precedent base.
+- **Collaborative review**: accept / dismiss per flag, reviewer comments, exportable audit trail.
 
-A new rule that reads a new attribute therefore gets it extracted on real files without new code. The offline French
-patterns remain the no-key path and are tuned to the synthetic generator — say so (see *Limits*).
+---
 
-## What uses Mistral (with a key) — and what was verified
-
-| Step | Model (configurable in `.env`) | Fallback without key |
-|---|---|---|
-| OCR of scans / photos | `mistral-ocr-latest`; if `/ocr` is unavailable, a vision chat model transcribes the page (`mistral_vision`) | Tesseract, else page "unreadable" |
-| Classification of unknown documents | `MISTRAL_FAST_MODEL` | patterns on the "Objet" line |
-| Extraction of unknown documents + rule-driven gap filling | `MISTRAL_EXTRACT_MODEL` | patterns |
-| Dependency links for orphan acts (dashed) | `MISTRAL_JUDGE_MODEL` | structural + "vu le PV n°" links only |
-| Judge on grey zones (facts only, quotes verified) | Jev if `TYPESAFE_API_KEY`, else fast → judge model | keyword heuristics |
-| Tribunal (defence / prosecution / presiding) | `MISTRAL_JUDGE_MODEL` | deterministic agents over the graph |
-| "LLM alone" baseline in the benchmark | `MISTRAL_JUDGE_MODEL` | not run (says so) |
-| Lean proofs | Leanstral if `MISTRAL_LEAN_MODEL` (Labs model, must be enabled by a workspace admin) | `by decide`, checked by Lean |
-
-- **Model fallback**: a model refused by the workspace (403/404, or a 0 requests/minute quota) is skipped and the next
-  one of `MISTRAL_FALLBACK_MODELS` is used; `/api/engines` and `casebreak doctor` show which model actually answered.
-- Answers are cached on disk (`data/cache/llm_*.json`): re-running the demo, moving the time slider or exporting the
-  report does not call the API again.
-- Pseudonymisation (names, addresses, dates of birth, phones) before every **text** call; act ids sent to the model
-  are opaque. Page **images** sent to OCR cannot be pseudonymised.
-- Verified on 4 Oct 2026 with the team key: chat, JSON extraction, judge, tribunal and vision OCR answer through the
-  fallback chain (`ministral-14b-latest`). On that workspace `mistral-large`, `mistral-medium`, `mistral-small` and the
-  `/ocr` endpoint are refused or have a 0 quota, and Leanstral needs Labs enabled — activate a plan in the console to
-  use them; nothing else to change.
-
-## Interface (`app.html`)
-
-- **War room** while the file is read: live counters, stages and feed, all from `/cases/{id}/status`.
-- **Case graph** (centre): 3D graph of the file — acts (colour = category), people, seals, alerts; links = depends on,
-  contradiction, involves, part of custody. Hover = neighbourhood, click = details (act checklist + attributes with
-  quotes; people/seals → their acts; alert → alert card). Slow rotation until touched. Built with
-  [3d-force-graph](https://github.com/vasturiano/3d-force-graph) (CDN).
-- **Timeline**: one lane per category, time on X (long gaps compressed), every act labelled with its time, custody
-  bars with start → end, dependencies shown on hover.
-- **Alert card**: what · where (page image, quote highlighted) · why (article, version in force, acts affected) · what
-  next; tribunal, Lean proof, judge answers, Judilibre precedents (key only), accept / dismiss.
-- Domino effect (graph or timeline), time-travel slider, defence / prosecution mode, pseudonymisation, report MD/PDF,
-  benchmark page. White theme; Tailwind (CDN, preflight off) for the new components.
-
-## Guardrails (CONTEXT §14)
-
-- Every attribute has a page and a quote that is checked to be on that page.
-- No invented article, decision or deadline: unknowns are `TODO(legal)` in the catalogue and shown in the UI.
-- No confidence percentage: three certainty levels (documented / inferred / needs reading). The benchmark page shows
-  measured recall/precision on synthetic files only.
-- The tool never decides prejudice or nullity. Synthetic data only in the repo (`data/` is git-ignored).
-
-## Limits (to say honestly)
-
-- The offline extractors are French patterns written alongside the synthetic generator: the benchmark (100 % recall
-  and precision on 10 synthetic files) measures the pipeline end to end, not generalisation to real files. On real
-  files, rule-driven Mistral extraction is what closes the gap — not yet measured on real (anonymised) files.
-- The legal content of the catalogue is not validated by a lawyer (`validated_by: null` everywhere, `TODO(legal)` items).
-- The tribunal, the judge and the baseline ran on `ministral-14b` with the current key; quality with larger models
-  is untested here.
-- Jev (TypeSafe) payload is unverified (no access); Judilibre needs a PISTE key.
+Built at the Mistral AI legal hackathon · powered by Mistral OCR, Mistral chat models and `mistral-embed`.
