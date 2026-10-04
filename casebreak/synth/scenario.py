@@ -592,7 +592,7 @@ def demo_case() -> CaseBuilder:
 
 # ============================================================================ random scenarios (NullityBench-FR)
 
-INJECTABLE = ["GAV-02", "GAV-04", "GAV-06", "GAV-08", "GAV-09", "GAV-10", "GAV-12", "GAV-13",
+INJECTABLE = ["GAV-02", "GAV-04", "GAV-06", "GAV-08", "GAV-09", "GAV-10", "GAV-11", "GAV-12", "GAV-13",
               "PRQ-01", "PRQ-02", "PRQ-03", "PRQ-04", "EXP-01", "GEO-01"]
 DECOYS = ["GAV-04", "GAV-08", "GAV-02", "PRQ-01", "PRQ-03"]
 
@@ -629,8 +629,13 @@ def random_case(seed: int) -> CaseBuilder:
     just = "l'état d'ébriété manifeste de l'intéressé, constaté à son arrivée au service" if "GAV-04" in decoys else None
     lawyer_req = "GAV-08" in inject or "GAV-08" in decoys or rng.random() < 0.5
     doctor_req = "GAV-09" in inject or rng.random() < 0.3
+    family_req = "GAV-11" in inject or rng.random() < 0.5
     nt = b.notification(p, start + delay, flag, stated_start=stated, lawyer=lawyer_req, doctor=doctor_req,
-                        family=rng.random() < 0.5, interpreter=lang_interp)
+                        family=family_req, interpreter=lang_interp, justification=just)
+    if family_req and "GAV-11" not in inject:
+        b.avis_famille(p, start + delay + timedelta(minutes=20), flag, scan=rng.random() < 0.3)
+    if "GAV-11" in inject:
+        gt(nt, "GAV-11", "possible_nullity", True, "Proche à prévenir non avisé", phrase="faire prévenir")
     if "GAV-04" in inject:
         gt(nt, "GAV-04", "possible_nullity", True, "Notification tardive", phrase="Notifions")
     if "GAV-04" in decoys:
@@ -703,7 +708,9 @@ def random_case(seed: int) -> CaseBuilder:
         b.prolongation(p, start + timedelta(hours=22), flag, from_dt=start + timedelta(hours=24))
     fin = b.fin_gav(p, end, flag, with_time="GAV-12" not in inject, scan=rng.random() < 0.25)
     if "GAV-02" in inject:
-        gt(pl, "GAV-02", "possible_nullity", True, "Plus de 24 h sans prolongation", phrase="Décidons de placer")
+        # without an end time (GAV-12) the duration cannot be computed: the honest answer is « à lire »
+        exp = "needs_reading" if "GAV-12" in inject else "possible_nullity"
+        gt(pl, "GAV-02", exp, True, "Plus de 24 h sans prolongation", phrase="Décidons de placer")
     if "GAV-02" in decoys:
         gt(pl, "GAV-02", "not_flagged", False, "Prolongation autorisée")
     if "GAV-12" in inject:

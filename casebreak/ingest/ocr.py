@@ -10,6 +10,7 @@ import hashlib
 import io
 import json
 import logging
+import re
 from collections.abc import Callable
 from pathlib import Path
 
@@ -51,8 +52,27 @@ def _tesseract(img: Image.Image) -> tuple[str, list]:
         lines.setdefault(key, []).append(txt)
         x, y, ww, hh = data["left"][i], data["top"][i], data["width"][i], data["height"][i]
         words.append((x / w, y / h, (x + ww) / w, (y + hh) / h, txt))
-    text = "\n".join(" ".join(v) for _, v in sorted(lines.items()))
+    text = repair_ocr("\n".join(" ".join(v) for _, v in sorted(lines.items())))
     return text, words
+
+
+_NUM_WORDS = ("un|une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|"
+              "vingt|minuit|midi")
+_REPAIRS = [
+    # Tesseract without the French model reads « à » as « 4 » or drops it: repair only unambiguous contexts.
+    (re.compile(rf"(?<=\s)[4aà](?=\s+(?:\d{{1,2}}\s?[hH:]|(?:{_NUM_WORDS})\b))"), "à"),
+    (re.compile(r"\bgarde [4a] vue\b"), "garde à vue"),
+    (re.compile(r"\b(r[ée]sidence|domicile) 4 "), r"\1 à "),
+    (re.compile(r"\bfin la (garde|mesure)\b"), r"fin à la \1"),
+    (re.compile(r"\bpersonne gard[ée]e 4 vue\b"), "personne gardée à vue"),
+]
+
+
+def repair_ocr(text: str) -> str:
+    """Post-correction of known OCR confusions on French PVs (documented, conservative)."""
+    for rx, rep in _REPAIRS:
+        text = rx.sub(rep, text)
+    return text
 
 
 def _ocr_image(img: Image.Image, raw: bytes, mime: str, key: str) -> dict:
