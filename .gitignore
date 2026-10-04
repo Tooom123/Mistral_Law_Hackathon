@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+data/cases/*
+!data/cases/.gitkeep
+data/real/

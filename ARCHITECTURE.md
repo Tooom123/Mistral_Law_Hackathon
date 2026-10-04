@@ -41,6 +41,41 @@ Deterministic requirements are decided by **code**; open-textured ones by an **L
                                                         (Nullity Wiki grows)
 ```
 
+### The full ambitious system (what we pitch; §15 says what we build today)
+
+```text
+                                   ┌────────────────────────── PRIVACY SHIELD ──────────────────────────┐
+                                   │ pseudonymise names/addresses before any API call · on-prem option   │
+                                   └─────────────────────────────────────────────────────────────────────┘
+ CASE FILE                          FACT BANK                       LAW BANK                          LAW WATCH
+ PDF · scans · photos ──► OCR ──► acts × time × category   ◄──►  requirements (versioned)   ◄──  Journal officiel /
+ audio (Voxtral)          vision   facts → page + bbox             compiled from Légifrance          Légifrance diffs
+ EXIF / metadata          segment  case graph + case wiki           precedents (Judilibre)            → new rule versions
+                                          │                         nullity wiki (compounding)
+                                          ▼                                   │
+                               ┌──────────────────────────────────────────────┴───┐
+                               │ MATCHER  A. rule → facts   B. fact → rules       │
+                               │          C. contradictions D. corroboration      │
+                               └─────────────────────┬────────────────────────────┘
+                                                     ▼
+                               ┌──────────────────────────────────────────────────┐
+                               │ JUDGE   code · Jev (typed, probabilistic)        │
+                               │         · Mistral (explained) · Leanstral proofs │
+                               └─────────────────────┬────────────────────────────┘
+                                                     ▼
+                               ┌──────────────────────────────────────────────────┐
+                               │ ADVERSARIAL TRIBUNAL  defense ⚔ prosecution      │
+                               │ → presiding judge agent → "survives objection?"  │
+                               └─────────────────────┬────────────────────────────┘
+                                                     ▼
+                               ┌──────────────────────────────────────────────────┐
+                               │ STRATEGY  cascade · deadline clock · empirical   │
+                               │ annulment rates · skeleton of moyens · time-travel│
+                               └─────────────────────┬────────────────────────────┘
+                                                     ▼
+                                     LAWYER REVIEW ──► labels ──► NullityBench-FR + wiki
+```
+
 ---
 
 ## 1. Review of the team's proposal ("facts bank × law bank × confidence")
@@ -487,7 +522,108 @@ tests/           fixtures per requirement
 
 ---
 
-## 15. Sources
+## 15. Ambition ladder — what we build vs what we pitch
+
+Build bottom-up; every level is demoable on its own. **Never start a level before the previous one is green.**
+
+| Level | What works | Demo moment | Target time |
+|---|---|---|---|
+| **L0 — Spine** | synthetic dossier → facts with pages → timeline × category → 6 deterministic rules → finding card with highlighted page | "3 h 15 between placement and rights notification — page 43" | 13:30 |
+| **L1 — Structure** | cascade + simulate impact · time contradictions · law-as-of-date (2024 custody reform) · metrics vs ground truth | dependent acts grey out; same dossier dated 2023 vs 2025 gives different findings | 15:30 |
+| **L2 — Intelligence** | Jev/Mistral judge on open-textured rules · Pass B discovery · Judilibre precedents · deadline clock | "this defect: annulled in X decisions, rejected in Y (no grief) — here they are" | 17:00 |
+| **L3 — Moonshots** | adversarial tribunal · Leanstral proofs · law watch · empirical annulment rates · audio | "proved, not estimated" / "survives the prosecution's objection" | pitch + roadmap |
+
+The pitch shows L0–L2 live and L3 as one working example (pick one) + roadmap.
+
+---
+
+## 16. Moonshots (L3) — designed now, so the core doesn't block them
+
+### 16.1 Adversarial tribunal — findings that survive cross-examination
+
+Every finding is put on trial by three agents before it reaches the lawyer:
+
+```text
+FINDING ──► DEFENSE agent      argues the defect + grief, citing only facts & provisions in the banks
+        ──► PROSECUTION agent  objects: justification in the file? waiver? special regime? no grief? purge?
+        ──► PRESIDING agent    rules on each objection, element by element, quotes required
+        ──► output: "survives" / "falls on objection X" + the objection text shown to the lawyer
+```
+
+- Grounding: multi-agent courtroom-style deliberation has been studied for legal reasoning ([Investigating Multi-Agent Deliberation in Law, 2026](https://arxiv.org/pdf/2606.30906)); we use it **adversarially**, to kill weak findings rather than to sound smarter.
+- Measurable: on the benchmark, decoys (lawful-looking cases) should **fall on objection**. Report "decoys eliminated by the tribunal: X / Y".
+- Lawyers love it because it is exactly their prep: *what will the other side say?*
+
+### 16.2 Proofs, not estimates (Leanstral)
+
+For deterministic requirements, compile the requirement and the relevant facts into **Lean 4** and ask **Leanstral** (Mistral's open-source prover) for a machine-checked proof of the violation (or of compliance).
+
+```lean
+-- sketch
+def notifiedImmediately (placement notif : Minute) (tol : Nat) : Prop := notif - placement ≤ tol
+theorem gav04_violated : ¬ notifiedImmediately 665 860 60 := by decide
+```
+
+The UI shows a ✓ "formally verified" badge with the proof. It proves the arithmetic on the extracted facts — **not** that the extraction is right nor the legal threshold (`tol` is set by the legal teammate). Say exactly that.
+
+### 16.3 Law watch — the Law Bank updates itself
+
+- Poll Légifrance / Journal officiel for changes to tracked CPP articles (e.g., loi 2026-651 art. 9).
+- On change: the requirement compiler drafts a **new version** (`valid_from` = entry into force), diffs it against the old one, and opens a review task for the legal teammate.
+- Effect: "law-as-of-date" stays correct without code changes. (This recycles the team's earlier compliance-watch idea where it is actually defensible: a narrow, versioned, validated rule set.)
+- Bonus anecdote for the pitch: the Ministry's own implementation table for loi 2026-651 contradicts itself on the entry-into-force date — the watcher would flag it.
+
+### 16.4 Empirical annulment rates (from Judilibre, not from the LLM)
+
+- For each requirement, retrieve criminal-chamber decisions citing the provision + "nullité", classify outcome (annulled / rejected) and reason (no grief, regularised, late, purged) — LLM classifies, human spot-checks 20.
+- Show per finding: "Cour de cassation, decisions retrieved: N — outcomes: …" with links. Counts are **retrieved data**, never generated. Always state the corpus and date of retrieval (Judilibre criminal coverage runs to the end of 2025).
+- This is what a partner actually wants: *is this argument worth spending the client's money on?*
+
+### 16.5 Time-travel slider
+
+A date slider on the timeline: move "law applicable as of" and watch findings appear/disappear (2024 custody reform, 2026 nullity deadline). It makes **versioned law** visible in one gesture — very strong for Stanford/Sciences Po academics.
+
+### 16.6 Multimodal corroboration
+
+- **Photos:** EXIF time vs the PV time of the search; seal labels read by vision vs seal numbers in the seizure PV.
+- **Audio/video (Voxtral):** recorded hearings (mandatory in some cases) transcribed and aligned with the written PV — flag omissions or time mismatches.
+- **Handwriting:** for `needs_reading` times, an agent re-reads the cropped bbox with a vision model and asks the lawyer a targeted question ("is this 14h20 or 11h20?").
+- Corroboration never creates a finding alone; it raises or lowers certainty.
+
+### 16.7 Privacy shield (credibility with the judges)
+
+- Before any external call: pseudonymise people, addresses, phone numbers (reversible map kept locally).
+- Deployment story: open-weight Mistral models on the firm's servers; nothing leaves the building. Secrecy of the investigation is the first objection a criminal lawyer will raise — answer it before they ask.
+
+### 16.8 Strategy layer
+
+- **Deadline clock** per anchor act (4 vs 6 months depending on date, cut-off for briefs) — always "to verify".
+- **Skeleton of moyens:** for each accepted finding — the formality violated, the provision (version), the facts with pages, the acts to name (cascade), the precedents. Not a drafted brief: a structured checklist the lawyer writes from.
+- **Prosecutor mode:** same engine, framed as a *regularity audit* before referral to trial. Equality of arms; doubles the market.
+
+### 16.9 NullityBench-FR (contribution to the field)
+
+Publish the generator, the injected-defect dossiers, decoys and the scorer. Academics on the jury (Stanford CodeX, Imperial, Sciences Po) value an **open, reproducible benchmark** more than a demo. One line in the pitch: "we're releasing the first benchmark for procedural-defect detection in French criminal files."
+
+### 16.10 What we must not overclaim
+
+- Synthetic results ≠ real-world accuracy. Say "on our synthetic set".
+- The tribunal and the judge never decide grief or nullity.
+- Annulment rates describe retrieved decisions, not the probability of winning a given case.
+- Leanstral proves arithmetic on extracted facts, not the law.
+
+---
+
+## 17. Code status
+
+A first scaffold exists (started, then paused by team decision): `pyproject.toml` (uv), `casebreak/schemas.py` (the Pydantic contracts of §12), `casebreak/facts/normalize_time.py` (French date/time parser — "onze heures cinq", "14 H 20", "12/03/2026") with 6 passing tests in `tests/`, `.env.example`, `.gitignore` (real data never committed). Reuse or discard freely.
+
+---
+
+## 18. Sources
+
+- Multi-agent deliberation in law: [arXiv 2606.30906](https://arxiv.org/pdf/2606.30906)
+- Custody reform in force 1 July 2024 (loi n° 2024-364): [Eurojuris](https://www.eurojuris.fr/articles/reforme-garde-a-vue-changements-42735.htm)
 
 - COLIEE 2026, statute retrieval & entailment: [NOWJ@COLIEE 2026](https://arxiv.org/pdf/2607.16603)
 - LLM verbalized confidence miscalibration: [Dunning-Kruger effect in LLMs (2026)](https://arxiv.org/pdf/2603.09985), [Wired for Overconfidence](https://www.alphaxiv.org/abs/2604.01457)
