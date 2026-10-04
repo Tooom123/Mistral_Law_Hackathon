@@ -23,6 +23,7 @@ def main() -> None:
     co.add_argument("--llm", action="store_true", help="add Mistral reviewer notes (needs MISTRAL_API_KEY)")
     co.add_argument("--export", type=Path, help="write the audit JSON (the front end's offline snapshot)")
     co.add_argument("--memo", help="print the review memo of one flag, e.g. F1")
+    co.add_argument("--pdf", type=Path, help="write the case file as one PDF per document into this folder")
     sub.add_parser("doctor", help="Check which engines work with the keys in .env (one tiny call per Mistral path)")
     b = sub.add_parser("bench", help="NullityBench-FR: N synthetic case files, recall/precision")
     b.add_argument("--n", type=int, default=10)
@@ -56,6 +57,12 @@ def main() -> None:
     elif a.cmd == "coi":
         from casebreak.coi.audit import memo, run_audit
 
+        if a.pdf:
+            from casebreak.coi.casefile import CASES as COI_CASES, write_pdfs
+
+            paths = write_pdfs(COI_CASES[a.case](), a.pdf)
+            print(f"{len(paths)} PDFs written to {a.pdf}")
+            return
         res = run_audit(a.case, llm=a.llm)
         if a.memo:
             print(memo(res, a.memo))

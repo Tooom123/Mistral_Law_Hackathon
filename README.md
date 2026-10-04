@@ -121,10 +121,11 @@ The front end is dependency-free vanilla JS (ES modules, SVG). It also runs from
 
 ```bash
 uv sync
-uv run casebreak serve                    # http://localhost:8000 → landing → "Open the McKinsey case"
+uv run casebreak serve                    # http://localhost:8000 → drop the case-files/mckinsey folder on the landing
                                           # http://localhost:8000/audit.html?intro  (straight to the audit)
 uv run casebreak coi                      # the audit in the terminal: flags, pages, comparable cases
 uv run casebreak coi --memo F3            # one review memo
+uv run casebreak coi --pdf case-files/mckinsey   # the case file as 17 PDFs, ready to drag and drop
 uv run casebreak coi --llm --export frontend/audit/data/mckinsey.json   # refresh the snapshot with Mistral notes
 uv run casebreak doctor                   # which Mistral paths answer with the keys in .env
 uv run pytest                             # 55 tests, fully offline

@@ -398,3 +398,44 @@ def mckinsey() -> CaseFile:
 
 CASES = {"mckinsey": mckinsey}
 DEFAULT_CASE = "mckinsey"
+
+
+def write_pdfs(case: CaseFile, out_dir) -> list:
+    """One PDF per document (A4, the page text and the provenance notice in the footer): the folder to drop."""
+    from pathlib import Path
+
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    paths = []
+    W, H = A4
+    for d in case.docs:
+        path = out / f"{d.id} - {d.title.replace('/', '-')}.pdf"
+        c = canvas.Canvas(str(path), pagesize=A4)
+        c.setTitle(d.title)
+        c.setAuthor(d.issuer)
+        for n, text in enumerate(d.pages, 1):
+            y = H - 72
+            for i, line in enumerate(text.splitlines()):
+                c.setFont("Times-Bold" if i == 0 else "Times-Roman", 12 if i == 0 else 10.5)
+                words, cur = line.split(" "), ""
+                for w in words:                       # wrap at the right margin
+                    if c.stringWidth((cur + " " + w).strip(), "Times-Roman", 10.5) > W - 144:
+                        c.drawString(72, y, cur)
+                        y -= 15
+                        cur = w
+                    else:
+                        cur = (cur + " " + w).strip()
+                c.drawString(72, y, cur)
+                y -= 15 if line.strip() else 9
+            c.setFont("Helvetica", 7)
+            c.setFillGray(0.45)
+            c.drawString(72, 40, d.notice)
+            c.drawRightString(W - 72, 40, f"{d.id} — page {n}/{len(d.pages)}")
+            c.setFillGray(0)
+            c.showPage()
+        c.save()
+        paths.append(path)
+    return paths
