@@ -107,7 +107,7 @@ def _documents(case: CaseFile, flags: list[dict]) -> list[dict]:
         touched = sorted({fl["id"] for fl in flags for e in fl["evidence"] if e["doc"] == d.id},
                          key=lambda x: int(x[1:]))
         out.append({"id": d.id, "date": d.date, "precision": d.precision, "lane": d.lane, "kind": d.kind,
-                    "title": d.title, "issuer": d.issuer, "provenance": d.provenance, "notice": d.notice,
+                    "title": d.title, "short": d.short or d.title, "issuer": d.issuer, "provenance": d.provenance, "notice": d.notice,
                     "tags": d.tags, "pages": pages, "flags": touched,
                     "severity": max((fl["severity"] for fl in flags if fl["id"] in touched),
                                     key=lambda s: SEVERITY[s], default=None)})

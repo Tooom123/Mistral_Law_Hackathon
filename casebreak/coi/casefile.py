@@ -16,10 +16,10 @@ PUBLIC = "Public chronology · summary written for the demo, not a verbatim extr
 
 # Timeline lanes, top to bottom.
 LANES = [
-    {"id": "procurement", "label": "Public procurement"},
-    {"id": "private", "label": "Firm ↔ private clients"},
-    {"id": "declarations", "label": "Declarations of interests"},
-    {"id": "decisions", "label": "Deliverables & decisions"},
+    {"id": "procurement", "label": "Procurement"},
+    {"id": "private", "label": "Private clients"},
+    {"id": "declarations", "label": "Declarations"},
+    {"id": "decisions", "label": "Decisions"},
     {"id": "scrutiny", "label": "Scrutiny"},
 ]
 
@@ -36,6 +36,7 @@ class Doc:
     provenance: str = "synthetic"   # synthetic | public_record
     precision: str = "day"          # day | month
     tags: list[str] = field(default_factory=list)
+    short: str = ""                 # label on the timeline tile
 
     @property
     def notice(self) -> str:
@@ -361,6 +362,27 @@ def mckinsey() -> CaseFile:
               """),
           ], provenance="public_record", tags=["public record"]),
     ]
+    short = {
+        "D01": "Framework agreement",
+        "D02": "Rousseau declaration",
+        "D03": "Vaxellis engagement",
+        "D04": "Specifications",
+        "D05": "Vasseur declaration",
+        "D06": "Le Gall declaration",
+        "D07": "Haddad declaration",
+        "D08": "Purchase order",
+        "D09": "Team annex",
+        "D10": "Allocation scenarios",
+        "D11": "Decision memo",
+        "D12": "LogiFroid registry",
+        "D13": "Time report",
+        "D14": "Senate inquiry",
+        "D15": "Hearing under oath",
+        "D16": "Ministry answer",
+        "D17": "Senate report",
+    }
+    for doc in docs:
+        doc.short = short[doc.id]
     context = [
         {"date": "2020-12-27", "label": "Vaccination campaign starts in France"},
     ]

@@ -54,8 +54,9 @@ function cutPath(seed, half) {
 }
 
 export class Flow {
-  constructor(root, { onSelect, onAlert, onSimulate } = {}) {
+  constructor(root, { onSelect, onAlert, onSimulate, padBottom } = {}) {
     this.root = root;
+    this.padBottom = padBottom;   // room kept under the rows (the deadline ruler needs ~196 px)
     this.onSelect = onSelect; this.onAlert = onAlert; this.onSimulate = onSimulate;
     this.svg = svgEl("svg", { class: "flow", role: "img", "aria-label": "Case graph: acts as paper tiles, by category and time" });
     this.ruler = h("div", { class: "ruler", hidden: true });
@@ -90,7 +91,7 @@ export class Flow {
     const acts = g.nodes.filter(n => n.type === "ACT").sort((a, b) => (a.start ?? "9").localeCompare(b.start ?? "9"));
     const lanes = g.lanes.filter(l => acts.some(a => a.category === l));
     const small = W < 700;
-    const padL = small ? 16 : 150, padR = small ? 16 : 56, padT = small ? 96 : 118, padB = small ? 170 : 196;
+    const padL = small ? 16 : 150, padR = small ? 16 : 56, padT = small ? 96 : 118, padB = this.padBottom ?? (small ? 170 : 196);
     const laneH = Math.min(172, (H - padT - padB) / Math.max(lanes.length, 1));
     const step = acts.length > 1 ? Math.min(176, (W - padL - padR - 60) / (acts.length - 1)) : 0;
     const t = Math.max(34, Math.min(66, step * 0.56 || 66, laneH * 0.48));
@@ -181,11 +182,11 @@ export class Flow {
         const tx = svgEl("text", { y: top + 15, class: "fn__label" }, lab);
         lines.forEach((ln, k) => { const sp = svgEl("tspan", { x: 0, dy: k ? lh : 0 }, tx); sp.textContent = ln; });
         if (n.start) {
-          svgEl("text", { y: top + 15 + lines.length * lh + 1, class: "fn__date" }, lab).textContent =
-            dmy(n.start).slice(0, 5) + (n.start.slice(11, 16) !== "00:00" ? ` ${hm(n.start)}` : "");
+          svgEl("text", { y: top + 15 + lines.length * lh + 1, class: "fn__date" }, lab).textContent = n.dateLabel ??
+            (dmy(n.start).slice(0, 5) + (n.start.slice(11, 16) !== "00:00" ? ` ${hm(n.start)}` : ""));
         }
       }
-      if (al) this.drawSticker(outer, al, ts);
+      if (al && !al.noSticker) this.drawSticker(outer, al, ts);
       outer.addEventListener("mouseenter", () => this.hover(n.id));
       outer.addEventListener("mouseleave", () => this.hover(null));
       outer.addEventListener("click", () => { this.select(n.id); this.onSelect?.(n); });
@@ -219,6 +220,7 @@ export class Flow {
     const d = al.details ?? {};
     let big = al.nullity_id, small = "";
     if (d.day_received != null && d.offence && d.limit) { big = `Day ${d.day_received}`; small = `limit ${dayDiff(new Date(d.offence), new Date(d.limit))}`; }
+    if (al.sticker) ({ big, small } = al.sticker);
     const g = svgEl("g", { class: `fn__sticker ${al.status === "needs_reading" ? "read" : ""}`, transform: `translate(${ts / 2 + 12},${-ts / 2 - 6}) rotate(9)` }, outer);
     svgEl("circle", { r: 37, class: "st__ring" }, g);
     svgEl("circle", { r: 31, class: "st__disc" }, g);

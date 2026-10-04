@@ -48,13 +48,12 @@ Two counter-tests in `tests/test_coi.py` prove the engine reasons rather than re
 
 ## The interface (`/audit.html`)
 
-**Timeline first.** Lawyers think in chronology, so the case opens on it.
+**Timeline first.** Lawyers think in chronology, so the case opens on it — drawn as a paper collage, the same visual language as the case graph of the procedural engine (`frontend/app/flow.js`, reused as is):
 
-- **Five document lanes** (procurement · firm ↔ private clients · declarations · deliverables & decisions · scrutiny) and **one lane per person involved**, with their engagements and employment drawn as bars.
-- **Overlaps light up**: where a private engagement and a public one run at the same time for the same person, the period is hatched red — the conflict is *visible* before reading a word.
-- **Adaptive time scale**: busy months get the space, quiet years are compressed; zoom (± / ctrl-scroll), pan, *Fit*, *Mission*.
-- Every point is a document: **click → the document opens** beside the timeline, scrolled to the exact lines, highlighted, with margin notes saying which flag cites them and why. ← / → walks the file in time order.
-- **Select a flag** → its time window appears, its documents pulse, the others fade, and a thread connects the evidence across lanes in the order a lawyer should read it.
+- **One cut-out tile per document**, in time order, **one row per category** (procurement · private clients · declarations · decisions · scrutiny).
+- **Select a flag** → its documents are joined by a pen line in reading order, framed in yellow, and the line to read first becomes the **taped red tile with a sticker** (`F3 · false decl.`).
+- **Click a tile → the document opens** beside the timeline, scrolled to the exact lines, highlighted, with margin notes saying which flag cites them and why. ← / → walks the file in time order.
+- *All documents* shows the pieces no flag cites too — the negative space of the audit.
 
 **Where to look.** Flags ranked by severity and certainty, each with:
 - the **chain** (person → company → public order) as a diagram whose edges open their source document;
@@ -114,7 +113,7 @@ GET  /api/coi/precedents?q=&pattern=&provenance=&k=
 GET  /api/coi/precedents/{id}
 ```
 
-The front end is dependency-light vanilla JS + **d3** (zoomable piecewise time scale). It also runs from a static snapshot (`frontend/audit/data/`) when no server is up — useful on a projector with bad Wi-Fi.
+The front end is dependency-free vanilla JS (ES modules, SVG). It also runs from a static snapshot (`frontend/audit/data/`) when no server is up — useful on a projector with bad Wi-Fi.
 
 ---
 

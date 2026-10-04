@@ -8,19 +8,19 @@
  "lanes": [
   {
    "id": "procurement",
-   "label": "Public procurement"
+   "label": "Procurement"
   },
   {
    "id": "private",
-   "label": "Firm ↔ private clients"
+   "label": "Private clients"
   },
   {
    "id": "declarations",
-   "label": "Declarations of interests"
+   "label": "Declarations"
   },
   {
    "id": "decisions",
-   "label": "Deliverables & decisions"
+   "label": "Decisions"
   },
   {
    "id": "scrutiny",
@@ -35,6 +35,7 @@
    "lane": "procurement",
    "kind": "framework_agreement",
    "title": "Framework agreement DITP-2018-AC01 — strategy & transformation consulting",
+   "short": "Framework agreement",
    "issuer": "DITP",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -74,6 +75,7 @@
    "lane": "declarations",
    "kind": "official_declaration",
    "title": "Declaration of interests — Mathilde Rousseau, on appointment",
+   "short": "Rousseau declaration",
    "issuer": "Ministry of Solidarity and Health",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -108,6 +110,7 @@
    "lane": "private",
    "kind": "engagement_letter",
    "title": "Engagement letter VX-2020-31 — Vaxellis SA",
+   "short": "Vaxellis engagement",
    "issuer": "McKinsey & Company, Paris office",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -201,6 +204,7 @@
    "lane": "procurement",
    "kind": "specifications",
    "title": "Specifications DGS-2020-VAC-04 — logistics strategy of the vaccination campaign",
+   "short": "Specifications",
    "issuer": "Directorate General for Health",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -244,6 +248,7 @@
    "lane": "declarations",
    "kind": "consultant_declaration",
    "title": "Declaration of interests — Clara Vasseur",
+   "short": "Vasseur declaration",
    "issuer": "McKinsey & Company, Paris office",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -286,6 +291,7 @@
    "lane": "declarations",
    "kind": "consultant_declaration",
    "title": "Declaration of interests — Thomas Le Gall",
+   "short": "Le Gall declaration",
    "issuer": "McKinsey & Company, Paris office",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -320,6 +326,7 @@
    "lane": "declarations",
    "kind": "consultant_declaration",
    "title": "Declaration of interests — Inès Haddad",
+   "short": "Haddad declaration",
    "issuer": "McKinsey & Company, Paris office",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -343,6 +350,7 @@
    "lane": "procurement",
    "kind": "purchase_order",
    "title": "Purchase order BC-2020-117",
+   "short": "Purchase order",
    "issuer": "Ministry of Solidarity and Health",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -377,6 +385,7 @@
    "lane": "procurement",
    "kind": "staffing_plan",
    "title": "Annex 1 to BC-2020-117 — team assigned",
+   "short": "Team annex",
    "issuer": "McKinsey & Company, Paris office",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -494,6 +503,7 @@
    "lane": "decisions",
    "kind": "deliverable",
    "title": "Deliverable L2 — dose allocation scenarios",
+   "short": "Allocation scenarios",
    "issuer": "McKinsey & Company, Paris office",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -553,6 +563,7 @@
    "lane": "decisions",
    "kind": "decision_memo",
    "title": "Decision memo — allocation scenario and cold-chain provider",
+   "short": "Decision memo",
    "issuer": "Directorate General for Health",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -596,6 +607,7 @@
    "lane": "private",
    "kind": "registry_extract",
    "title": "Company registry extract — LogiFroid SAS",
+   "short": "LogiFroid registry",
    "issuer": "Trade and companies register",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -630,6 +642,7 @@
    "lane": "private",
    "kind": "time_report",
    "title": "Firm time report — February 2021",
+   "short": "Time report",
    "issuer": "McKinsey & Company, Paris office",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -706,6 +719,7 @@
    "lane": "scrutiny",
    "kind": "inquiry",
    "title": "Senate inquiry committee on the influence of consulting firms",
+   "short": "Senate inquiry",
    "issuer": "French Senate",
    "provenance": "public_record",
    "notice": "Public chronology · summary written for the demo, not a verbatim extract",
@@ -729,6 +743,7 @@
    "lane": "scrutiny",
    "kind": "hearing",
    "title": "Hearing under oath — Raphaël Dumont",
+   "short": "Hearing under oath",
    "issuer": "Senate inquiry committee",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -773,6 +788,7 @@
    "lane": "scrutiny",
    "kind": "administration_answer",
    "title": "Ministry answer to the committee questionnaire",
+   "short": "Ministry answer",
    "issuer": "Directorate General for Health",
    "provenance": "synthetic",
    "notice": "Synthetic reconstruction · individuals, companies other than the firm, figures and relationships are fictional",
@@ -852,6 +868,7 @@
    "lane": "scrutiny",
    "kind": "report",
    "title": "Senate inquiry report",
+   "short": "Senate report",
    "issuer": "French Senate",
    "provenance": "public_record",
    "notice": "Public chronology · summary written for the demo, not a verbatim extract",
@@ -3336,10 +3353,10 @@
   "cleared": 10,
   "rules": 6,
   "precedents": 46,
-  "ms": 159
+  "ms": 136
  },
  "engine": {
-  "extraction": "line readers + Mistral reader for unknown layouts",
+  "extraction": "line readers",
   "precedents": "sqlite-fts5 bm25 + pattern overlap + mistral-embed",
   "notes": "mistral"
  }

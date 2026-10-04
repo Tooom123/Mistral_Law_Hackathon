@@ -1,7 +1,10 @@
+import { Flow } from "../app/flow.js";
+
 /* BREACH — conflict-of-interest audit.
    Data: GET /api/coi/cases/{case} (falls back to the snapshot in audit/data/ when the API is not running).
-   Timeline (d3, zoomable, long quiet periods compressed) → click a point → the document, with the exact lines
-   highlighted and annotated in the margin. Flags → chain, evidence, comparable past cases, next steps. */
+   Timeline = the case graph collage (app/flow.js): one paper tile per document, a row per category, in time order;
+   the selected flag's documents are joined in pen, its first line to read is the taped red tile.
+   Click a tile → the document, with the exact lines highlighted and annotated in the margin. Flags → chain, evidence, comparable past cases, next steps. */
 
 const API = window.BREACH_API ?? "";
 const params = new URLSearchParams(location.search);
@@ -9,9 +12,15 @@ const CASE = params.get("case") || "mckinsey";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const parse = d3.timeParse("%Y-%m-%d");
-const fmtDay = d3.timeFormat("%d %b %Y");
-const fmtMonth = d3.timeFormat("%b %Y");
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const parse = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const fmtDay = x => `${String(x.getDate()).padStart(2, "0")} ${MONTHS[x.getMonth()]} ${x.getFullYear()}`;
+const fmtMonth = x => `${MONTHS[x.getMonth()]} ${x.getFullYear()}`;
+const dmy = x => `${String(x.getDate()).padStart(2, "0")}/${String(x.getMonth() + 1).padStart(2, "0")}/${x.getFullYear()}`;
+const STICKER = { dual_role: "dual role", undeclared_interest: "false decl.", missing_declaration: "missing", revolving_door: "revolving", family_tie: "relative", false_statement: "under oath" };
+// the document a flag sends you to first
+const PRIMARY = ["declared", "statement", "signature", "private engagement", "missing", "declared tie"];
+const primary = f => f.evidence.find(e => PRIMARY.includes(e.role)) ?? f.evidence[0];
 const CERT = { documented: "Documented", inferred: "Inferred", needs_reading: "Needs reading" };
 const KIND_LABEL = { person: "person", company: "company", public: "public order", doc: "document" };
 
@@ -55,9 +64,8 @@ function renderHeader() {
   $("#tab-flags").textContent = flags.length;
   $("#tab-prec").textContent = "";
   const cells = [
-    [st.documents, "documents"], [st.pages, "pages read"], [st.facts, "facts extracted"],
-    [`${st.people} · ${st.companies}`, "people · companies"], [st.cross_references, "cross-references"],
-    [st.flags, `flags · ${st.high} high`, "alert"], [st.cleared, "checks cleared", "ok"],
+    [st.documents, "documents read"], [st.flags, "potential conflicts", "alert"],
+    [st.cross_references, "lines to read"], [st.cleared, "checks cleared", "ok"],
   ];
   $("#strip").innerHTML = cells.map(([n, l, k]) => `<div class="stat ${k ? "stat--" + k : ""}"><b>${n}</b><span>${l}</span></div>`).join("");
   renderEngine();
@@ -65,272 +73,50 @@ function renderHeader() {
 
 function renderEngine() {
   const e = S.data.engine || {};
-  $("#engine").innerHTML = `<i></i>${S.live ? "live" : "snapshot"} · ${esc(e.precedents || "")}${e.notes === "mistral" ? " · Mistral notes" : ""}`;
+  $("#engine").innerHTML = `<i></i>${S.live ? "live" : "offline"}${e.notes === "mistral" ? " · Mistral" : ""}`;
+  $("#engine").title = `${e.extraction || ""} · ${e.precedents || ""}`;
 }
 
-/* ================================================================ timeline */
+/* ================================================================ timeline (paper collage) */
 
-const TL = { lane: 62, person: 46, gutter: 178, top: 34, bottom: 30, section: 26 };
+let flow = null;
 
-function buildScale(width) {
-  // piecewise time scale: quiet periods are compressed so the dense months stay readable
-  const docs = S.data.documents.map(d => parse(d.date));
-  const ctx = S.data.context.map(c => parse(c.date));
-  const all = [...docs, ...ctx].sort((a, b) => a - b);
-  // the axis follows the documents; older periods (e.g. a past employment) run in from the left edge
-  const min = d3.timeMonth.offset(all[0], -3), max = d3.timeMonth.offset(all[all.length - 1], 3);
-  // months with documents weigh 4, their neighbours 1.2, quiet months .15
-  const months = d3.timeMonth.range(d3.timeMonth.floor(min), d3.timeMonth.offset(d3.timeMonth.ceil(max), 1));
-  const count = d3.rollup(docs, v => v.length, d => +d3.timeMonth.floor(d));
-  const near = m => count.has(+d3.timeMonth.offset(m, -1)) || count.has(+d3.timeMonth.offset(m, 1));
-  const weights = months.map(m => (count.has(+m) ? 3 + Math.min(3, count.get(+m)) * 0.6 : near(m) ? 1.2 : 0.15));
-  const total = d3.sum(weights);
-  let acc = 0;
-  const range = [0, ...weights.map(w => (acc += w) / total * width)];
-  const domain = [...months, d3.timeMonth.offset(months[months.length - 1], 1)];
-  return { x: d3.scaleTime().domain(domain).range(range).clamp(false) };
+function flowData() {
+  const all = $("#tl-all").checked;
+  const f = S.flag && S.byFlag[S.flag];
+  const lane = Object.fromEntries(S.data.lanes.map(l => [l.id, l.label]));
+  const docs = S.docOrder.map(id => S.byDoc[id]).filter(d => all || d.flags.length);
+  const nodes = docs.map(d => ({
+    id: d.id, type: "ACT", category: lane[d.lane], label: d.short, start: `${d.date}T00:00:00`, doc_ids: [d.id],
+    dateLabel: d.precision === "month" ? fmtMonth(parse(d.date)) : dmy(parse(d.date)),
+  }));
+  const shown = new Set(docs.map(d => d.id));
+  const edges = [], alerts = [];
+  if (f) {
+    const chain = S.docOrder.filter(id => f.docs.includes(id) && shown.has(id));
+    for (let i = 1; i < chain.length; i++) edges.push({ kind: "SUPPORTS", src: chain[i - 1], dst: chain[i] });
+    const main = primary(f).doc;
+    for (const id of chain) {
+      alerts.push(id === main
+        ? { node: { id }, status: "possible_nullity", key: f.id, sticker: { big: f.id, small: STICKER[f.pattern] ?? "" } }
+        : { node: { id }, status: "needs_reading", key: f.id, noSticker: true });
+    }
+  }
+  return { graph: { lanes: S.data.lanes.map(l => l.label), nodes, edges }, alerts };
 }
 
 function renderTimeline() {
-  const host = $("#tl-canvas");
-  host.innerHTML = "";
-  const flaggedOnly = $("#tl-flagged").checked;
-  const showPeople = $("#tl-people").checked;
-  const W = Math.max(host.clientWidth, 980);
-  const innerW = W - TL.gutter - 24;
-  const lanes = S.data.lanes;
-  const people = showPeople ? [...new Set(S.data.periods.map(p => p.person))] : [];
-  const lanesH = lanes.length * TL.lane;
-  const peopleTop = TL.top + lanesH + (people.length ? TL.section : 0);
-  const H = peopleTop + people.length * TL.person + TL.bottom;
-
-  const { x: x0 } = buildScale(innerW);
-  let x = x0;
-  const svg = d3.select(host).append("svg").attr("width", W).attr("height", H);
-  const defs = svg.append("defs");
-  defs.append("pattern").attr("id", "hatch-high").attr("width", 6).attr("height", 6).attr("patternUnits", "userSpaceOnUse")
-    .attr("patternTransform", "rotate(45)")
-    .call(p => { p.append("rect").attr("width", 6).attr("height", 6).attr("fill", "rgba(230,19,0,.10)"); p.append("rect").attr("width", 2.2).attr("height", 6).attr("fill", "rgba(230,19,0,.55)"); });
-  defs.append("clipPath").attr("id", "tl-clip").append("rect").attr("x", 0).attr("y", 0).attr("width", innerW).attr("height", H);
-
-  // lane backgrounds + labels
-  const bg = svg.append("g");
-  lanes.forEach((l, i) => {
-    const y = TL.top + i * TL.lane;
-    bg.append("rect").attr("class", "tl-lane-bg" + (i % 2 ? " alt" : "")).attr("x", 0).attr("y", y).attr("width", W).attr("height", TL.lane);
-    bg.append("line").attr("class", "tl-sep").attr("x1", 0).attr("x2", W).attr("y1", y).attr("y2", y);
-    const n = S.data.documents.filter(d => d.lane === l.id).length;
-    bg.append("text").attr("class", "tl-lane-label").attr("x", 18).attr("y", y + TL.lane / 2 - 2).text(l.label);
-    bg.append("text").attr("class", "tl-lane-sub").attr("x", 18).attr("y", y + TL.lane / 2 + 13).text(`${n} document${n > 1 ? "s" : ""}`);
+  flow ??= new Flow($("#flow"), {
+    padBottom: 40,
+    onSelect: n => openDoc(n.id, S.flag && S.byFlag[S.flag].docs.includes(n.id) ? { flag: S.flag } : null),
+    onAlert: key => { const e = primary(S.byFlag[key]); openDoc(e.doc, { flag: key, span: e }); },
   });
-  if (people.length) {
-    bg.append("text").attr("class", "tl-section").attr("x", 18).attr("y", TL.top + lanesH + 17).text("People");
-    bg.append("line").attr("class", "tl-sep").attr("x1", 0).attr("x2", W).attr("y1", TL.top + lanesH).attr("y2", TL.top + lanesH);
-    people.forEach((p, i) => {
-      const y = peopleTop + i * TL.person;
-      bg.append("rect").attr("class", "tl-lane-bg" + (i % 2 ? "" : " alt")).attr("x", 0).attr("y", y).attr("width", W).attr("height", TL.person);
-      bg.append("text").attr("class", "tl-lane-label").attr("x", 18).attr("y", y + TL.person / 2 + 4).text(p);
-    });
-  }
-  bg.append("line").attr("class", "tl-sep").attr("x1", TL.gutter - 8).attr("x2", TL.gutter - 8).attr("y1", TL.top).attr("y2", H - TL.bottom);
-
-  const plot = svg.append("g").attr("transform", `translate(${TL.gutter},0)`);
-  const clip = plot.append("g").attr("clip-path", "url(#tl-clip)");
-  const gGrid = clip.append("g").attr("class", "tl-grid");
-  const gWin = clip.append("g");
-  const gCtx = clip.append("g").attr("class", "tl-ctx");
-  const gPer = clip.append("g");
-  const gLinks = clip.append("g");
-  const gDocs = clip.append("g");
-  const gAxis = plot.append("g").attr("class", "tl-axis").attr("transform", `translate(0,${TL.top})`);
-  const gAxisB = plot.append("g").attr("class", "tl-axis").attr("transform", `translate(0,${H - TL.bottom})`);
-
-  const docs = S.data.documents.filter(d => !flaggedOnly || d.flags.length);
-  const laneIdx = Object.fromEntries(lanes.map((l, i) => [l.id, i]));
-  const personIdx = Object.fromEntries(people.map((p, i) => [p, i]));
-
-  function draw() {
-    // axis + grid
-    // monthly candidates, kept when at least 56 px from the previous one (January wins its slot)
-    const [d0, d1] = x.domain().length ? [x.domain()[0], x.domain()[x.domain().length - 1]] : [];
-    const ticks = [];
-    for (const m of d3.timeMonth.range(d3.timeMonth.ceil(d0), d1)) {
-      const px = x(m);
-      if (px < 0 || px > innerW) continue;
-      const last = ticks[ticks.length - 1];
-      if (!last || px - x(last) >= 56) ticks.push(m);
-      else if (m.getMonth() === 0 && last.getMonth() !== 0 && (ticks.length < 2 || px - x(ticks[ticks.length - 2]) >= 56)) ticks[ticks.length - 1] = m;
-    }
-    const tf = d => (d.getMonth() === 0 ? d3.timeFormat("%Y")(d) : d3.timeFormat("%b")(d));
-    gAxis.call(d3.axisTop(x).tickValues(ticks).tickFormat(tf).tickSize(4));
-    gAxisB.call(d3.axisBottom(x).tickValues(ticks).tickFormat(d3.timeFormat("%b %Y")).tickSize(4));
-    gGrid.call(d3.axisTop(x).tickValues(ticks).tickSize(-(H - TL.top - TL.bottom)).tickFormat(""))
-      .attr("transform", `translate(0,${TL.top})`);
-
-    // context events
-    gCtx.selectAll("g").data(S.data.context).join(enter => {
-      const g = enter.append("g");
-      g.append("line"); g.append("text");
-      return g;
-    }).each(function (c) {
-      const cx = x(parse(c.date));
-      d3.select(this).select("line").attr("x1", cx).attr("x2", cx).attr("y1", TL.top).attr("y2", H - TL.bottom);
-      d3.select(this).select("text").attr("x", cx - 4).attr("text-anchor", "end").attr("y", H - TL.bottom - 6).text(c.label);
-    });
-
-    // selected flag window
-    gWin.selectAll("*").remove();
-    const f = S.flag && S.byFlag[S.flag];
-    if (f) {
-      const a = x(parse(f.window[0])), b = x(parse(f.window[1]));
-      gWin.append("rect").attr("class", "tl-window").attr("x", Math.min(a, b)).attr("y", TL.top).attr("width", Math.max(2, Math.abs(b - a))).attr("height", H - TL.top - TL.bottom);
-      [a, b].forEach(v => gWin.append("line").attr("class", "tl-window-edge").attr("x1", v).attr("x2", v).attr("y1", TL.top).attr("y2", H - TL.bottom));
-      gWin.append("text").attr("class", "tl-window-label").attr("x", Math.min(a, b) + 4).attr("y", TL.top + 12).text(`${f.id} · ${fmtDay(parse(f.window[0]))} → ${fmtDay(parse(f.window[1]))}`);
-    }
-
-    // people periods
-    if (people.length) drawPeriods();
-
-    // documents: stacked when they collide in the same lane
-    const placed = [];
-    const byLane = d3.group(docs, d => d.lane);
-    for (const [lane, list] of byLane) {
-      const sorted = [...list].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-      let groupX = -1e9, stack = [];
-      const flush = () => {
-        stack.forEach((d, k) => placed.push({ d, cx: d._x, cy: TL.top + laneIdx[lane] * TL.lane + TL.lane / 2 + (k - (stack.length - 1) / 2) * 15, k, n: stack.length }));
-        stack = [];
-      };
-      for (const d of sorted) {
-        d._x = x(parse(d.date));
-        if (d._x - groupX > 14) { flush(); groupX = d._x; }
-        stack.push(d);
-      }
-      flush();
-    }
-    // labels: only when there is room before the next point of the same lane
-    placed.sort((a, b) => a.cx - b.cx);
-    const byLaneP = d3.group(placed, p => p.d.lane);
-    for (const list of byLaneP.values()) {
-      let free = -1e9;
-      list.forEach((p, i) => {
-        const nextX = list.slice(i + 1).find(q => q.cx - p.cx > 14)?.cx ?? 1e9;
-        const full = p.d.title.split(" — ")[0];
-        const text = p.n === 1 ? (full.length > 30 ? full.slice(0, 29) + "…" : full) : p.k === 0 ? `${p.n} documents` : "";
-        const w = text.length * 5.6 + 16;
-        p.label = text && p.cx > free && p.cx + w < nextX && p.cx + w < innerW + 10 ? text : "";
-        if (p.label) free = p.cx + w;
-      });
-    }
-
-    const sel = gDocs.selectAll("g.tl-doc").data(placed, p => p.d.id).join(enter => {
-      const g = enter.append("g").attr("class", "tl-doc").attr("tabindex", 0).attr("role", "button");
-      g.append("circle").attr("class", "halo").attr("r", 12);
-      g.append("circle").attr("class", "dot").attr("r", 6.5);
-      g.append("rect").attr("class", "badge-bg").attr("rx", 5).attr("height", 11);
-      g.append("text").attr("class", "badge");
-      g.append("text").attr("class", "lbl");
-      g.on("click", (ev, p) => openDoc(p.d.id, S.flag ? { flag: S.flag } : null))
-        .on("keydown", (ev, p) => { if (ev.key === "Enter") openDoc(p.d.id); })
-        .on("mouseenter", (ev, p) => showTip(ev, docTip(p.d)))
-        .on("mousemove", moveTip)
-        .on("mouseleave", hideTip);
-      return g;
-    });
-    sel.attr("transform", p => `translate(${p.cx},${p.cy})`)
-      .attr("class", p => {
-        const d = p.d, f = S.flag && S.byFlag[S.flag];
-        return ["tl-doc", d.severity ? `sev-${d.severity}` : "", d.provenance === "public_record" ? "is-public" : "",
-          S.doc === d.id ? "is-open" : "", f ? (f.docs.includes(d.id) ? "is-hit" : "is-dim") : ""].join(" ");
-      });
-    sel.select("text.lbl").attr("x", 11).attr("y", 4).text(p => p.label);
-    sel.select("rect.badge-bg").attr("x", 3).attr("y", -15).attr("width", p => p.d.flags.length > 9 ? 16 : 11)
-      .attr("display", p => p.d.flags.length ? null : "none");
-    sel.select("text.badge").attr("x", 5.5).attr("y", -6.6).text(p => p.d.flags.length || "");
-
-    // links through the evidence of the selected flag, in time order
-    gLinks.selectAll("*").remove();
-    if (f) {
-      const pts = f.docs.map(id => placed.find(p => p.d.id === id)).filter(Boolean).sort((a, b) => a.cx - b.cx || a.cy - b.cy);
-      const line = d3.line().curve(d3.curveCatmullRom.alpha(.6)).x(p => p.cx).y(p => p.cy);
-      if (pts.length > 1) gLinks.append("path").attr("class", "tl-link").attr("d", line(pts));
-    }
-  }
-
-  function drawPeriods() {
-    const rows = S.data.periods;
-    const track = p => (p.kind === "private" || p.kind === "employment" ? 0 : 1);
-    const yOf = p => peopleTop + personIdx[p.person] * TL.person + 8 + track(p) * 16;
-    const f = S.flag && S.byFlag[S.flag];
-    const sel = gPer.selectAll("g.tl-period").data(rows, (p, i) => p.person + p.label + p.start + i).join(enter => {
-      const g = enter.append("g").attr("class", p => `tl-period k-${p.kind}`);
-      g.append("rect").attr("height", 13);
-      g.append("text").attr("y", 10);
-      g.on("click", (ev, p) => p.doc && openDoc(p.doc, p.flags[0] ? { flag: p.flags[0] } : null))
-        .on("mouseenter", (ev, p) => showTip(ev, `<span class="mono">${esc(p.person)}</span><b>${esc(p.label)}</b><br>${fmtDay(parse(p.start))} → ${fmtDay(parse(p.end))}${p.doc ? `<br><span class="mono">source ${p.doc}</span>` : ""}`))
-        .on("mousemove", moveTip).on("mouseleave", hideTip);
-      return g;
-    });
-    sel.attr("transform", p => `translate(${x(parse(p.start))},${yOf(p)})`)
-      .classed("is-dim", p => f && !p.flags.includes(f.id) && !f.persons.includes(p.person));
-    sel.select("rect").attr("width", p => Math.max(3, x(parse(p.end)) - x(parse(p.start))));
-    sel.select("text").attr("x", 6).text(p => (x(parse(p.end)) - x(parse(p.start)) > p.label.length * 5.4 + 12 ? p.label : ""));
-
-    // overlap of a private and a public engagement for the same person
-    const overlaps = [];
-    for (const person of people) {
-      const pr = rows.filter(r => r.person === person && r.kind === "private");
-      const pu = rows.filter(r => r.person === person && r.kind === "public");
-      for (const a of pr) for (const b of pu) {
-        const s = a.start > b.start ? a.start : b.start, e = a.end < b.end ? a.end : b.end;
-        if (s <= e) overlaps.push({ person, s, e });
-      }
-    }
-    const ov = gPer.selectAll("g.tl-ov").data(overlaps, o => o.person + o.s).join(enter => {
-      const g = enter.append("g").attr("class", "tl-ov");
-      g.append("rect").attr("class", "tl-overlap").attr("rx", 4);
-      g.append("text").attr("class", "tl-window-label");
-      return g;
-    });
-    ov.select("rect").attr("x", o => x(parse(o.s))).attr("y", o => peopleTop + personIdx[o.person] * TL.person + 5)
-      .attr("width", o => Math.max(2, x(parse(o.e)) - x(parse(o.s)))).attr("height", 35);
-    ov.select("text").attr("x", o => x(parse(o.e)) + 4).attr("y", o => peopleTop + personIdx[o.person] * TL.person + 26)
-      .text(o => (x(parse(o.e)) - x(parse(o.s)) > 6 ? "overlap" : ""));
-  }
-
-  const zoom = d3.zoom().scaleExtent([1, 30]).translateExtent([[0, 0], [innerW, H]]).extent([[0, 0], [innerW, H]])
-    .filter(ev => (ev.type === "wheel" ? ev.ctrlKey || ev.metaKey || ev.shiftKey : !ev.button))
-    .on("zoom", ev => { x = ev.transform.rescaleX(x0); draw(); });
-  svg.call(zoom).on("dblclick.zoom", null);
-  TL.zoomTo = (a, b) => {
-    const xa = x0(a), xb = x0(b), k = Math.min(30, innerW / Math.max(1, xb - xa));
-    svg.transition().duration(650).call(zoom.transform, d3.zoomIdentity.scale(k).translate(-xa, 0));
-  };
-  TL.fit = () => svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
-  TL.by = k => svg.transition().duration(300).call(zoom.scaleBy, k);
-  TL.redraw = draw;
-  draw();
+  const { graph, alerts } = flowData();
+  flow.setData(graph, alerts);
+  if (S.doc) flow.select(S.doc);
 }
 
-function docTip(d) {
-  const fl = d.flags.map(id => `<span class="chip chip--${S.byFlag[id].severity}">${id}</span>`).join("");
-  return `<span class="mono">${esc(d.id)} · ${d.precision === "month" ? fmtMonth(parse(d.date)) : fmtDay(parse(d.date))}</span>
-    <b>${esc(d.title)}</b><br><span style="opacity:.7">${esc(d.issuer)}</span>
-    ${fl ? `<div class="tip__flags">${fl}</div>` : ""}`;
-}
-
-function renderLegend() {
-  $("#tl-legend").innerHTML = `
-    <span><i class="lg-dot"></i>document</span>
-    <span><i class="lg-dot lg-dot--high"></i>cited by a high flag</span>
-    <span><i class="lg-dot lg-dot--medium"></i>cited by a medium flag</span>
-    <span><i class="lg-dot lg-dot--public"></i>public record</span>
-    <span><i class="lg-bar lg-bar--public"></i>public engagement</span>
-    <span><i class="lg-bar lg-bar--private"></i>private engagement</span>
-    <span><i class="lg-bar lg-bar--employment"></i>employment</span>
-    <span><i class="lg-bar lg-bar--overlap"></i>overlap / window</span>
-    <span>ctrl + scroll or ± to zoom · drag to pan</span>`;
-}
+const TL = { redraw: () => flow && renderTimeline() };
 
 /* ================================================================ tooltip */
 
@@ -350,12 +136,7 @@ function renderFlags() {
     <li class="fl sev-${f.severity}" data-flag="${f.id}" tabindex="0">
       <span class="fl__id">${f.id}</span>
       <span class="fl__h">${esc(f.headline)}</span>
-      <span class="fl__meta">
-        <span class="chip chip--${f.severity}">${f.severity}</span>
-        <span class="chip">${esc(f.pattern_label)}</span>
-        <span class="cert cert--${f.certainty}">${CERT[f.certainty]}</span>
-      </span>
-      <span class="fl__meta">${f.docs.map(id => `<span class="chip chip--doc" data-doc="${id}" data-flag="${f.id}">${id}</span>`).join("")}</span>
+      <span class="fl__meta"><span class="chip">${esc(f.pattern_label)}</span></span>
     </li>`).join("");
   $$("#flag-list .fl").forEach(li => {
     li.addEventListener("click", e => {
@@ -378,14 +159,7 @@ function selectFlag(id, scroll = true) {
   S.flag = S.flag === id && scroll ? null : id;
   $$("#flag-list .fl").forEach(li => li.classList.toggle("is-on", li.dataset.flag === S.flag));
   renderDetail(S.flag, scroll);
-  TL.redraw?.();
-  const bar = $("#tl-flagbar");
-  if (S.flag) {
-    const f = S.byFlag[S.flag];
-    bar.hidden = false;
-    bar.innerHTML = `<b>${f.id}</b><span>${esc(f.headline)}</span><span class="mono">${f.docs.length} documents · ${f.evidence.length} lines</span><button type="button" id="flag-clear">Clear</button>`;
-    $("#flag-clear").onclick = () => selectFlag(S.flag);
-  } else bar.hidden = true;
+  renderTimeline();
   if (S.flag) history.replaceState(null, "", `#flag=${S.flag}`);
 }
 
@@ -402,39 +176,37 @@ function renderDetail(id, scroll) {
       <div class="ev__label">${esc(e.label)}</div>
       <p class="ev__q">${esc(e.quote)}</p>
     </li>`).join("");
-  const note = f.note ? `
-    <div class="d__sec"><h4>Reviewer note</h4>
-      <div class="note"><div class="note__h">✦ Mistral · ${esc(f.note.model || "")}${f.note.verified ? " · quotes verified on the page" : ""}</div>${md(f.note.text)}</div></div>` : "";
-  const pcs = f.precedents.map(p => precCard(p, true)).join("");
+  const evShort = f.evidence.slice(0, 5).map((e, i) => `
+    <li class="ev" data-i="${i}">
+      <div class="ev__top"><span class="ev__label">${esc(e.label)}</span><span class="ev__ref">${e.doc} p.${e.page}</span></div>
+      <p class="ev__q">${esc(e.quote)}</p>
+    </li>`).join("");
+  const more = f.evidence.length > 5 ? `<details class="more"><summary>${f.evidence.length - 5} more lines</summary><ol class="evs">${ev.split('<li class="ev"').slice(6).map(x => '<li class="ev"' + x).join("")}</ol></details>` : "";
   el.innerHTML = `
     <div class="sev-${f.severity}">
       <div class="d__top">
         <span class="fl__id">${f.id}</span>
-        <span class="chip chip--${f.severity}">${f.severity} severity</span>
         <span class="chip">${esc(f.pattern_label)}</span>
         <span class="cert cert--${f.certainty}">${CERT[f.certainty]}</span>
-        <span class="d__rule mono">${f.rule} · ${esc(f.title)}</span>
       </div>
       <h3 class="d__h">${esc(f.headline)}</h3>
       <p class="d__sum">${esc(f.summary)}</p>
       <div class="d__grid">
         <div>
-          <div class="d__sec"><h4>The chain</h4>${chainSVG(f)}</div>
-          <div class="d__sec"><h4>Where to look · ${f.evidence.length} lines in ${f.docs.length} documents</h4><ol class="evs">${ev}</ol></div>
-          ${f.aggravating.length ? `<div class="d__sec"><h4>Aggravating</h4><ul class="agg">${f.aggravating.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>` : ""}
+          <div class="d__sec">${chainSVG(f)}</div>
+          <div class="d__sec"><h4>Where to look</h4><ol class="evs">${evShort}</ol>${more}</div>
         </div>
         <div>
-          ${note}
-          <div class="d__sec"><h4>Comparable past cases</h4><ol class="pcs">${pcs}</ol></div>
-          <div class="d__sec"><h4>Framework</h4><ul class="legal">${f.legal.map(l => `<li><b>${esc(l.ref)}</b>${esc(l.text)}</li>`).join("")}</ul></div>
+          <div class="d__sec"><h4>Similar past cases</h4><ol class="pcs">${[f.precedents[0], f.precedents.find(p => p.provenance === "public_record" && p !== f.precedents[0]) ?? f.precedents[1]].filter(Boolean).map(p => precCard(p, true)).join("")}</ol></div>
           <div class="d__sec"><h4>Next steps</h4><ul class="next">${f.next.map((n, i) => `<li><input type="checkbox" id="nx-${f.id}-${i}"><label for="nx-${f.id}-${i}">${esc(n)}</label></li>`).join("")}</ul></div>
+          ${f.note ? `<details class="more"><summary>✦ Mistral reviewer note</summary><div class="note">${md(f.note.text)}</div></details>` : ""}
+          <details class="more"><summary>Legal framework</summary><ul class="legal">${f.legal.map(l => `<li><b>${esc(l.ref)}</b>${esc(l.text)}</li>`).join("")}</ul></details>
         </div>
       </div>
       <div class="d__actions">
-        <button class="btn btn--primary" type="button" id="d-open">Open the first line →</button>
-        <button class="btn" type="button" id="d-time">Show on the timeline</button>
-        <button class="btn" type="button" id="d-memo">Review memo (.md)</button>
-        <span class="disclaimer">Potential conflict of interest — to review. The qualification is the lawyer's.</span>
+        <button class="btn btn--primary" type="button" id="d-open">Open the document →</button>
+        <button class="btn" type="button" id="d-memo">Export memo</button>
+        <span class="disclaimer">To review — the lawyer decides.</span>
       </div>
     </div>`;
   $$(".ev", el).forEach(li => li.addEventListener("click", () => {
@@ -442,8 +214,7 @@ function renderDetail(id, scroll) {
     openDoc(e.doc, { flag: f.id, span: e });
   }));
   $$(".chain .l.is-doc", el).forEach(g => g.addEventListener("click", () => openDoc(g.dataset.doc, { flag: f.id })));
-  $("#d-open").onclick = () => openDoc(f.evidence[0].doc, { flag: f.id, span: f.evidence[0] });
-  $("#d-time").onclick = () => { $("#view-timeline").scrollIntoView({ behavior: "smooth" }); TL.zoomTo?.(d3.timeMonth.offset(parse(f.window[0]), -2), d3.timeMonth.offset(parse(f.window[1]), 2)); };
+  $("#d-open").onclick = () => { const e = primary(f); openDoc(e.doc, { flag: f.id, span: e }); };
   $("#d-memo").onclick = () => download(`${CASE}-${f.id}.md`, memo(f));
   if (scroll) $("#view-flags").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -489,12 +260,12 @@ function precCard(p, compact) {
     ...(p.why.signals || []).slice(0, 3).map(x => `<span class="chip chip--ok">${esc(x)}</span>`)].join("") : "";
   const score = p.score != null ? `<span class="score" title="similarity">${Math.round(p.score * 100)}<i style="--w:${Math.round(Math.min(1, p.score) * 100)}%"></i></span>` : "";
   return `<li class="pc">
-    <div class="pc__top">${prov}<span class="chip">${esc(p.jurisdiction)} · ${p.year}</span><span class="chip">${esc(p.kind)}</span>${score}</div>
+    <div class="pc__top">${prov}<span class="chip">${esc(p.jurisdiction)} · ${p.year}</span>${compact ? "" : `<span class="chip">${esc(p.kind)}</span>`}${score}</div>
     <div class="pc__t">${esc(p.title)}</div>
     <div class="pc__c">${esc(p.citation)}</div>
     ${compact ? "" : `<p class="pc__f">${esc(p.facts)}</p><p class="pc__o"><b>Outcome.</b> ${esc(p.outcome)}</p>`}
     <p class="pc__l">${compact ? "" : "<b>Lesson.</b> "}${esc(p.lesson)}</p>
-    ${why ? `<div class="pc__why">${why}</div>` : ""}
+    ${why && !compact ? `<div class="pc__why">${why}</div>` : ""}
   </li>`;
 }
 
@@ -536,13 +307,13 @@ function openDoc(id, opts = null) {
   }).join("");
   $$("#doc-flags .chip").forEach(c => c.addEventListener("click", () => selectFlag(c.dataset.flag)));
   $("#doc-body").innerHTML = d.pages.map(p => pageHTML(d, p)).join("");
+  flow?.select(id);
   requestAnimationFrame(() => {
     $$(".sheet").forEach(placeNotes);
     $$(".sheet__text mark").forEach(m => m.addEventListener("click", () => selectFlag(m.dataset.flags.split(" ")[0], false)));
     $$(".mnote").forEach(n => n.addEventListener("click", () => selectFlag(n.dataset.flag, false)));
     focusSpan(d);
   });
-  TL.redraw?.();
 }
 
 function pageHTML(d, p) {
@@ -563,7 +334,9 @@ function pageHTML(d, p) {
     html += `<mark class="sev-${sev}" data-flags="${flags.join(" ")}" data-start="${a}" title="${esc(title)}">${seg}</mark>`;
   }
   // one margin note per distinct span start
-  const groups = d3.groups(p.marks, m => m.start).map(([start, ms]) => ({ start, ms }));
+  const byStart = new Map();
+  p.marks.forEach(m => byStart.set(m.start, [...(byStart.get(m.start) ?? []), m]));
+  const groups = [...byStart].map(([start, ms]) => ({ start, ms }));
   const notes = groups.map(g => {
     const sev = g.ms.some(m => m.severity === "high") ? "high" : "medium";
     const fl = [...new Set(g.ms.map(m => m.flag))];
@@ -625,7 +398,7 @@ function stepDoc(dir) {
 function closeDoc() {
   $("#drawer").hidden = true;
   S.doc = null;
-  TL.redraw?.();
+  flow?.select(null);
 }
 
 /* ================================================================ precedents */
@@ -695,7 +468,6 @@ function setView(v) {
   if (prec) loadPrecedents();
   else if (v === "flags") $("#view-flags").scrollIntoView({ behavior: "smooth" });
   else window.scrollTo({ top: 0, behavior: "smooth" });
-  if (!prec) requestAnimationFrame(() => renderTimeline());
 }
 
 async function intro() {
@@ -743,7 +515,6 @@ async function boot() {
     throw e;
   }
   renderHeader();
-  renderLegend();
   renderFlags();
   renderTimeline();
 
@@ -757,12 +528,7 @@ async function boot() {
   else selectFlag(S.data.flags[0].id, false);
 
   $$(".tab").forEach(t => t.addEventListener("click", e => { e.preventDefault(); setView(t.dataset.view); }));
-  $("#tl-flagged").addEventListener("change", renderTimeline);
-  $("#tl-people").addEventListener("change", renderTimeline);
-  $("#zoom-in").onclick = () => TL.by(1.6);
-  $("#zoom-out").onclick = () => TL.by(1 / 1.6);
-  $("#zoom-fit").onclick = () => TL.fit();
-  $("#zoom-crisis").onclick = () => TL.zoomTo(new Date(2020, 9, 15), new Date(2021, 6, 15));
+  $("#tl-all").addEventListener("change", renderTimeline);
   $("#doc-close").onclick = closeDoc;
   $("#doc-prev").onclick = () => stepDoc(-1);
   $("#doc-next").onclick = () => stepDoc(1);
@@ -773,8 +539,6 @@ async function boot() {
     if (!$("#drawer").hidden && e.key === "ArrowRight") stepDoc(1);
     if (!$("#drawer").hidden && e.key === "ArrowLeft") stepDoc(-1);
   });
-  let rt = 0;
-  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderTimeline, 150); });
 }
 
 boot();
