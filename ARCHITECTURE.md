@@ -64,7 +64,7 @@ The proposal: (1) a bank of neutral facts, (2) a bank of laws/clauses; for each 
 
 **Verdict:** keep the two banks and the fact → law search; add the requirement compiler, the reverse pass, and measured certainty. That is the architecture below.
 
-> "Jev": we're not sure which model/tool this refers to. Below it's the **Judge** stage; plug any Mistral model in it (see §9).
+> **"Jev" = TypeSafe AI's Jev** (launched 15 Sept 2026): a "System One" decision model that takes a *state* + *typed questions* (boolean / choice / score) and returns typed answers **with probabilities**, in 70–500 ms, no free text. It fits the Judge stage well — see §7.2. If we can't get access or it misbehaves on French legal text, we fall back to a fast Mistral model with constrained JSON output. Either way, **probabilities are only shown after we measure their calibration on our benchmark.**
 
 ---
 
@@ -277,9 +277,29 @@ Same `kind` + same act + different values from different sources → `CONTRADICT
 ### 7.1 Deterministic checks
 Python predicates. Output `violated | satisfied | missing_fact`. Certainty `documented` if all facts are `explicit` with good OCR, else `needs_reading`.
 
-### 7.2 LLM judge for `judgment` requirements
+### 7.2 Judge for `judgment` requirements — two tiers
 
-Input: requirement (text + elements), the article sentence, the relevant facts **with quotes**, neighbouring facts of the same act, the version date.
+**Tier 1 — Jev (fast, typed, probabilistic).** One call per (requirement, act):
+
+```python
+# state = requirement + article sentence + facts with quotes (JSON, < 64k tokens)
+questions = [
+  {"name": "objective_stated",   "type": "boolean", "q": "Does `facts` state one of the objectives listed in `requirement`?"},
+  {"name": "only_means",         "type": "choice",  "q": "Is custody shown to be the only means?", "options": ["yes", "no", "not_documented"]},
+  {"name": "verdict",            "type": "choice",  "q": "Overall", "options": ["potential_defect", "no_defect", "insufficient_information"]},
+]
+# POST /v1/systemone  (model: jev-latest)  → each answer: label + probability
+```
+
+- Python and JS SDKs, REST `POST /v1/systemone`, text-only input, 64k context, early access since Sept 2026 (verify access + French behaviour in the first hour).
+- **Routing:** if every answer's probability ≥ threshold (set on the benchmark, not by intuition) → accept Jev's decision; otherwise → Tier 2.
+- Jev gives **no explanation and no quotes**, so the finding card's text always comes from Tier 2 or from code templates.
+
+**Tier 2 — Mistral judge (slow, explained).** Used when Jev is unsure, unavailable, or when the finding will be shown (to produce explanation, quotes, counter-arguments).
+
+**Fallback if Jev doesn't work:** Tier 1 = Mistral Small with constrained JSON (same typed questions, `choice` enums); no probability → certainty from agreement across 3 runs.
+
+Tier 2 input: requirement (text + elements), the article sentence, the relevant facts **with quotes**, neighbouring facts of the same act, the version date.
 Output (JSON schema, temperature 0):
 
 ```json
@@ -306,7 +326,7 @@ Guards:
 | Certainty | Produced when |
 |---|---|
 | `documented` | deterministic test, explicit facts, OCR OK |
-| `inferred` | LLM judge agreed 3/3, all quotes verified, or `llm_inferred` edge involved |
+| `inferred` | Jev above the calibrated threshold, or Mistral judge agreed 3/3, all quotes verified, or `llm_inferred` edge involved |
 | `needs_reading` | missing/unreadable fact, judge disagreement, conflicting sources |
 
 On the benchmark we compute **precision per certainty level** (e.g. "documented: 0.95 precision, inferred: 0.7"). Those **measured** numbers are what we may show — labelled "on our synthetic set".
@@ -356,7 +376,8 @@ Pitch: *"every case the firm reviews makes the next review better."*
 | Photos | Pixtral / multimodal Mistral | seals, screens, visible times |
 | Fact extraction | Mistral Large 3 (or Medium) | long PVs, French administrative style, JSON schema |
 | Rerank (Pass B) | Mistral Small | cheap, many calls |
-| Judge | Mistral Large 3 + Magistral (reasoning) as second opinion | two models = self-consistency signal |
+| Judge tier 1 | **Jev** (TypeSafe AI, `jev-latest`) — fallback Mistral Small, JSON enums | fast typed decisions with probabilities |
+| Judge tier 2 | Mistral Large 3 (+ Magistral as second opinion) | explanation, quotes, counter-arguments |
 | Embeddings | Mistral Embed | page passages, requirement texts, precedents |
 | Requirement compiler | Mistral Large 3 | drafts YAML from article text |
 | Moonshot proofs | Leanstral | Lean 4 proofs of deterministic violations |
@@ -474,6 +495,7 @@ tests/           fixtures per requirement
 - Mistral Document AI annotations (JSON schema, bbox): [docs.mistral.ai](https://docs.mistral.ai/capabilities/document_ai/annotations)
 - Légifrance API (PISTE, consolidated texts, versions): [data.gouv.fr](https://www.data.gouv.fr/dataservices/legifrance/)
 - Judilibre API (PISTE, criminal chamber `cr`): [data.gouv.fr](https://www.data.gouv.fr/fr/datasets/api-judilibre/), [pyjudilibre](https://pyjudilibre.readthedocs.io/en/latest/)
+- Jev (TypeSafe AI): [Jev-as-a-judge docs (Arize)](https://arize.com/docs/ax/evaluate/jev-as-a-judge), [overview](https://www.everydev.ai/tools/jev/llms.txt), [JEV-as-a-Judge paper](https://www.alphaxiv.org/abs/2609.26550.md) — performance and cost figures are vendor/third-party claims, to re-measure on our data
 - Karpathy "LLM Wiki" pattern: [overview](https://www.analyticsvidhya.com/blog/2026/04/llm-wiki-by-andrej-karpathy/)
 - Leanstral: [Mistral news](https://mistral.ai/news/leanstral-1-5/)
 - Legal rules, reforms and their verification status: see `CONTEXT.md` §7 and §12.
