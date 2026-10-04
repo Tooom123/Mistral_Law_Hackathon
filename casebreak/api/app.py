@@ -31,7 +31,7 @@ from casebreak.privacy.pseudonymize import mask_value
 from casebreak.proofs import lean
 from casebreak.propagate.cascade import simulate as simulate_cascade
 from casebreak.schemas import LANES
-from casebreak.synth import DEMO_TITLE, generate_demo
+from casebreak.synth import DEFAULT_DEMO, DEMO_CASES
 from casebreak.tribunal.court import deliberate
 
 log = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ app = FastAPI(title="CASEBREAK", version="0.3", description="Find the procedural
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 Mode = Literal["defense", "prosecution"]
-DEMO_SRC = CACHE / "demo_src"
+DEMO_SRC = CACHE / "demo_src"  # + "_<case>" for the cases other than the first synthetic one
 _demo_lock = threading.Lock()
 
 
@@ -107,17 +107,21 @@ async def create_case(files: list[UploadFile] = File(...), title: str = Query(""
 
 
 @app.post("/cases/demo")
-def create_demo(pace: float = Query(1.0, ge=0, le=5)) -> dict:
-    """The frozen synthetic demo (the Mathurins case), run live for the war room."""
+def create_demo(pace: float = Query(1.0, ge=0, le=5), case: str = Query(DEFAULT_DEMO)) -> dict:
+    """A frozen synthetic demo case file, run live for the war room: `beckham` (default) or `mathurins`."""
+    if case not in DEMO_CASES:
+        raise HTTPException(400, f"Unknown demo case {case!r}; available: {', '.join(DEMO_CASES)}.")
+    title, generate = DEMO_CASES[case]
+    src = DEMO_SRC if case == "mathurins" else DEMO_SRC.with_name(f"demo_src_{case}")
     with _demo_lock:
-        if not (DEMO_SRC / "ground_truth.json").exists():
-            generate_demo(DEMO_SRC)
+        if not (src / "ground_truth.json").exists():
+            generate(src)
     cid = svc.new_case_id().replace("c", "demo-", 1)
     d = svc.case_path(cid)
-    shutil.copytree(DEMO_SRC, d)
+    shutil.copytree(src, d)
     files = ["dossier.pdf"] + sorted(f"photos/{p.name}" for p in (d / "photos").glob("*.jpg"))
-    threading.Thread(target=_run_safe, args=(cid, files, DEMO_TITLE, pace), daemon=True).start()
-    return {"case_id": cid, "files": files, "title": DEMO_TITLE}
+    threading.Thread(target=_run_safe, args=(cid, files, title, pace), daemon=True).start()
+    return {"case_id": cid, "files": files, "title": title}
 
 
 def _run_safe(cid: str, files: list[str], title: str, pace: float) -> None:

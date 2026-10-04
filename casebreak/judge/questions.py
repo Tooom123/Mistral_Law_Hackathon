@@ -30,4 +30,9 @@ PROSECUTION = {
     "clerical_error": "The discrepancy is a harmless clerical error.",
     "camera_clock": "The camera clock was set wrong.",
     "sufficient_grounds": "The grounds are sufficient in light of the legal objectives.",
+    # England & Wales road traffic (NIP-01) — TODO(legal): confirm each against s.1 Road Traffic Offenders Act 1988
+    "postal_presumption": "Service by first class post is presumed to have been effected in the ordinary course of post, "
+                          "i.e. within the 14 days.",
+    "diligence_exception": "Neither the driver nor the keeper could, with reasonable diligence, have been identified in time.",
+    "driver_conduct": "The accused contributed to the late service by their own conduct.",
 }

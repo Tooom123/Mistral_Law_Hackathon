@@ -1,0 +1,62 @@
+id: NIP-01
+category: TRAFFIC
+jurisdiction: UK
+title: Notice of intended prosecution not served within 14 days of the offence
+article: s.1 Road Traffic Offenders Act 1988
+applies_to: [nip]
+needs: [nip_posted_at]
+condition_type: measurable
+confidence: M
+versions:
+  - label: notice served on the driver or the registered keeper within 14 days of the offence
+    params: {days: 14}
+    let:
+      offence: t('case:speed_offence.offence_at')
+      posted: t('nip_posted_at')
+      recv: t('case:post_room_entry.nip_received_at')
+      limit: end_of_day(add_minutes(offence, params['days'] * 1440))
+      day_posted: round(minutes(end_of_day(offence), end_of_day(posted)) / 1440)
+      day_recv: round(minutes(end_of_day(offence), end_of_day(recv)) / 1440)
+    outcomes:
+    - when: offence is None
+      status: needs_reading
+      say: The date of the offence is missing or unreadable, so the 14-day period cannot be computed.
+      cite: [case:speed_offence.offence_at]
+    - when: recv is not None and recv > limit
+      status: possible_nullity
+      say: "The notice of intended prosecution was posted on {dhm(posted)} (day {day_posted} after the offence of {dhm(offence)}) but the registered keeper's register records its receipt on {dhm(recv)}, day {day_recv}: one day after the 14-day limit ({dhm(limit)})."
+      cite: [case:speed_offence.offence_at, nip_posted_at, case:post_room_entry.nip_received_at, case:witness_statement.nip_received_stated]
+      proof:
+        kind: duration_gt
+        start: iso(offence)
+        end: iso(recv)
+        limit_minutes: minutes(offence, limit)
+      details:
+        offence: iso(offence)
+        posted: iso(posted)
+        received: iso(recv)
+        limit: iso(limit)
+        day_posted: day_posted
+        day_received: day_recv
+    - when: posted is None
+      status: needs_reading
+      say: The date the notice was posted is missing or unreadable.
+      cite: [nip_posted_at]
+    - when: recv is None and posted <= limit
+      status: needs_reading
+      say: "The notice was posted on {dhm(posted)} (day {day_posted}), within the period, but no document in the file records when the registered keeper received it. Read the delivery evidence."
+      cite: [case:speed_offence.offence_at, nip_posted_at]
+    - when: True
+      status: satisfied
+      say: "Notice posted on {dhm(posted)} (day {day_posted}) and received on {dhm(recv)}, within the 14-day limit ({dhm(limit)})."
+      cite: [case:speed_offence.offence_at, nip_posted_at]
+rights_at_stake: [statutory time limit for prosecution]
+next_steps:
+  - Check the postmark and the delivery evidence (post room register, witness statement) against the date the notice was sent.
+  - Check whether service on the registered keeper in time is presumed from posting, and what evidence rebuts that presumption. TODO(legal)
+  - Check whether a statutory exception applies (reasonable diligence; conduct of the accused). TODO(legal)
+prosecution_hints: [postal_presumption, diligence_exception, driver_conduct]
+weight: 1.5
+legal_todo:
+  - "Confirm the wording of s.1(1) and (3) Road Traffic Offenders Act 1988 and the rules on deemed service by post (Interpretation Act 1978 s.7) on legislation.gov.uk."
+  - "Rule coded from press reports of the 2018 case (14-day window; notice received on day 15): confirm with a practising road traffic lawyer."

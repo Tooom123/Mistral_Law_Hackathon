@@ -16,7 +16,8 @@ def main() -> None:
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8000)
     s.add_argument("--reload", action="store_true")
-    sub.add_parser("demo", help="Generate and analyse the synthetic demo case file")
+    dm = sub.add_parser("demo", help="Generate and analyse a synthetic demo case file")
+    dm.add_argument("--case", default="beckham", choices=["beckham", "mathurins"])
     sub.add_parser("doctor", help="Check which engines work with the keys in .env (one tiny call per Mistral path)")
     b = sub.add_parser("bench", help="NullityBench-FR: N synthetic case files, recall/precision")
     b.add_argument("--n", type=int, default=10)
@@ -36,12 +37,13 @@ def main() -> None:
         from casebreak.config import CASES
         from casebreak.graph import store
         from casebreak.pipeline import run_case
-        from casebreak.synth import DEMO_TITLE, generate_demo
+        from casebreak.synth import DEMO_CASES
 
+        title, generate = DEMO_CASES[a.case]
         d = CASES / "demo-cli"
         shutil.rmtree(d, ignore_errors=True)
-        truth = generate_demo(d)
-        run_case("demo-cli", truth["files"], DEMO_TITLE)
+        truth = generate(d)
+        run_case("demo-cli", truth["files"], title)
         _, checks = store.load(d)
         for c in sorted((c for c in checks if c.rank > 0), key=lambda c: -c.rank):
             print(f"{c.id}  {c.nullity_id:7} {c.status:16} {c.certainty:13} p.{','.join(str(s.page) for s in c.sources):8} "

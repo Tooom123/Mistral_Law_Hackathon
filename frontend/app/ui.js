@@ -29,6 +29,9 @@ export const longDate = iso => { const x = d(iso); return x ? `${x.getDate()} ${
 
 // category id -> [label, subtitle] (the ids stay the French procedural categories of the data model)
 export const CAT_FR = {
+  TRAFFIC: ["Enforcement", "offence · keeper · notice"],
+  KEEPER: ["Registered keeper", "post room · statements · reply"],
+  COURT: ["Court", "summons · hearings"],
   INTERPELLATION: ["Arrest", "arrests"],
   GARDE_A_VUE: ["Custody", "placement · rights · end"],
   AUDITION: ["Hearings", "custody · witnesses"],
@@ -62,6 +65,13 @@ export const ATTR_FR = {
   custody_start_conflict: "Conflicting times", exif_conflict: "EXIF inconsistency", special_regime: "Special regime",
   cited_missing: "Cited report missing", geoloc_used: "Geolocation used", custody_id: "Custody", custody_end_date: "End date",
   start_date_only: "Date (time unreadable)", seized: "Seized",
+  offence_at: "Offence", offence_place: "Place of offence", speed_recorded: "Recorded speed (mph)", speed_limit: "Speed limit (mph)",
+  keeper_name: "Registered keeper", nip_posted_at: "Notice posted", nip_addressee: "Notice addressed to",
+  nip_service_method: "Method of service", offence_stated_at: "Offence (as stated in the notice)",
+  offence_place_stated: "Place (as stated in the notice)", offence_nature_stated: "Nature (as stated in the notice)",
+  nip_received_at: "Notice received", nip_received_stated: "Notice received (as stated)", driver_name: "Driver identified",
+  response_date: "Response", summons_date: "Summons", hearing_at: "Hearing", plea: "Plea", statement_date: "Statement",
+  notice_date: "Notice date", enquiry_date: "Enquiry", court: "Court",
 };
 
 // document types of the case file (French police/court documents) -> English label
@@ -69,6 +79,9 @@ export const DOC_TYPE = {
   PV_INTERPELLATION: "Arrest report", PV_PLACEMENT_GAV: "Custody placement report", PV_NOTIFICATION_DROITS: "Rights notification report",
   PV_AVIS_AVOCAT: "Lawyer notice", PV_AVIS_FAMILLE: "Relative notice", PV_EXAMEN_MEDICAL: "Medical examination report",
   AUTORISATION_PROLONGATION: "Custody extension authorisation", PV_FIN_GAV: "End-of-custody report", PV_AUDITION_GAV: "Custody hearing report",
+  SPEED_OFFENCE_REPORT: "Speed camera offence report", KEEPER_ENQUIRY: "Registered keeper enquiry", NIP: "Notice of intended prosecution",
+  POST_ROOM_REGISTER: "Post room register", WITNESS_STATEMENT: "Witness statement", DRIVER_IDENTIFICATION: "Driver identification",
+  SUMMONS: "Summons", COURT_HEARING_RECORD: "Court record",
   PV_AUDITION_TEMOIN: "Witness hearing report", PV_PERQUISITION: "Search and seizure report", PV_EXPLOITATION: "Seal analysis report",
   RAPPORT_EXPERTISE: "Expert report", ORDONNANCE_EXPERTISE: "Expert appointment order", AUTORISATION_GEOLOC: "Geolocation authorisation",
   PV_GEOLOCALISATION: "Geolocation report", ORDONNANCE_INTERCEPTION: "Interception order", PV_INTERCEPTION: "Interception transcript",

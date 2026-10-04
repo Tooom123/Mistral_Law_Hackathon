@@ -1,0 +1,25 @@
+id: NIP-02
+category: TRAFFIC
+jurisdiction: UK
+title: Notice specifies the nature, time and place of the offence
+article: s.1 Road Traffic Offenders Act 1988
+applies_to: [nip]
+needs: [offence_stated_at, offence_place_stated, offence_nature_stated]
+condition_type: measurable
+confidence: M
+versions:
+  - label: the notice must specify the nature of the offence and the time and place alleged
+    outcomes:
+    - when: missing('offence_stated_at') or missing('offence_place_stated') or missing('offence_nature_stated')
+      status: possible_nullity
+      say: The notice does not state all of the nature, the time and the place of the alleged offence.
+      cite: [offence_stated_at, offence_place_stated, offence_nature_stated]
+    - when: True
+      status: satisfied
+      say: "The notice states the nature ({text(val('offence_nature_stated'))}), the time ({dhm(t('offence_stated_at'))}) and the place of the alleged offence."
+      cite: [offence_stated_at, offence_place_stated, offence_nature_stated]
+rights_at_stake: [information of the accused]
+next_steps:
+  - Compare the time and place stated in the notice with the enforcement authority's offence report.
+legal_todo:
+  - "Confirm the wording of s.1(1) Road Traffic Offenders Act 1988 on legislation.gov.uk."

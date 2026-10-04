@@ -99,7 +99,7 @@ def card(c: Check, g: CaseGraph, reviews: dict, mode: str = "defense", pseudo: b
                 .get(c.status, STATUS_LABEL.get(c.status, c.status)))
     next_steps = ([PARQUET_STEPS.get(c.kind, PARQUET_STEPS["default"])] if is_parquet else list(c.next_steps))
     return {
-        "id": c.id, "key": review_key(c), "nullity_id": c.nullity_id, "title": c.title, "headline": headline,
+        "id": c.id, "key": review_key(c), "nullity_id": c.nullity_id, "jurisdiction": nl.jurisdiction if nl else "FR", "title": c.title, "headline": headline,
         "status": c.status, "status_label": STATUS_LABEL.get(c.status, c.status), "certainty": c.certainty,
         "certainty_label": CERTAINTY_LABEL[c.certainty], "kind": c.kind, "rank": c.rank, "confidence": c.confidence,
         "category": node.category if node else None,
@@ -110,7 +110,9 @@ def card(c: Check, g: CaseGraph, reviews: dict, mode: str = "defense", pseudo: b
         "why": {"article": c.article, "law_version": c.law_version, "rights_at_stake": c.rights_at_stake,
                 "affected": acts, "affected_count": len(acts),
                 "legal_todo": nl.legal_todo if nl else [], "validated_by": c.validated_by,
-                "grief_note": "No nullity without prejudice (art. 171 and 802 CPP): prejudice is never assessed by the tool."},
+                "grief_note": ("Whether the statutory time limit bars the prosecution is for the court: never decided by the tool."
+                               if nl and nl.jurisdiction != "FR" else
+                               "No nullity without prejudice (art. 171 and 802 CPP): prejudice is never assessed by the tool.")},
         "next": next_steps,
         "judge": c.judge, "details": {k: v for k, v in c.details.items() if k not in ("cascade",)},
         "review": rv, "mode": mode,

@@ -11,7 +11,7 @@ def client_case():
     from casebreak.api.app import app
 
     c = TestClient(app)
-    cid = c.post("/cases/demo?pace=0").json()["case_id"]
+    cid = c.post("/cases/demo?pace=0&case=mathurins").json()["case_id"]
     for _ in range(300):
         st = c.get(f"/cases/{cid}/status").json()
         if st["state"] in ("done", "error"):

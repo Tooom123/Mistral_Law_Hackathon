@@ -81,6 +81,9 @@ class Ctx:
         if h:
             raw = self.pt.raw(h, 1).strip()
             return re.sub(r"\s+", " ", raw)
+        h = self.pt.find(r"person concerned\s*:\s*([a-z' -]{3,60}?)\s*\.")  # England & Wales documents
+        if h:
+            return re.sub(r"\s+", " ", self.pt.raw(h, 1).strip())
         return None
 
     def _opener(self) -> tuple[datetime | None, date | None, Src | None, bool]:
@@ -433,6 +436,120 @@ def _photo(c: Ctx) -> list[Draft]:
     return [Draft(n, seals_used=seals)]
 
 
+# ---------------------------------------------------------------- England & Wales road traffic documents
+# Same principle as the French readers: deterministic patterns, every value keeps {page, quote}.
+
+EN_MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october",
+             "november", "december"]
+EN_DT = r"(\d{1,2})(?:st|nd|rd|th)? (" + "|".join(EN_MONTHS) + r") (\d{4})(?:,? (?:at )?(?:about )?(\d{1,2})[:.h](\d{2}))?"
+
+
+def _en_when(c: Ctx, label: str, tail: str = "") -> Attr | None:
+    """`label` (no capture group) followed by "7 February 2018 [at 09:40]" → datetime attribute with its quote."""
+    h = c.hit(label + r"\s*:?\s*" + EN_DT + tail)
+    if not h:
+        return None
+    day, month, year, hh, mm = h.group(1), h.group(2), h.group(3), h.group(4), h.group(5)
+    try:
+        d = date(int(year), EN_MONTHS.index(month) + 1, int(day))
+        t = time(int(hh), int(mm)) if hh else time(0, 0)
+    except ValueError:
+        return Attr(value=None, src=h.src, status="unreadable")
+    return Attr(value=datetime.combine(d, t).isoformat(), src=h.src)
+
+
+def _en_text(c: Ctx, pattern: str) -> Attr | None:
+    h = c.hit(pattern)
+    return Attr(value=squash(c.pt.raw(h, 1)), src=h.src) if h else None
+
+
+def _refs(c: Ctx) -> list[tuple[str, Src]]:
+    """Reference numbers printed in the text ("... in respect of offence report TCJU/2018/00123") — the cited
+    documents become SUPPORTS edges (the cited act supports this one)."""
+    return [(c.pt.raw(h, 1).upper(), h.src) for h in c.pt.find_all(r"\b([a-z]{2,6}(?:/[a-z]{1,4})?/\d{4}/\d{3,6})\b")]
+
+
+def _set(n: Node, key: str, a: Attr | None, missing: bool = True) -> None:
+    if a is not None:
+        n.attrs[key] = a
+    elif missing:
+        n.attrs[key] = Attr(value=None, status="missing")
+
+
+def _speed_offence(c: Ctx) -> list[Draft]:
+    n = c.node("speed_offence", "TRAFFIC", "Speeding detected")
+    _set(n, "offence_at", _en_when(c, r"date and time of offence"))
+    _set(n, "offence_place", _en_text(c, r"place of offence\s*:\s*([^.]{5,90})\."))
+    sp = c.hit(r"recorded speed\s*:\s*(\d{2,3}) mph")
+    if sp:
+        n.attrs["speed_recorded"] = Attr(value=sp.group(1), src=sp.src)
+    lim = c.hit(r"posted speed limit\s*:\s*(\d{2,3}) mph")
+    if lim:
+        n.attrs["speed_limit"] = Attr(value=lim.group(1), src=lim.src)
+    n.start = _dt(n.attrs.get("offence_at"))
+    return [Draft(n)]
+
+
+def _keeper_enquiry(c: Ctx) -> list[Draft]:
+    n = c.node("keeper_enquiry", "TRAFFIC", "Registered keeper identified")
+    _set(n, "keeper_name", _en_text(c, r"registered keeper at the date of the offence\s*:\s*([^.,]{3,60})[.,]"))
+    n.attrs["enquiry_date"] = _en_when(c, r"date of enquiry") or Attr(value=None, status="missing")
+    n.start = _dt(n.attrs["enquiry_date"])
+    return [Draft(n, cites=_refs(c))]
+
+
+def _nip(c: Ctx) -> list[Draft]:
+    n = c.node("nip", "TRAFFIC", "Notice of intended prosecution")
+    _set(n, "notice_date", _en_when(c, r"date of notice"))
+    _set(n, "nip_posted_at", _en_when(c, r"date and time of posting"))
+    _set(n, "nip_addressee", _en_text(c, r"addressed to\s*:\s*([^.,(]{3,60}?)\s*[.,(]"))
+    _set(n, "nip_service_method", _en_text(c, r"method of service\s*:\s*([^.]{3,40})\."))
+    _set(n, "offence_stated_at", _en_when(c, r"offence date and time stated"))
+    _set(n, "offence_place_stated", _en_text(c, r"offence place stated\s*:\s*([^.]{5,90})\."))
+    _set(n, "offence_nature_stated", _en_text(c, r"nature of offence stated\s*:\s*([^.]{5,90})\."))
+    n.start = _dt(n.attrs.get("nip_posted_at")) or _dt(n.attrs.get("notice_date"))
+    return [Draft(n, cites=_refs(c))]
+
+
+def _post_room(c: Ctx) -> list[Draft]:
+    n = c.node("post_room_entry", "KEEPER", "Notice received at the post room")
+    _set(n, "nip_received_at", _en_when(c, r"received", tail=r"\s*-\s*notice of intended prosecution"))
+    n.start = _dt(n.attrs.get("nip_received_at"))
+    return [Draft(n)]
+
+
+def _witness(c: Ctx) -> list[Draft]:
+    n = c.node("witness_statement", "KEEPER", "Witness statement — post room")
+    _set(n, "statement_date", _en_when(c, r"date of statement"))
+    _set(n, "nip_received_stated", _en_when(c, r"opened the envelope[^.]{0,80}?in the post room on"))
+    n.start = _dt(n.attrs.get("statement_date"))
+    return [Draft(n)]
+
+
+def _driver_identification(c: Ctx) -> list[Draft]:
+    n = c.node("driver_identification", "KEEPER", "Driver identified to the police")
+    _set(n, "response_date", _en_when(c, r"date of response"))
+    _set(n, "driver_name", _en_text(c, r"identifies the driver[^.]{0,80}? as ((?:mr|mrs|ms|miss) [a-z' -]{3,40})\."))
+    n.start = _dt(n.attrs.get("response_date"))
+    return [Draft(n, cites=_refs(c))]
+
+
+def _summons(c: Ctx) -> list[Draft]:
+    n = c.node("summons", "COURT", "Summons issued")
+    _set(n, "summons_date", _en_when(c, r"date of summons"))
+    _set(n, "court", _en_text(c, r"court\s*:\s*([^.]{5,70})\."))
+    n.start = _dt(n.attrs.get("summons_date"))
+    return [Draft(n, cites=_refs(c))]
+
+
+def _hearing_record(c: Ctx) -> list[Draft]:
+    n = c.node("hearing_record", "COURT", "Plea hearing")
+    _set(n, "hearing_at", _en_when(c, r"date of hearing"))
+    _set(n, "plea", _en_text(c, r"plea entered[^:]{0,40}:\s*([^.]{3,30})\."))
+    n.start = _dt(n.attrs.get("hearing_at"))
+    return [Draft(n, cites=_refs(c))]
+
+
 EXTRACTORS = {
     "PV_INTERPELLATION": _interpellation,
     "PV_PLACEMENT_GAV": _placement,
@@ -456,6 +573,14 @@ EXTRACTORS = {
     "ORDONNANCE_EXPERTISE": _court("expert_order", "INSTRUCTION", "Expert appointment"),
     "ARRET_CHAMBRE_INSTRUCTION": _court("chamber_ruling", "INSTRUCTION", "Investigating chamber ruling"),
     "PHOTO": _photo,
+    "SPEED_OFFENCE_REPORT": _speed_offence,
+    "KEEPER_ENQUIRY": _keeper_enquiry,
+    "NIP": _nip,
+    "POST_ROOM_REGISTER": _post_room,
+    "WITNESS_STATEMENT": _witness,
+    "DRIVER_IDENTIFICATION": _driver_identification,
+    "SUMMONS": _summons,
+    "COURT_HEARING_RECORD": _hearing_record,
 }
 
 

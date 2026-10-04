@@ -53,3 +53,27 @@ exif_conflict_search:   {type: text, derived: true, description: "Search act the
 authorization_ref:      {type: text, description: "Reference of the authorisation / order the act executes", fr: "en exécution de l'autorisation n° … / de l'ordonnance n° …"}
 authorization_date:     {type: date, description: "Date of the authorisation cited", fr: "délivrée par … en date du …"}
 date:                   {type: datetime, description: "Date (and time) of the order, ruling or report", fr: "L'an … le …"}
+
+# --- England & Wales road traffic (speeding case: notice of intended prosecution, s.1 Road Traffic Offenders Act 1988)
+offence_at:             {type: datetime, description: "Date and time the offence was committed (as recorded by the enforcement authority)", en: "Date and time of offence: 23 January 2018 at 14:36"}
+offence_place:          {type: text, description: "Place of the offence", en: "Place of offence: A40 Westway, Paddington"}
+speed_recorded:         {type: text, description: "Speed recorded by the detection device (mph)", en: "Recorded speed: 59 mph"}
+speed_limit:            {type: text, description: "Posted speed limit (mph)", en: "Posted speed limit: 40 mph"}
+keeper_name:            {type: text, description: "Registered keeper of the vehicle at the date of the offence", en: "Registered keeper at the date of the offence: ..."}
+nip_posted_at:          {type: datetime, description: "Date and time the notice of intended prosecution was posted", en: "Date and time of posting: 2 February 2018 at 16:30"}
+nip_addressee:          {type: text, description: "Person the notice of intended prosecution is addressed to", en: "Addressed to: ..."}
+nip_service_method:     {type: text, description: "Method of service stated on the notice (first class post, recorded delivery…)", en: "Method of service: first class post"}
+offence_stated_at:      {type: datetime, description: "Date and time of the offence as stated in the notice", en: "Offence date and time stated: ..."}
+offence_place_stated:   {type: text, description: "Place of the offence as stated in the notice", en: "Offence place stated: ..."}
+offence_nature_stated:  {type: text, description: "Nature of the offence as stated in the notice", en: "Nature of offence stated: ..."}
+nip_received_at:        {type: datetime, description: "Date and time the notice of intended prosecution was received by the registered keeper (post room register)", en: "Received: 7 February 2018 at 09:40 - Notice of intended prosecution ..."}
+nip_received_stated:    {type: datetime, description: "Date and time of receipt of the notice as stated in a witness statement", en: "I opened the envelope ... on 7 February 2018 at 09:40"}
+driver_name:            {type: text, description: "Driver identified in response to the notice", en: "identifies the driver ... as ..."}
+response_date:          {type: datetime, description: "Date of the registered keeper's response to the notice", en: "Date of response: 12 February 2018"}
+summons_date:           {type: datetime, description: "Date the summons was issued", en: "Date of summons: 2 July 2018"}
+hearing_at:             {type: datetime, description: "Date of the court hearing", en: "Date of hearing: 28 August 2018"}
+plea:                   {type: text, description: "Plea entered at the hearing", en: "Plea: not guilty"}
+statement_date:         {type: datetime, description: "Date of a witness statement", en: "Date of statement: 20 August 2018"}
+notice_date:            {type: datetime, description: "Date of the notice of intended prosecution", en: "Date of notice: 2 February 2018"}
+enquiry_date:           {type: datetime, description: "Date of the registered keeper enquiry", en: "Date of enquiry: 24 January 2018"}
+court:                  {type: text, description: "Court named on the document", en: "Court: Wimbledon Magistrates' Court"}

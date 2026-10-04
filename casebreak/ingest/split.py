@@ -16,8 +16,12 @@ HEADER_RE = re.compile(
     r"^\s*(proc[e]s[- ]?verbal|ordonnance|rapport|autorisation|r[e]quisitoire|arr[e]t)\b[^\n]{0,40}?\bn\s?[o0]\s*[:.]?\s*([\w/.-]+)",
     re.M,
 )
+# English documents (England & Wales road traffic case): "OFFENCE REPORT No: TCJU/2018/00123"
+EN_HEADER_RE = re.compile(
+    r"^\s*(offence report|keeper enquiry|notice of intended prosecution|incoming post register|witness statement|"
+    r"response to notice|summons|court record)\s+no\s*[:.]?\s*([\w/.-]+)", re.M)
 COTE_RE = re.compile(r"\bcote\s+(d\d+)\b")
-OBJET_RE = re.compile(r"^\s*objet\s*:\s*(.+)$", re.M)
+OBJET_RE = re.compile(r"^\s*(?:objet|subject)\s*:\s*(.+)$", re.M)
 
 # (keywords in "Objet", type, category) — first match wins, order matters.
 TYPES: list[tuple[str, str, str]] = [
@@ -49,6 +53,15 @@ TYPES: list[tuple[str, str, str]] = [
     ("compte rendu", "PV_CONSTATATIONS", "AUTRE"),
     ("requisition", "PV_REQUISITION", "AUTRE"),
     ("annexe", "PV_ANNEXE", "AUTRE"),
+    # England & Wales road traffic (speeding case)
+    ("speed camera detection", "SPEED_OFFENCE_REPORT", "TRAFFIC"),
+    ("registered keeper enquiry", "KEEPER_ENQUIRY", "TRAFFIC"),
+    ("notice of intended prosecution", "NIP", "TRAFFIC"),
+    ("incoming post register", "POST_ROOM_REGISTER", "KEEPER"),
+    ("witness statement", "WITNESS_STATEMENT", "KEEPER"),
+    ("driver identification", "DRIVER_IDENTIFICATION", "KEEPER"),
+    ("summons", "SUMMONS", "COURT"),
+    ("record of hearing", "COURT_HEARING_RECORD", "COURT"),
 ]
 TYPE_CATEGORY = {t: c for _, t, c in TYPES} | {"PHOTO": "PERQUISITION_SAISIE", "INCONNU": "AUTRE"}
 
@@ -90,6 +103,8 @@ def split_pieces(pages: list[PageRec]) -> list[Piece]:
             continue
         n = norm(pg.text)
         m = HEADER_RE.search(_lines(pg.text, 14))
+        en = None if m else EN_HEADER_RE.search(_lines(pg.text, 14))
+        m = m or en
         if m or not pieces or pieces[-1].type == "PHOTO":
             cm = COTE_RE.search(n)
             cote = cm.group(1).upper() if cm else f"P{pg.page}"
@@ -98,6 +113,8 @@ def split_pieces(pages: list[PageRec]) -> list[Piece]:
                 cote = f"D{prev + 1}"  # OCR misread the cote number on a scan: trust the sequence
             pid = _unique(cote, used_ids)
             number = m.group(2).rstrip(".,;") if m else ""
+            if en:
+                number = number.upper()  # reference numbers are cited in upper case ("NIP/2018/04417")
             om = OBJET_RE.search(_lines(pg.text, 16))
             objet = om.group(1).strip() if om else ""
             pieces.append(Piece(id=pid, number=number, type="INCONNU", title=_raw_objet(pg.text) or objet,
@@ -127,7 +144,7 @@ def _lines(text: str, n: int) -> str:
 
 def _raw_objet(text: str) -> str:
     for line in text.split("\n")[:16]:
-        if norm(line).strip().startswith("objet"):
+        if norm(line).strip().startswith(("objet", "subject")):
             return line.split(":", 1)[-1].strip()
     return ""
 

@@ -113,10 +113,12 @@ def _offline(c: Check, g: CaseGraph) -> dict:
                + (f"{len(aff)} act(s) are potentially affected and should be named in the request: {aff_txt}."
                   if aff else "No dependent act identified in the graph."))
     objections = [_objection(h, c, n, g, pages) for h in (nl.prosecution_hints if nl else [])] if n else []
-    if not any(o["hint"] == "no_prejudice" for o in objections):
+    if nl and nl.jurisdiction != "FR":
+        pass  # "no nullity without prejudice" is a rule of French criminal procedure only
+    elif not any(o["hint"] == "no_prejudice" for o in objections):
         objections.append(_objection("no_prejudice", c, n, g, pages) if n else
                           {"hint": "no_prejudice", "text": PROSECUTION["no_prejudice"], "strength": "principle", "source": None, "why": ""})
-    objections += _procedural(g, c)
+    objections += _procedural(g, c) if not nl or nl.jurisdiction == "FR" else []
     return {"tier": "offline", "defense": {"role": "Defence", "text": defense, "sources": [s.model_dump() for s in c.sources]},
             "prosecution": {"role": "Prosecution", "objections": objections},
             "presiding": _presiding(c, objections)}
@@ -138,8 +140,15 @@ def _presiding(c: Check, objections: list[dict]) -> dict:
     else:
         verdict, label = "survives", "The ground survives cross-examination"
         motive = "No prosecution objection is backed by a document in the file."
-    motive += " Prejudice is still for the defence to prove; the tool rules on neither prejudice nor nullity."
+    motive += _closing(c)
     return {"role": "Presiding judge", "verdict": verdict, "label": label, "text": motive}
+
+
+def _closing(c: Check) -> str:
+    nl = load_catalogue().get(c.nullity_id)
+    if nl and nl.jurisdiction != "FR":
+        return " Whether the statutory bar applies is for the court; the tool rules on neither the bar nor the outcome."
+    return " Prejudice is still for the defence to prove; the tool rules on neither prejudice nor nullity."
 
 
 def deliberate(c: Check, g: CaseGraph) -> dict:
@@ -149,9 +158,11 @@ def deliberate(c: Check, g: CaseGraph) -> dict:
     pages = {p.page: p for p in g.pages}
     excerpt = "\n\n".join(f"[page {s.page}]\n{pages[s.page].text[:2500]}" for s in c.sources if s.page in pages)
     masked, mapping = pseudonymize.mask(excerpt) if settings.pseudonymize else (excerpt, {})
+    nl = load_catalogue().get(c.nullity_id)
+    law = "French criminal procedure" if not nl or nl.jurisdiction == "FR" else "England & Wales road traffic law"
     try:
         out = mistral.chat_json(
-            "You simulate an adversarial debate on a possible nullity ground in French criminal procedure. Answer in English. "
+            f"You simulate an adversarial debate on a possible nullity ground in {law}. Answer in English. "
             "Defence, then prosecution (objections, each with an exact quote from the file or null), then the presiding judge. "
             "The presiding judge NEVER concludes on nullity or prejudice: they say whether the ground survives cross-examination. "
             "Do not invent any article or decision. JSON: {\"defense\": str, \"objections\": [{\"text\": str, "

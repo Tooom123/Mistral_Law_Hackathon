@@ -1,0 +1,29 @@
+id: NIP-03
+category: TRAFFIC
+jurisdiction: UK
+title: Notice addressed to the registered keeper of the vehicle
+article: s.1 Road Traffic Offenders Act 1988
+applies_to: [nip]
+needs: [nip_addressee]
+condition_type: measurable
+confidence: M
+versions:
+  - label: notice served on the driver or on the person registered as keeper
+    outcomes:
+    - when: missing('nip_addressee') or missing('case:keeper_enquiry.keeper_name')
+      status: needs_reading
+      say: The addressee of the notice or the registered keeper could not be read in the file.
+      cite: [nip_addressee, case:keeper_enquiry.keeper_name]
+    - when: text(val('nip_addressee')) != text(val('case:keeper_enquiry.keeper_name'))
+      status: needs_reading
+      say: "The notice is addressed to {text(val('nip_addressee'))}, but the keeper enquiry names {text(val('case:keeper_enquiry.keeper_name'))}. Check that they are the same person."
+      cite: [nip_addressee, case:keeper_enquiry.keeper_name]
+    - when: True
+      status: satisfied
+      say: "The notice is addressed to the registered keeper ({text(val('nip_addressee'))}), as named in the keeper enquiry."
+      cite: [nip_addressee, case:keeper_enquiry.keeper_name]
+rights_at_stake: [information of the accused]
+next_steps:
+  - Check the keeper record is dated on or after the date of the offence.
+legal_todo:
+  - "Confirm the wording of s.1(1) Road Traffic Offenders Act 1988 on legislation.gov.uk."

@@ -11,8 +11,8 @@ defective act. Architecture: `ARCHITECTURE.md` · law: `CONTEXT.md`.
 
 ```bash
 uv sync
-uv run casebreak serve          # http://localhost:8000 → landing ; http://localhost:8000/app.html?demo → live demo
-uv run casebreak demo           # CLI: generate + analyse the synthetic "Mathurins" case
+uv run casebreak serve          # http://localhost:8000 → landing ; http://localhost:8000/app.html?demo → live demo (Beckham 2018)
+uv run casebreak demo           # CLI: generate + analyse the demo case (--case mathurins for the French one)
 uv run casebreak doctor         # which engines work with the keys in .env (one tiny call per Mistral path)
 uv run casebreak bench --n 10   # NullityBench-FR: recall / precision vs ground truth
 uv run pytest                   # 40 tests, always offline (keys are blanked in tests/conftest.py)
@@ -21,6 +21,26 @@ uv run pytest                   # 40 tests, always offline (keys are blanked in 
 Without any key everything runs offline. With `MISTRAL_API_KEY` in `.env` (copy `.env.example`), the Mistral paths
 switch on — see below. Optional local tools: **Tesseract** (OCR of scans/photos without a key) and **Lean 4** (`elan`,
 kernel-checked proofs).
+
+## Demo case: Beckham, speeding, 2018
+
+The demo is the 2018 David Beckham speeding case, which ended with the charge dismissed on a procedural defect.
+Public facts (sources in `casebreak/synth/beckham.py`): a loaned Bentley recorded at 59 mph in a 40 mph zone on the A40,
+Paddington, on 23 Jan 2018; the notice of intended prosecution (NIP) was posted to the registered keeper, Bentley Motors
+Ltd, on 2 Feb and reached its post room on 7 Feb — day 15, one day outside the 14-day window of s.1 Road Traffic
+Offenders Act 1988; on 27 Sep 2018 the district judge dismissed the charge.
+
+- **The 8 documents are a synthetic reconstruction** written from those press reports (offence report, keeper enquiry,
+  NIP, post-room register, witness statement, driver identification, summons, court record). Times of day, reference
+  numbers and the witness are invented; every page says so in its footer. No original document, personal data or real
+  registration is reproduced.
+- **The file never states the outcome.** The engine finds it: rule `NIP-01` (data: `catalogue/NIP-01.yaml`) reads the
+  offence date, the posting date and the receipt recorded in the post-room register, computes day 10 vs day 15, flags it
+  `documented` with the source pages, and the domino lists the 3 acts that depend on the notice. `NIP-02` / `NIP-03`
+  (content of the notice, addressed to the registered keeper) are lawful decoys and stay green.
+- The rules are coded from press reports: `legal_todo` lists what a road-traffic lawyer must confirm (wording of s.1
+  RTOA 1988, deemed service by post). `tests/test_beckham_case.py` checks the finding, the cascade, the decoys, that the
+  outcome is not written in the file, and a counter-test (receipt on day 14 → no alert).
 
 ## Rules are data
 

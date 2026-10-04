@@ -8,6 +8,9 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 Category = Literal[
+    "TRAFFIC",
+    "KEEPER",
+    "COURT",
     "INTERPELLATION",
     "GARDE_A_VUE",
     "AUDITION",
@@ -22,6 +25,9 @@ CATEGORIES: list[str] = list(Category.__args__)  # type: ignore[attr-defined]
 
 # Swim-lane order in the UI (top to bottom).
 LANES: list[str] = [
+    "TRAFFIC",
+    "KEEPER",
+    "COURT",
     "INTERPELLATION",
     "GARDE_A_VUE",
     "AUDITION",
@@ -196,6 +202,7 @@ class Nullity(BaseModel):
     next_steps: list[str] = Field(default_factory=list)
     prosecution_hints: list[str] = Field(default_factory=list)
     judilibre_query: str = ""
+    jurisdiction: str = "FR"  # FR = French criminal procedure (default), UK = England & Wales road traffic
     weight: float = 1.0
     source_url: str = ""
     legal_todo: list[str] = Field(default_factory=list)
