@@ -186,7 +186,7 @@
     const has = items.length > 0;
     card.classList.toggle("has-files", has);
     filesEl.hidden = !has;
-    $(".dropzone__title").textContent = has ? "Add more documents" : "Drop the criminal case file";
+    $(".dropzone__title").textContent = has ? "Add more documents" : "Drop the case file";
 
     listEl.replaceChildren(...items.map(it => {
       const li = document.createElement("li");
@@ -276,15 +276,15 @@
      ================================================================ */
 
   const STEPS = [
-    { id: "read",        label: "Lecture",        detail: "OCR et vision, page et position conservées" },
-    { id: "reconstruct", label: "Reconstitution", detail: "Actes, heures, personnes" },
-    { id: "check",       label: "Vérification",   detail: "Règles en vigueur à la date de chaque acte" },
-    { id: "crosscheck",  label: "Confrontation",  detail: "Contradictions entre PV sur les faits utiles" },
-    { id: "cascade",     label: "Domino",         detail: "Actes potentiellement affectés" },
-    { id: "ground",      label: "Fondement",      detail: "Articles et décisions Judilibre" },
-    { id: "act",         label: "Délais",         detail: "Délais à vérifier, moyens à examiner" },
+    { id: "read",        label: "Reading",        detail: "OCR and vision, page and position kept" },
+    { id: "reconstruct", label: "Linking",        detail: "People, companies, decisions, declarations" },
+    { id: "check",       label: "Cross-checking", detail: "A statement against the other documents" },
+    { id: "crosscheck",  label: "Spotting",       detail: "Roles, past ties, benefiting companies" },
+    { id: "cascade",     label: "Tracing",        detail: "From the decision back to the original evidence" },
+    { id: "ground",      label: "Weighing",       detail: "What depends on each link" },
+    { id: "act",         label: "Next steps",     detail: "Points to review, with the pages" },
   ];
-  const STATE_LABEL = { pending: "En attente", running: "En cours", done: "Fait", error: "Erreur" };
+  const STATE_LABEL = { pending: "Pending", running: "Running", done: "Done", error: "Error" };
 
   const pipelineEl = $("#pipeline");
   const openTimeline = $("#open-timeline");
@@ -328,17 +328,17 @@
     $("#pipeline-mode").textContent = "";
     const form = new FormData();
     items.forEach(it => form.append("files", it.file, it.file.name));
-    setStep(STEPS[0].id, "running", "Envoi du dossier…");
+    setStep(STEPS[0].id, "running", "Uploading the case file…");
     try {
       const res = await fetch(`${API_BASE}/cases`, { method: "POST", body: form });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail ?? res.status);
       const { case_id } = await res.json();
       $("#dossier-id").textContent = case_id;
-      setStep(STEPS[0].id, "done", "Dossier reçu");
+      setStep(STEPS[0].id, "done", "Case file received");
       location.href = `app.html?case=${encodeURIComponent(case_id)}`;
     } catch (e) {
       setStep(STEPS[0].id, "error", String(e.message ?? e));
-      toast("Serveur injoignable : lancez `uv run casebreak serve` puis rechargez.");
+      toast("Server unreachable: run `uv run casebreak serve`, then reload.");
     }
   }
 

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BREACH — Trouver le vice</title>
-  <meta name="description" content="BREACH lit le dossier pénal, reconstitue la chronologie de chaque acte de procédure et signale les nullités possibles, page à l’appui.">
+  <title>BREACH — Audit the case</title>
+  <meta name="description" content="BREACH turns thousands of documents into one case graph and finds conflicts of interest: who took part in a decision, which company they were tied to, and the pages that prove it.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23FFAF01' d='M0 0h3v1H0zM4 0h2v1H4z'/%3E%3Cpath fill='%23FF8204' d='M0 1h2v1H0zM3 1h3v1H3z'/%3E%3Cpath fill='%23FA500F' d='M0 2h3v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h3v1H3z'/%3E%3Cpath fill='%23E61300' d='M0 4h3v1H0zM4 4h2v1H4z'/%3E%3Cpath fill='%23C4001D' d='M0 5h2v1H0zM3 5h3v1H3z'/%3E%3C/svg%3E">
   <script>document.documentElement.classList.add("js");</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
     <canvas class="pixels" data-pixels="hero" data-anchor="#card" aria-hidden="true"></canvas>
 
     <header class="nav">
-      <a class="brand" href="#top" aria-label="BREACH — accueil">
+      <a class="brand" href="#top" aria-label="BREACH — home">
         <svg class="brand__mark" viewBox="0 0 6 6" shape-rendering="crispEdges" aria-hidden="true">
           <!-- cracked block: each row follows the Mistral ramp, the crack zigzags -->
           <path fill="#FFAF01" d="M0 0h3v1H0zM4 0h2v1H4z"/>
@@ -40,39 +40,40 @@
         <span class="brand__word">BREACH</span>
       </a>
       <nav class="nav__links" aria-label="Sections">
-        <a href="#method">Méthode</a>
-        <a href="#finding">Alertes</a>
-        <a href="#guardrails">Garde-fous</a>
-        <a href="app.html#bench">Mesures</a>
+        <a href="#method">Method</a>
+        <a href="#finding">Findings</a>
+        <a href="#guardrails">Guardrails</a>
+        <a href="app.html#bench">Benchmark</a>
       </nav>
       <span class="nav__tag mono">Prototype · Hackathon</span>
     </header>
 
     <div class="hero__inner">
       <h1 class="headline" data-split>
-        Trouver le <span class="cutout cutout--tilt"><span>vice</span></span><br>
-        avant le délai.
+        Don’t summarize the case.<br>
+        <span class="cutout cutout--tilt"><span>Audit</span></span> it.
       </h1>
 
       <p class="lede" data-reveal="up" style="--i: 3">
-        BREACH lit tout le dossier, reconstitue la chronologie de chaque acte de procédure et signale
-        les <strong>nullités possibles</strong>, chacune épinglée à sa page.
+        BREACH reads thousands of documents and finds <strong>conflicts of interest</strong>:
+        who took part in a decision, which company they had worked for or were tied to,
+        and who benefited — each link pinned to the pages that prove it.
       </p>
 
       <!-- ===== Drop zone: start of the pipeline ===== -->
       <div class="drop-wrap" data-reveal="up" style="--i: 4">
         <p class="annotation" aria-hidden="true" data-speed="-0.06">
-          tout le dossier,<br>même les scans
+          contracts, hearings,<br>declarations of interests
           <svg class="annotation__arrow" viewBox="0 0 120 70" fill="none">
             <path d="M4 8 C 40 4, 78 18, 104 54" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
             <path d="M92 52 L105 56 L106 42" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </p>
 
-        <!-- TODO(legal): validate this sticker (loi n° 2026-651, art. 173-1 CPP; entry into force to verify) before the demo -->
+        <!-- TODO: verify the figure against the Sénat commission report (2022) before the demo -->
         <div class="sticker" aria-hidden="true" data-speed="0.08">
-          <span class="sticker__big">4 mois</span>
-          <span class="sticker__small">et non 6</span>
+          <span class="sticker__big">7 000+</span>
+          <span class="sticker__small">documents, Senate 2022</span>
         </div>
 
         <div class="card" id="card">
@@ -106,8 +107,8 @@
                   <path class="doc__line" fill="#E61300" d="M2 10h7v1H2z"/>
                 </svg>
               </span>
-              <span class="dropzone__title">Déposez le dossier pénal</span>
-              <span class="dropzone__hint">ou <u>parcourez vos fichiers</u></span>
+              <span class="dropzone__title">Drop the case file</span>
+              <span class="dropzone__hint">or <u>browse your files</u></span>
               <span class="dropzone__formats mono">PDF · scans · photos</span>
             </label>
 
@@ -115,9 +116,9 @@
               <div class="files__stats mono" id="stats"></div>
               <ul class="files__list" id="file-list"></ul>
               <div class="files__actions">
-                <label class="btn btn--ghost" for="file-input">+ Ajouter</label>
+                <label class="btn btn--ghost" for="file-input">+ Add</label>
                 <button class="btn btn--primary" id="analyze" type="button">
-                  Analyser le dossier <span aria-hidden="true">→</span>
+                  Run the conflict audit <span aria-hidden="true">→</span>
                 </button>
               </div>
             </div>
@@ -126,80 +127,80 @@
           <!-- stage 2: pipeline running -->
           <div class="stage" data-stage="pipeline" hidden>
             <div class="pipeline__head">
-              <span class="mono">Dossier <span id="dossier-id">—</span></span>
+              <span class="mono">Case <span id="dossier-id">—</span></span>
               <span class="mono" id="pipeline-mode"></span>
             </div>
             <ol class="pipeline" id="pipeline"></ol>
             <div class="files__actions">
-              <button class="btn btn--ghost" id="reset" type="button">Nouveau dossier</button>
+              <button class="btn btn--ghost" id="reset" type="button">New case</button>
               <a class="btn btn--primary is-disabled" id="open-timeline" href="#" aria-disabled="true">
-                Ouvrir la frise <span aria-hidden="true">→</span>
+                Open the case graph <span aria-hidden="true">→</span>
               </a>
             </div>
           </div>
         </div>
 
         <p class="demo-link">
-          Pas de dossier sous la main ?
-          <button type="button" class="link" id="demo">Lancer l’affaire des Mathurins (synthétique)</button>
+          No case file at hand?
+          <button type="button" class="link" id="demo">Launch the Mathurins case (synthetic)</button>
         </p>
       </div>
     </div>
 
     <ul class="trust mono" data-reveal="up" style="--i: 6">
-      <li>Chaque alerte citée à la page</li>
-      <li>Le droit en vigueur à la date de l’acte</li>
-      <li>Aucune donnée réelle dans la démo</li>
+      <li>Every finding cited to the page</li>
+      <li>Every person–company link sourced</li>
+      <li>No real data in the demo</li>
     </ul>
   </section>
 
   <!-- ============ SCROLL-LINKED TICKER ============ -->
-  <section class="ticker" aria-label="La chaîne en sept verbes">
-    <p class="ticker__row" data-drift="-1">Lire <i></i> Reconstituer <i></i> Vérifier <i></i> Confronter <i></i> Lire <i></i> Reconstituer <i></i> Vérifier <i></i> Confronter <i></i></p>
-    <p class="ticker__row ticker__row--alt" data-drift="1">Domino <i></i> Fonder <i></i> Agir <i></i> Domino <i></i> Fonder <i></i> Agir <i></i> Domino <i></i> Fonder <i></i> Agir <i></i></p>
+  <section class="ticker" aria-label="The pipeline in seven verbs">
+    <p class="ticker__row" data-drift="-1">Read <i></i> Link <i></i> Cross-check <i></i> Spot <i></i> Read <i></i> Link <i></i> Cross-check <i></i> Spot <i></i></p>
+    <p class="ticker__row ticker__row--alt" data-drift="1">Trace <i></i> Weigh <i></i> Act <i></i> Trace <i></i> Weigh <i></i> Act <i></i> Trace <i></i> Weigh <i></i> Act <i></i></p>
   </section>
 
   <!-- ============ METHOD ============ -->
   <section class="section" id="method">
     <div class="section__head">
-      <p class="eyebrow mono" data-reveal="left">La chaîne</p>
-      <h2 data-reveal="left" style="--i: 1">Le modèle lit. Le code vérifie.<br><span class="hl">L’avocat décide.</span></h2>
+      <p class="eyebrow mono" data-reveal="left">The pipeline</p>
+      <h2 data-reveal="left" style="--i: 1">The model reads. The code cross-checks.<br><span class="hl">The lawyer decides.</span></h2>
     </div>
 
     <ol class="steps">
-      <li data-reveal="left" style="--i: 0"><span class="steps__n">01</span><b>Lire</b><span>OCR et vision : chaque fait garde sa page et sa position.</span></li>
-      <li data-reveal="left" style="--i: 1"><span class="steps__n">02</span><b>Reconstituer</b><span>Actes, heures, personnes : une frise par catégorie.</span></li>
-      <li data-reveal="left" style="--i: 2"><span class="steps__n">03</span><b>Vérifier</b><span>Les conditions de la loi, en code, à la date de l’acte.</span></li>
-      <li data-reveal="left" style="--i: 3"><span class="steps__n">04</span><b>Confronter</b><span>Deux PV, deux heures différentes pour le même fait.</span></li>
-      <li data-reveal="right" style="--i: 4"><span class="steps__n">05</span><b>Domino</b><span>Ce qui tombe avec l’acte : les actes à viser dans la requête.</span></li>
-      <li data-reveal="right" style="--i: 5"><span class="steps__n">06</span><b>Fonder</b><span>Version de l’article et décisions récupérées sur Judilibre.</span></li>
-      <li data-reveal="right" style="--i: 6"><span class="steps__n">07</span><b>Agir</b><span>Le délai à surveiller et les moyens à examiner.</span></li>
+      <li data-reveal="left" style="--i: 0"><span class="steps__n">01</span><b>Read</b><span>OCR and vision: every fact keeps its page and position.</span></li>
+      <li data-reveal="left" style="--i: 1"><span class="steps__n">02</span><b>Link</b><span>People, companies, decisions, declarations: one graph for the whole case.</span></li>
+      <li data-reveal="left" style="--i: 2"><span class="steps__n">03</span><b>Cross-check</b><span>One statement, two documents, two versions of the same fact.</span></li>
+      <li data-reveal="left" style="--i: 3"><span class="steps__n">04</span><b>Spot</b><span>Someone in a decision, with a past tie to the company that benefited.</span></li>
+      <li data-reveal="right" style="--i: 4"><span class="steps__n">05</span><b>Trace</b><span>From the decision to the claim, then to the original evidence.</span></li>
+      <li data-reveal="right" style="--i: 5"><span class="steps__n">06</span><b>Weigh</b><span>What becomes problematic if this information is wrong.</span></li>
+      <li data-reveal="right" style="--i: 6"><span class="steps__n">07</span><b>Act</b><span>The points to put in front of a reviewer, with the pages.</span></li>
     </ol>
   </section>
 
   <!-- ============ A FINDING ============ -->
   <section class="section section--tint" id="finding">
     <div class="section__head">
-      <p class="eyebrow mono" data-reveal="right">Chaque alerte répond à quatre questions</p>
-      <h2 data-reveal="right" style="--i: 1">Pas un résumé.<br>Un vice, avec son numéro de page.</h2>
+      <p class="eyebrow mono" data-reveal="right">Every finding answers four questions</p>
+      <h2 data-reveal="right" style="--i: 1">Not a summary.<br>A conflict of interest, with the pages.</h2>
     </div>
 
     <div class="questions">
       <article class="q q--a" data-reveal="left" style="--i: 0">
-        <span class="q__tag mono">Quoi</span>
-        <p>Un fait, sans conclusion juridique : droits notifiés 3 h 15 après le placement.</p>
+        <span class="q__tag mono">What</span>
+        <p>A plain fact: person X took part in decision Y, and company Z — a former client — benefited from it.</p>
       </article>
       <article class="q q--b" data-reveal="left" style="--i: 1">
-        <span class="q__tag mono">Où</span>
-        <p>La pièce, la page, la ligne surlignée. Un clic ouvre la page source.</p>
+        <span class="q__tag mono">Where</span>
+        <p>Three documents, three pages, the lines highlighted. One click opens the source.</p>
       </article>
       <article class="q q--c" data-reveal="right" style="--i: 1">
-        <span class="q__tag mono">Pourquoi</span>
-        <p>La règle dans sa version applicable, les actes potentiellement affectés, les précédents.</p>
+        <span class="q__tag mono">Why</span>
+        <p>The whole chain: person, role, decision, benefiting company, and what depends on each link.</p>
       </article>
       <article class="q q--d" data-reveal="right" style="--i: 2">
-        <span class="q__tag mono">Et maintenant</span>
-        <p>Ce que l’avocat doit vérifier — le grief, une justification au dossier — et le délai.</p>
+        <span class="q__tag mono">What next</span>
+        <p>What to verify — declaration of interests, dates, actual role — and who should do it.</p>
       </article>
     </div>
   </section>
@@ -207,15 +208,15 @@
   <!-- ============ GUARDRAILS ============ -->
   <section class="section" id="guardrails">
     <div class="section__head">
-      <p class="eyebrow mono" data-reveal="left">Garde-fous</p>
-      <h2 data-reveal="left" style="--i: 1">Un outil d’audit,<br>pas un oracle.</h2>
+      <p class="eyebrow mono" data-reveal="left">Guardrails</p>
+      <h2 data-reveal="left" style="--i: 1">An audit tool,<br>not an oracle.</h2>
     </div>
     <ul class="rules">
-      <li data-reveal="left"><span><b>Pas de source, pas d’alerte.</b> Tout ce qui s’affiche renvoie à une page du dossier.</span></li>
-      <li data-reveal="right"><span><b>Aucun pourcentage inventé.</b> Trois niveaux : documenté, déduit, à lire.</span></li>
-      <li data-reveal="left"><span><b>Aucune nullité déclarée.</b> On parle de « moyens à examiner » ; le grief, c’est l’avocat.</span></li>
-      <li data-reveal="right"><span><b>Aucune jurisprudence inventée.</b> Seules les décisions récupérées via l’API Judilibre sont citées.</span></li>
-      <li data-reveal="left"><span><b>Des deux côtés de la barre.</b> Le même audit sert la défense et le parquet qui veut une procédure propre.</span></li>
+      <li data-reveal="left"><span><b>No source, no finding.</b> Everything on screen points to a page in the case file.</span></li>
+      <li data-reveal="right"><span><b>No made-up percentages.</b> Three levels: documented, inferred, needs reading.</span></li>
+      <li data-reveal="left"><span><b>No conflict declared.</b> We say “potential conflict of interest — to review”; the legal qualification belongs to a lawyer.</span></li>
+      <li data-reveal="right"><span><b>No invented relationship.</b> Person–company links come from the documents; an inferred link is labeled as such.</span></li>
+      <li data-reveal="left"><span><b>For anyone who audits.</b> Inquiry commissions, audit firms, compliance teams, legal departments, lawyers: the same audit.</span></li>
     </ul>
   </section>
 
@@ -223,7 +224,7 @@
   <footer class="footer">
     <div class="footer__grid">
       <div class="footer__col footer__about">
-        <a class="brand" href="#top" aria-label="BREACH — haut de page">
+        <a class="brand" href="#top" aria-label="BREACH — back to top">
           <svg class="brand__mark" viewBox="0 0 6 6" shape-rendering="crispEdges" aria-hidden="true">
             <path fill="#FFAF01" d="M0 0h3v1H0zM4 0h2v1H4z"/>
             <path fill="#FF8204" d="M0 1h2v1H0zM3 1h3v1H3z"/>
@@ -233,23 +234,23 @@
           </svg>
           <span class="brand__word">BREACH</span>
         </a>
-        <p>Trouver le vice avant le délai.</p>
+        <p>Don’t summarize the case. Audit it.</p>
       </div>
       <nav class="footer__col" aria-label="Product">
-        <p class="footer__title mono">Produit</p>
-        <a href="#top">Déposer un dossier</a>
-        <a href="app.html">Ouvrir l’application</a>
-        <a href="app.html#bench">NullityBench-FR</a>
-        <a href="#guardrails">Garde-fous</a>
+        <p class="footer__title mono">Product</p>
+        <a href="#top">Upload a case file</a>
+        <a href="app.html">Open the app</a>
+        <a href="app.html#bench">Benchmark</a>
+        <a href="#guardrails">Guardrails</a>
       </nav>
       <div class="footer__col">
-        <p class="footer__title mono">Projet</p>
-        <span>Prototype de hackathon</span>
-        <span>Données synthétiques uniquement</span>
-        <span>Contenu juridique à valider</span>
+        <p class="footer__title mono">Project</p>
+        <span>Hackathon prototype</span>
+        <span>Synthetic data only</span>
+        <span>Legal content pending review</span>
       </div>
       <div class="footer__col">
-        <p class="footer__title mono">Construit avec</p>
+        <p class="footer__title mono">Built with</p>
         <span class="footer__powered">
           <svg viewBox="0 0 162 162" aria-hidden="true">
             <rect x="31" y="31" width="20" height="20" fill="#FFAF01"/><rect x="111" y="31" width="20" height="20" fill="#FFAF01"/>
@@ -264,8 +265,8 @@
     </div>
     <div class="footer__bar mono">
       <span>BREACH © 2026</span>
-      <span>Pas un conseil juridique · l’avocat décide</span>
-      <a href="#top">Haut de page ↑</a>
+      <span>Not legal advice · the lawyer decides</span>
+      <a href="#top">Back to top ↑</a>
     </div>
   </footer>
 
