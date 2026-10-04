@@ -233,17 +233,26 @@ def _llm_supports(nodes: dict[str, Node], edges: list[Edge], edge) -> None:
     orphans = [n for n in acts if n.id not in has_in and n.category in ("EXPERTISE", "AUDITION", "INSTRUCTION")]
     if not orphans:
         return
-    listing = "\n".join(f"{n.id} | {n.category} | {n.label} | {n.start}" for n in acts)
+    from casebreak.privacy import pseudonymize
+
+    # Short opaque ids (A1, A2…) instead of node ids, which contain person names.
+    alias = {f"A{k}": n.id for k, n in enumerate(acts, 1)}
+    back = {v: k for k, v in alias.items()}
+    listing = "\n".join(f"{back[n.id]} | {n.category} | {n.subtype} | {n.label} | {n.start}" for n in acts)
+    if settings.pseudonymize:
+        listing = pseudonymize.mask_value(listing)
     try:
         out = mistral.chat_json(
             "You propose dependency links (act B relies on act A) between the acts of a criminal case file. "
             "Only propose obvious links. JSON: {\"links\": [{\"src\": id, \"dst\": id, \"why\": str}]}",
-            f"Acts:\n{listing}\n\nActs with no identified support: {[n.id for n in orphans]}")
+            f"Acts:\n{listing}\n\nActs with no identified support: {[back[n.id] for n in orphans]}", purpose="link")
     except mistral.MistralUnavailable:
         return
-    for link in out.get("links", [])[:20]:
-        if link.get("dst") in {n.id for n in orphans}:
-            edge(link.get("src"), link.get("dst"), "SUPPORTS", origin="llm_inferred", label=squash(str(link.get("why", "")))[:80])
+    orphan_ids = {n.id for n in orphans}
+    for link in [x for x in out.get("links", []) if isinstance(x, dict)][:20]:
+        src, dst = alias.get(str(link.get("src"))), alias.get(str(link.get("dst")))
+        if src and dst in orphan_ids:
+            edge(src, dst, "SUPPORTS", origin="llm_inferred", label=squash(str(link.get("why", "")))[:80])
 
 
 def person_of(name: str) -> str:

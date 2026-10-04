@@ -76,13 +76,17 @@ def repair_ocr(text: str) -> str:
 
 
 def _ocr_image(img: Image.Image, raw: bytes, mime: str, key: str) -> dict:
+    # The cache key carries the engine available: adding a Mistral key later re-reads pages read by Tesseract.
+    key = f"{key}_{'m' if settings.mistral else 't' if settings.tesseract else 'x'}"
     cached = _cache_get(key)
-    if cached:
+    if cached and cached.get("ocr") != "none":
         return cached
     out = {"text": "", "words": [], "ocr": "none"}
     if settings.mistral:
         try:
-            out = {"text": mistral.ocr_image(raw, mime), "words": [], "ocr": "mistral_ocr"}
+            text, engine = mistral.ocr_image(raw, mime)
+            if text.strip():
+                out = {"text": repair_ocr(text), "words": [], "ocr": engine}
         except mistral.MistralUnavailable as e:
             log.warning("Mistral OCR failed, falling back: %s", e)
     if out["ocr"] == "none" and settings.tesseract:
@@ -97,7 +101,8 @@ def _ocr_image(img: Image.Image, raw: bytes, mime: str, key: str) -> dict:
             out["words"] = _tesseract(img)[1]
         except Exception:  # noqa: BLE001
             pass
-    _cache_put(key, out)
+    if out["ocr"] != "none":  # never cache a failure
+        _cache_put(key, out)
     return out
 
 

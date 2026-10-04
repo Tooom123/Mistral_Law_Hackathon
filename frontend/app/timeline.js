@@ -19,7 +19,7 @@ const SHORT = {
   interception_order: "Order", opening: "Opening", mise_en_examen: "Formal charge", expert_order: "Expert appointment",
   chamber_ruling: "Chamber ruling", photo: "Photo", other: "",
 };
-const ROW = 30, TOP = 46, LANE_PAD = 16, HOUR = 44, CAP_H = 4, BREAK_W = 54;
+const ROW = 34, TOP = 52, LANE_PAD = 12, HOUR = 48, CAP_H = 4, BREAK_W = 64, CHAR_W = 6.9;
 
 export class Timeline {
   constructor({ svg, labels, scroll, tooltip, onSelect, onHover }) {
@@ -95,22 +95,24 @@ export class Timeline {
       const nodes = this.acts.filter(n => n.category === cat);
       const rows = [];
       const place = new Map();
-      if (cat === "GARDE_A_VUE") {
-        const cont = nodes.filter(n => n.subtype === "garde_a_vue").sort((a, b) => a._t - b._t);
-        cont.forEach((c, i) => { rows.push([]); place.set(c.id, i); });
-        for (const n of nodes) {
-          if (n.subtype === "garde_a_vue") continue;
-          const c = cont.find(c => c.person === n.person);
-          if (c && GAV_CHILDREN.has(n.subtype)) place.set(n.id, place.get(c.id));
-        }
+      // Custody: one row per custody bar (nothing else on it), then the custody's acts packed below.
+      const cont = nodes.filter(n => n.subtype === "garde_a_vue").sort((a, b) => a._t - b._t);
+      const barEnd = [];
+      for (const c of cont) {  // bars share a row when they don't overlap in time (label included)
+        const x0 = this.xOf(c._t), x1 = Math.max(c.end ? this.xOf(new Date(c.end)) : x0 + 60, x0 + c.label.length * CHAR_W + 160);
+        let r = barEnd.findIndex(e => x0 - e > 24);
+        if (r === -1) { r = barEnd.length; barEnd.push(0); rows.push([]); }
+        barEnd[r] = x1;
+        place.set(c.id, r);
       }
       const rest = nodes.filter(n => !place.has(n.id)).sort((a, b) => a._t - b._t);
-      const lastX = rows.map(() => -1e9);
+      const lastX = rows.map(() => 1e12);
       for (const n of rest) {
         const x = this.xOf(n._t);
-        let r = lastX.findIndex(lx => x - lx > 26);
-        if (r === -1 || (cat === "GARDE_A_VUE" && r < rows.length && rows[r].length === 0 && false)) { r = lastX.length; lastX.push(-1e9); rows.push([]); }
-        lastX[r] = x + (this.labelFor(n) ? Math.min(150, this.labelFor(n).length * 6.2) : 0);
+        let r = lastX.findIndex(lx => x - lx > 18);
+        if (r === -1) { r = lastX.length; lastX.push(-1e9); rows.push([]); }
+        const lbl = this.labelFor(n);
+        lastX[r] = x + 12 + (lbl ? lbl.length * CHAR_W : 0);
         place.set(n.id, r);
       }
       const nRows = Math.max(1, lastX.length, rows.length);
@@ -120,11 +122,8 @@ export class Timeline {
       for (const n of [...nodes].sort((a, b) => a._t - b._t)) {
         const r = place.get(n.id) ?? 0;
         const x = this.xOf(n._t);
-        let dy = 0;
-        const prev = lastOnRow.get(r);
-        if (prev && x - prev.x < 16 && n.subtype !== "garde_a_vue") dy = prev.dy === 0 ? (prev.flip ? -11 : 11) : 0;
-        lastOnRow.set(r, { x, dy, flip: dy > 0 });
-        this.positions.set(n.id, { x, y: y + LANE_PAD + r * ROW + ROW / 2 + dy, lane: cat });
+        void lastOnRow;
+        this.positions.set(n.id, { x, y: y + LANE_PAD + r * ROW + ROW / 2 + (n.subtype === "garde_a_vue" ? 4 : 0), lane: cat });
       }
       y += hgt;
     }
@@ -132,11 +131,8 @@ export class Timeline {
   }
 
   labelFor(n) {
-    const al = this.alertsByNode.get(n.id);
-    const z = this.zoom;
-    if (n.subtype === "other" || n.subtype === "garde_a_vue") return "";
-    if (!al && z < 1.4 && !["search", "mise_en_examen", "interpellation", "hearing", "lab_report", "seal_analysis", "geolocation"].includes(n.subtype)) return "";
-    const base = SHORT[n.subtype] ?? n.label;
+    if (n.subtype === "garde_a_vue") return "";
+    const base = n.subtype === "other" ? n.label : SHORT[n.subtype] ?? n.label;
     const who = n.subtype === "seizure" ? (n.attrs?.seal_number?.value ?? "no seal") : "";
     return `${base}${who ? " " + who : ""} · ${n._approx ? "?" : hm(n._t.toISOString())}`;
   }
@@ -185,7 +181,7 @@ export class Timeline {
     const day = new Date(t0); day.setHours(0, 0, 0, 0);
     let lastLabelX = -1e9;
     if (this.xOf(day) < 0) {
-      gAxis.append(s("text", { class: "t-daylabel", x: 8, y: 22 }, dayLabel(t0).toUpperCase()));
+      gAxis.append(s("text", { class: "t-daylabel", x: 8, y: 22 }, dayLabel(t0)));
       lastLabelX = 8;
     }
     for (let dd = new Date(day); dd <= t1; dd.setDate(dd.getDate() + 1)) {
@@ -193,7 +189,7 @@ export class Timeline {
       if (x < 0) continue;
       gAxis.append(s("line", { class: "t-day", x1: x, x2: x, y1: 14, y2: this.height }));
       if (x - lastLabelX > 70) {
-        gAxis.append(s("text", { class: "t-daylabel", x: x + 5, y: 22 }, dayLabel(dd).toUpperCase()));
+        gAxis.append(s("text", { class: "t-daylabel", x: x + 5, y: 22 }, dayLabel(dd)));
         lastLabelX = x;
       }
     }
@@ -209,7 +205,7 @@ export class Timeline {
         if ((t - a.t) / 36e5 > CAP_H / 2 && (b.t - t) / 36e5 > CAP_H / 2 && b.brk) continue;
         const x = this.xOf(t);
         gAxis.append(s("line", { class: "t-hour", x1: x, x2: x, y1: 28, y2: this.height }));
-        gAxis.append(s("text", { class: "t-hourlabel", x: x + 3, y: 38 }, `${String(tt.getHours()).padStart(2, "0")}:00`));
+        gAxis.append(s("text", { class: "t-hourlabel", x: x + 3, y: 42 }, `${String(tt.getHours()).padStart(2, "0")}:00`));
       }
     }
     // legal hour band for home searches (21h–6h) — drawn faintly behind the PERQUISITION lane
@@ -235,7 +231,7 @@ export class Timeline {
       const pn = (n.checks ?? []).some(c => c.status === "possible_nullity");
       const g = s("g", { class: `t-custody ${pn ? "pn" : ""}`, "data-id": n.id });
       g.append(s("rect", { class: "bar", x: p.x, y: p.y - 8, width: Math.max(10, x2 - p.x), height: 16 }));
-      g.append(s("text", { x: p.x + 2, y: p.y - 12 }, (n.label.replace("Custody — ", "Custody · ") + (n.end ? "" : " · end?")).toUpperCase()));
+      g.append(s("text", { x: p.x + 2, y: p.y - 12 }, n.label.replace("Custody — ", "Custody · ") + (n.end ? ` · ${hm(n.start)} → ${dayLabel(new Date(n.end))} ${hm(n.end)}` : " · end not recorded")));
       // 24h mark
       const lim = new Date(+new Date(n.start) + 24 * 36e5);
       if (n.end && new Date(n.end) > lim) {
@@ -292,7 +288,7 @@ export class Timeline {
       if (al.length > 1) g.append(s("text", { class: "cnt", x: 0, y: 3, "text-anchor": "middle" }, al.length));
       const lbl = this.labelFor(n);
       if (lbl) g.append(s("text", { class: `lbl ${al.length ? "" : "dim"}`, x: r + 5, y: 3.5 }, lbl));
-      if (n._approx) g.append(s("text", { class: "lbl", x: -3, y: -10, fill: "#C4001D" }, "?"));
+      if (n._approx) g.append(s("text", { class: "lbl", x: -3, y: -11, fill: "#C4001D" }, "?"));
       g.addEventListener("mouseenter", ev => this.hover(n, ev));
       g.addEventListener("mousemove", ev => this.moveTip(ev));
       g.addEventListener("mouseleave", () => this.unhover());
@@ -306,10 +302,10 @@ export class Timeline {
     // lane labels (left column)
     this.labels.replaceChildren(h("div", { style: { height: `${TOP}px`, borderBottom: "1px solid var(--line)" } }));
     for (const l of this.lanes) {
-      const [name, sub] = CAT_FR[l.cat] ?? [l.cat, ""];
+      const [name] = CAT_FR[l.cat] ?? [l.cat, ""];
       const pns = l.nodes.flatMap(n => this.alertsByNode.get(n.id) ?? []);
       this.labels.append(h("div", { class: "lane-label", style: { height: `${l.h}px` } },
-        h("b", {}, name.toUpperCase()), h("small", {}, `${l.count} act${l.count > 1 ? "s" : ""} · ${sub}`),
+        h("b", {}, name), h("small", {}, `${l.count} act${l.count > 1 ? "s" : ""}`),
         pns.length ? h("span", { class: "lane-alerts" }, pns.slice(0, 12).map(a => h("i", { class: a.status === "needs_reading" ? "nr" : "" }))) : null));
     }
     this.scroll.onscroll = () => { this.labels.scrollTop = this.scroll.scrollTop; };

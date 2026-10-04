@@ -63,11 +63,16 @@ def classify_objet(objet_norm: str) -> tuple[str, str] | None:
 def _llm_classify(text: str) -> tuple[str, str] | None:
     if not settings.mistral:
         return None
+    from casebreak.privacy import pseudonymize
+
     allowed = sorted({t for _, t, _ in TYPES})
+    head = text[:1800]
+    if settings.pseudonymize:
+        head = pseudonymize.mask(head)[0]
     try:
         out = mistral.chat_json(
             "You classify documents from French criminal case files. Answer in JSON {\"type\": <one of the types>}.",
-            f"Allowed types: {allowed}\n\nStart of the document:\n{text[:1800]}", model=settings.fast_model)
+            f"Allowed types: {allowed}\n\nStart of the document:\n{head}", model=settings.fast_model, purpose="classify")
     except mistral.MistralUnavailable:
         return None
     t = out.get("type")

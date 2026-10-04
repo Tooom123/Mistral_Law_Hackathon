@@ -39,7 +39,16 @@ class Settings:
     extract_model: str = os.environ.get("MISTRAL_EXTRACT_MODEL", "mistral-large-latest")
     judge_model: str = os.environ.get("MISTRAL_JUDGE_MODEL", "mistral-large-latest")
     fast_model: str = os.environ.get("MISTRAL_FAST_MODEL", "mistral-small-latest")
-    # TODO: verify the Leanstral model id in the Mistral console when credits arrive.
+    # Tried in order when a model is refused (403/404) or has no quota on the workspace (429 with a 0 limit).
+    fallback_models: tuple = tuple(m.strip() for m in os.environ.get(
+        "MISTRAL_FALLBACK_MODELS",
+        "mistral-medium-latest,mistral-small-latest,ministral-14b-latest,ministral-8b-latest,open-mistral-nemo",
+    ).split(",") if m.strip())
+    # Vision chat models used to transcribe a scan/photo when the /ocr endpoint is unavailable.
+    vision_models: tuple = tuple(m.strip() for m in os.environ.get(
+        "MISTRAL_VISION_MODELS", "mistral-small-latest,mistral-medium-latest,ministral-14b-latest,ministral-8b-latest",
+    ).split(",") if m.strip())
+    # Leanstral is a "Labs" model (e.g. labs-leanstral-1-5-1): an admin must enable Labs models on the workspace.
     lean_model: str = os.environ.get("MISTRAL_LEAN_MODEL", "")
     typesafe_key: str = os.environ.get("TYPESAFE_API_KEY", "")
     jev_base: str = os.environ.get("JEV_BASE_URL", "https://api.typesafe.ai")
@@ -48,6 +57,8 @@ class Settings:
     # Date used as "today" by the deadline clock (demo can freeze it).
     today: str = os.environ.get("CASEBREAK_TODAY", "")
     pseudonymize: bool = os.environ.get("CASEBREAK_PSEUDONYMIZE", "1") != "0"
+    # Rule-driven extraction: ask Mistral for the attributes the rules needed and did not find (0 disables).
+    llm_fill: bool = os.environ.get("CASEBREAK_LLM_FILL", "1") != "0"
 
     @property
     def mistral(self) -> bool:

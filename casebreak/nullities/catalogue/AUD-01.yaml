@@ -8,7 +8,18 @@ condition_type: measurable
 confidence: n/a
 versions:
   - label: time-order check (graph)
-    check: hearing_in_custody_window
+    let:
+      s: t('@start')
+      cs: t('custody.@start')
+      ce: t('custody.@end')
+    outcomes:
+    - when: val('in_custody') is not True or s is None or cs is None
+      status: skip
+    - when: minutes(cs, s) < -1 or (ce is not None and s > ce)
+      status: needs_reading
+      say: '"Custody" hearing at {dhm(s)}, outside the custody period {dhm(cs)} → {dhm(ce)}.'
+      cite:
+      - start
 rights_at_stake: [legal regime of the hearing]
 next_steps: [Check the framework of the hearing (voluntary or under constraint).]
 weight: 0.6

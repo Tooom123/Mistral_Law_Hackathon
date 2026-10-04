@@ -7,7 +7,7 @@ condition_type: procedural
 confidence: H
 versions:
   - label: art. 198, 221-3, 385 CPP (law no. 2026-651)
-    check: info_only
+    outcomes: []
 rights_at_stake: [time bar]
 next_steps: [Exact rules to be checked. TODO(legal)]
 weight: 0

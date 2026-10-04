@@ -8,7 +8,31 @@ condition_type: measurable
 confidence: L
 versions:
   - label: art. 64 CPP
-    check: pv_mentions
+    outcomes:
+    - when: subtype == 'garde_a_vue' and acts('custody_end') == 0
+      status: needs_reading
+      say: No end-of-custody report for {name}.
+      cite:
+      - custody_start
+    - when: subtype == 'garde_a_vue' and val('custody_end') is None
+      status: possible_nullity
+      say: 'End-of-custody report for {name}: end time not recorded.'
+      cite:
+      - custody_end
+      - custody_end.end_date
+      certainty: needs_reading
+      kind: missing_mention
+    - when: subtype == 'garde_a_vue'
+      status: satisfied
+      say: End time recorded ({hm(t('custody_end'))}).
+      cite:
+      - custody_end
+    - when: subtype == 'hearing' and val('in_custody') and not defined('end')
+      status: needs_reading
+      say: Hearing end time not recorded.
+      cite:
+      - start
+      kind: missing_mention
 rights_at_stake: [review of the length of the measure]
 next_steps:
   - Look for the missing time in other reports (custody register, transfer report).

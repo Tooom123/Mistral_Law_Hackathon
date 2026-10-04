@@ -1,0 +1,55 @@
+# Attribute registry — the vocabulary the rules read on the graph.
+#
+# A rule (catalogue/*.yaml) reads attributes by name; this file says what each attribute IS, so the extractor
+# can look for it in any police report without code: the Mistral extraction schema is generated from here,
+# restricted to the attributes the catalogue actually needs for the act's subtype (dsl.needs_by_subtype).
+#
+#   type:     datetime (date + time of day) · date · bool · text · enum (with `values`)
+#   derived:  true = computed by the graph linker (contradictions, seals, custody containers), never read from text
+#   fr:       how French reports usually phrase it (helps the model; not a regex)
+#
+# Adding a rule that needs a new attribute = add it here. `tests/test_rules_as_data.py` fails if a rule reads an
+# attribute that is not described.
+
+arrest_time:            {type: datetime, description: "Date and time of the arrest", fr: "interpellons … le … à … heures"}
+custody_start:          {type: datetime, description: "Start of police custody (garde à vue), as decided by the officer", fr: "décidons de placer en garde à vue … à compter de …"}
+custody_end:            {type: datetime, description: "Date and time custody ended", fr: "mettons fin à la mesure de garde à vue … à …"}
+custody_end_date:       {type: date, derived: true, description: "Date of the end-of-custody report when the time is missing"}
+end_date:               {type: date, description: "Date of the end-of-custody report", fr: "le … (en-tête du procès-verbal de fin de garde à vue)"}
+custody_start_conflict: {type: text, derived: true, description: "Different custody start times stated in different reports"}
+notified_at:            {type: datetime, description: "Date and time the rights were notified to the person in custody", fr: "notifions à … les droits …, le … à …"}
+delay_justification:    {type: text, description: "Circumstance stated to explain a late notification of rights", fr: "la notification des droits a été différée en raison de …"}
+lawyer_requested:       {type: bool, description: "The person asked to be assisted by a lawyer", fr: "déclare souhaiter être assisté par Maître …"}
+doctor_requested:       {type: bool, description: "The person asked for a medical examination", fr: "déclare souhaiter être examiné par un médecin"}
+family_requested:       {type: bool, description: "The person asked for a relative / designated person to be informed", fr: "déclare souhaiter faire prévenir …"}
+interpreter_present:    {type: bool, description: "An interpreter assisted during this act", fr: "par l'intermédiaire de …, interprète en langue …"}
+understands_french:     {type: bool, description: "The person understands French", fr: "déclare ne pas comprendre la langue française"}
+objectives_text:        {type: text, description: "Grounds / objectives stated for placing the person in custody", fr: "aux motifs que … (art. 62-2 CPP)"}
+prosecutor_informed_at: {type: datetime, description: "Time the public prosecutor was informed of the custody", fr: "avisons à … heures M. le procureur de la République"}
+special_regime:         {type: text, description: "Special custody regime invoked (organised crime, drugs, terrorism)", fr: "régime dérogatoire … article 706-73"}
+extension_authorized:   {type: bool, description: "The custody extension was authorised", fr: "autorisons la prolongation de la garde à vue"}
+extension_authorized_at: {type: datetime, description: "Date and time the extension was authorised", fr: "autorisation de prolongation … le … à …"}
+in_custody:             {type: bool, description: "The person heard is currently in custody", fr: "actuellement en garde à vue"}
+start:                  {type: datetime, description: "Date and time the act started (opening line of the report)", fr: "L'an … le … à … heures"}
+end:                    {type: datetime, description: "Date and time the act ended", fr: "fin de l'audition à … / fin des opérations à …"}
+lawyer_present:         {type: bool, description: "The lawyer was present during the hearing", fr: "en présence de Maître … / hors la présence de son avocat"}
+lawyer_waiver:          {type: bool, description: "The person expressly waived the lawyer for this hearing", fr: "renonce expressément à l'assistance d'un avocat"}
+prosecutor_authorization: {type: bool, description: "Written authorisation of the prosecutor to question without waiting for the lawyer", fr: "autorisation écrite … du procureur"}
+lawyer_notified_at:     {type: datetime, description: "Time the lawyer was notified", fr: "avisons Maître … à …"}
+lawyer_notified_at_stated: {type: datetime, description: "Time the lawyer was notified, as restated in a hearing report", fr: "avisé à … ,"}
+family_notified_at:     {type: datetime, description: "Time the relative / designated person was informed", fr: "avisons … de la mesure"}
+exam_at:                {type: datetime, description: "Time of the medical examination", fr: "examen médical … le … à …"}
+is_home:                {type: bool, description: "The search took place in a home (domicile)", fr: "nous transportons au domicile de …"}
+occupant_present:       {type: bool, description: "The occupant was present throughout the search", fr: "en présence constante de … occupant des lieux"}
+witnesses_present:      {type: bool, description: "Two witnesses attended the search", fr: "en présence de deux témoins"}
+consent:                {type: enum, values: [handwritten, verbal], description: "Form of the occupant's consent to the search (preliminary inquiry)", fr: "assentiment exprès … écrit de sa main / donne verbalement son accord"}
+jld_authorization:      {type: bool, description: "Written and reasoned authorisation of the liberty and custody judge (JLD)", fr: "autorisation écrite et motivée du juge des libertés et de la détention"}
+item:                   {type: text, description: "Description of the seized item", fr: "- un téléphone portable …, placé sous scellé n° S1 ;"}
+seal_number:            {type: text, description: "Seal number of the seized item (e.g. S1)", fr: "placé sous scellé n° …"}
+orphan_seals:           {type: text, derived: true, description: "Seals analysed with no matching seizure in the file"}
+seal_label:             {type: text, description: "Seal number visible on a photograph", fr: "SCELLÉ N° …"}
+exif_conflict:          {type: text, derived: true, description: "Photo EXIF time inconsistent with the search report"}
+exif_conflict_search:   {type: text, derived: true, description: "Search act the photo is compared with"}
+authorization_ref:      {type: text, description: "Reference of the authorisation / order the act executes", fr: "en exécution de l'autorisation n° … / de l'ordonnance n° …"}
+authorization_date:     {type: date, description: "Date of the authorisation cited", fr: "délivrée par … en date du …"}
+date:                   {type: datetime, description: "Date (and time) of the order, ruling or report", fr: "L'an … le …"}

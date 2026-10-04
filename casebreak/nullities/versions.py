@@ -8,6 +8,7 @@ from pathlib import Path
 
 import yaml
 
+from casebreak.nullities.dsl import RuleError, validate_version
 from casebreak.schemas import Nullity
 
 CATALOGUE_DIR = Path(__file__).parent / "catalogue"
@@ -18,8 +19,20 @@ def load_catalogue() -> dict[str, Nullity]:
     out: dict[str, Nullity] = {}
     for f in sorted(CATALOGUE_DIR.glob("*.yaml")):
         raw = yaml.safe_load(f.read_text())
-        out[raw["id"]] = Nullity(**raw)
+        nl = Nullity(**raw)
+        for v in nl.versions:
+            try:
+                validate_version(v)
+            except RuleError as e:
+                raise RuleError(f"{f.name}: {e}") from e
+        out[raw["id"]] = nl
     return out
+
+
+@lru_cache(maxsize=1)
+def load_attributes() -> dict[str, dict]:
+    """Attribute registry (attributes.yaml): what each attribute the rules read means, its type, derived or not."""
+    return yaml.safe_load((Path(__file__).parent / "attributes.yaml").read_text())
 
 
 def version_label(n: Nullity, d: date | None) -> str:

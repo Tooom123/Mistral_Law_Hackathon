@@ -120,7 +120,7 @@ class PageRec(BaseModel):
     file: str  # file name inside the case folder
     file_page: int  # 0-based page index inside that file (images: 0)
     kind: Literal["pdf_native", "pdf_scan", "image"] = "pdf_native"
-    ocr: Literal["native", "tesseract", "mistral_ocr", "none"] = "native"
+    ocr: Literal["native", "tesseract", "mistral_ocr", "mistral_vision", "none"] = "native"
     text: str = ""
     readable: bool = True
     words: list[tuple[float, float, float, float, str]] = Field(default_factory=list)  # normalised bbox 0..1
@@ -167,8 +167,9 @@ class Version(BaseModel):
     valid_from: date | None = None
     valid_to: date | None = None
     label: str = ""  # "CPP 63-1, version issue de la loi du 22 avril 2024"
-    check: str  # name of a function in nullities/checks.py
     params: dict[str, Any] = Field(default_factory=dict)
+    let: dict[str, str] = Field(default_factory=dict)  # named expressions (nullities/dsl.py)
+    outcomes: list[dict[str, Any]] = Field(default_factory=list)  # ordered; first `when` that holds wins
     grey_zone: dict[str, Any] | None = None
     note: str = ""
 

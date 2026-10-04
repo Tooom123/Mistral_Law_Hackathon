@@ -67,7 +67,7 @@ def _jev(qids: list[str], context: str) -> list[dict] | None:
         return None
 
 
-def _mistral(qids: list[str], context: str, model: str) -> list[dict] | None:
+def _mistral(qids: list[str], context: str, model: str) -> tuple[list[dict], str] | None:
     if not settings.mistral:
         return None
     qs = "\n".join(f"- {q} ({QUESTIONS[q]['type']}{', options: ' + str(QUESTIONS[q].get('options')) if QUESTIONS[q].get('options') else ''}): {QUESTIONS[q]['text']}" for q in qids)
@@ -77,8 +77,9 @@ def _mistral(qids: list[str], context: str, model: str) -> list[dict] | None:
             "is void or lawful. Every answer quotes a passage copied word for word, with its page. If you do not know, "
             "answer 'not_documented'. JSON: {\"answers\": [{\"id\": str, \"answer\": bool|str, \"quote\": str|null, "
             "\"page\": int|null, \"unsure\": bool}]}",
-            f"Questions:\n{qs}\n\nDocuments:\n{context}", model=model)
-        return out.get("answers")
+            f"Questions:\n{qs}\n\nDocuments:\n{context}", model=model, purpose="judge")
+        answers = [a for a in out.get("answers") or [] if isinstance(a, dict)]
+        return (answers, out.get("_model", model)) if answers else None
     except mistral.MistralUnavailable as e:
         log.info("Mistral judge unavailable: %s", e)
         return None
@@ -90,7 +91,11 @@ def _verify(answers: list[dict], pages: dict[int, PageRec], mapping: dict) -> li
         if q and mapping:
             q = pseudonymize.unmask(q, mapping)
             a["quote"] = q
-        page = a.get("page")
+        try:
+            page = int(a.get("page")) if a.get("page") is not None else None
+        except (TypeError, ValueError):
+            page = None
+        a["page"] = page
         a["verified"] = bool(q and page in pages and quote_on_page_loose(q, pages[page].text)) or \
             bool(q and any(quote_on_page_loose(q, p.text) for p in pages.values() if page is None))
         if q and not a["verified"]:
@@ -98,8 +103,9 @@ def _verify(answers: list[dict], pages: dict[int, PageRec], mapping: dict) -> li
     return answers
 
 
-def ask(nullity: Nullity, node: Node, grey_attr: str | None, sources: list[Src], pages: dict[int, PageRec]) -> dict:
-    version = nullity.versions[-1]
+def ask(nullity: Nullity, node: Node, grey_attr: str | None, sources: list[Src], pages: dict[int, PageRec],
+        version=None) -> dict:
+    version = version or nullity.versions[-1]
     qids = [q for q in ((version.grey_zone or {}).get("judge_questions") or []) if q in QUESTIONS]
     if not qids:
         return {}
@@ -110,14 +116,14 @@ def ask(nullity: Nullity, node: Node, grey_attr: str | None, sources: list[Src],
     if answers:
         tier = "jev"
     else:
-        answers = _mistral(qids, masked, settings.fast_model)
-        tier = "mistral-small" if answers else "offline"
+        got = _mistral(qids, masked, settings.fast_model)
+        answers, tier = got if got else (None, "offline")
     if answers:
         answers = _verify(answers, pages, mapping)
-        if any(a.get("unsure") or not a.get("verified") for a in answers):
+        if any(a.get("unsure") or not a.get("verified") for a in answers) and settings.judge_model != settings.fast_model:
             big = _mistral(qids, masked, settings.judge_model)
-            if big:
-                answers, tier = _verify(big, pages, mapping), "mistral-large"
+            if big and big[1] != tier:  # only worth it if a stronger model actually answered
+                answers, tier = _verify(big[0], pages, mapping), big[1]
     if not answers:
         answers = [_offline(q, node, grey_attr) for q in qids]
         for a in answers:
@@ -149,7 +155,7 @@ def explain(statement: str, nullity: Nullity) -> str:
         return mistral.chat(
             [{"role": "system", "content": "Rephrase in 2 sentences of sober legal English, without concluding that the act is void."},
              {"role": "user", "content": f"Rule: {nullity.title} ({nullity.article}). Finding: {statement}"}],
-            model=settings.judge_model)
+            model=settings.judge_model, purpose="explain")
     except mistral.MistralUnavailable:
         return statement
 

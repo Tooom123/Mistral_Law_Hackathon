@@ -7,7 +7,12 @@ condition_type: open_textured
 confidence: M
 versions:
   - label: art. 706-88 et seq. CPP
-    check: special_regime
+    outcomes:
+    - when: defined('special_regime')
+      status: needs_reading
+      say: 'Special regime invoked: "{val(''special_regime'')}". Specific authorisations to be checked.'
+      cite:
+      - special_regime
 rights_at_stake: [personal liberty]
 next_steps:
   - Check the specific authorisations required by the invoked regime. TODO(legal)

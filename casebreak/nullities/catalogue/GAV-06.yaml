@@ -9,7 +9,29 @@ condition_type: measurable
 confidence: L
 versions:
   - label: art. 63 CPP
-    check: prosecutor_informed
+    let:
+      start: t('custody_start')
+      at: t('prosecutor_informed_at')
+    outcomes:
+    - when: not defined('prosecutor_informed_at')
+      status: skip
+    - when: missing('prosecutor_informed_at')
+      status: possible_nullity
+      say: 'Custody of {name}: no record that the public prosecutor was informed.'
+      cite:
+      - custody_start
+      certainty: needs_reading
+      kind: missing_mention
+    - when: start is not None and at is not None
+      status: satisfied
+      say: Prosecutor informed at {hm(at)} ({dur(minutes(start, at))} after custody began).
+      cite:
+      - prosecutor_informed_at
+    - when: 'True'
+      status: needs_reading
+      say: Time the prosecutor was informed is unreadable.
+      cite:
+      - prosecutor_informed_at
 rights_at_stake: [judicial oversight of the measure]
 next_steps:
   - Look for a notice to the prosecutor in other documents (logbook, summary report).

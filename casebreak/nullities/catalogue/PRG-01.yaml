@@ -7,7 +7,12 @@ condition_type: procedural
 confidence: M
 versions:
   - label: art. 174 CPP
-    check: purge
+    outcomes:
+    - when: 'True'
+      status: needs_reading
+      say: 'Investigating chamber ruling of {dhm(t(''@start''))}: earlier defects not raised may be purged (unless they could not have been known).'
+      cite:
+      - date
 rights_at_stake: [time bar]
 next_steps:
   - Check whether the defects found could have been known before the ruling.

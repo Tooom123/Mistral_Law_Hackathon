@@ -4,13 +4,16 @@ import { state, set } from "./state.js";
 import { $, $$, h, CERT, VERDICT, ATTR_FR, CAT_FR, fmtVal, hm, dmy, toast, REDUCED } from "./ui.js";
 import { startWarroom } from "./warroom.js";
 import { Timeline } from "./timeline.js";
+import { Graph3D, CAT_COLOR } from "./graph3d.js";
 import { openAlert } from "./acard.js";
 import { renderReport } from "./report.js";
 import { renderBench } from "./bench.js";
 
 const params = new URLSearchParams(location.search);
-let timeline;
+let timeline, g3;
 let stopWar = null;
+let view = (() => { try { return localStorage.getItem("breach.view") || "3d"; } catch { return "3d"; } })();
+const is3d = () => view === "3d" && g3?.ready;
 
 // ------------------------------------------------------------------ boot
 async function boot() {
@@ -77,6 +80,8 @@ async function openCase() {
     svg: $("#timeline"), labels: $("#lane-labels"), scroll: $("#timeline-scroll"), tooltip: $("#tooltip"),
     onSelect: n => openNode(n),
   });
+  g3 ??= new Graph3D($("#g3d"), { onSelect: n => selectFrom3d(n) });
+  setupView();
   await refresh({ first: true });
   route();
 }
@@ -89,6 +94,8 @@ async function refresh({ first = false } = {}) {
   $("#case-title").textContent = graph.title;
   document.title = `BREACH — ${graph.title}`;
   timeline.setData(graph, al.alerts);
+  g3.setData(graph, al.alerts);
+  renderLegend3d();
   renderAlerts(first ? null : before);
   renderDeadline();
   renderDense();
@@ -127,8 +134,8 @@ function renderAlerts(before) {
     const li = h("li", {
       class: `al ${a.status === "needs_reading" ? "nr" : ""} ${a.review?.decision === "rejected" ? "rejected" : ""}`, "data-key": a.key, tabindex: 0,
       style: { animationDelay: before && before.has(a.key) ? "0s" : `${Math.min(i, 12) * 40}ms` },
-      onclick: () => { timeline.select(a.node.id); markSel(a.key); openAlert(a.key, { onSimulate: simulate, onReviewed: () => refresh() }); },
-      onmouseenter: () => timeline.select(a.node.id, { scroll: false }),
+      onclick: () => { timeline.select(a.node.id); if (is3d()) g3.focus(a.node.id); markSel(a.key); openAlert(a.key, { onSimulate: simulate, onReviewed: () => refresh() }); },
+      onmouseenter: () => { timeline.select(a.node.id, { scroll: false }); if (is3d() && !g3.locked) g3.highlight(a.node.id); },
       onkeydown: e => { if (e.key === "Enter") e.currentTarget.click(); },
     },
       h("div", { class: "al__rank" }, "#", h("b", {}, String(i + 1).padStart(2, "0"))),
@@ -182,6 +189,7 @@ function renderDeadline() {
 
 // ------------------------------------------------------------------ node drawer
 function openNode(n) {
+  set({ selectedNode: n.id });
   timeline.select(n.id, { scroll: false });
   const box = $("#node-drawer");
   box.classList.remove("node-drawer--right");
@@ -207,7 +215,7 @@ function openNode(n) {
           a.src ? h("span", { class: "q" }, `“${a.src.quote}” — ${a.src.doc_id}, p. ${a.src.page}`) : null)))),
       h("div", { class: "nd__actions" },
         h("button", { class: "btn btn--primary btn--sm", onclick: () => simulate(n.id) }, "Simulate impact"),
-        h("button", { class: "btn btn--sm", onclick: () => { box.hidden = true; timeline.resetDomino(); $("#domino-sticker").hidden = true; } }, "Restore"))));
+        h("button", { class: "btn btn--sm", onclick: () => { box.hidden = true; resetSim(); } }, "Close"))));
   box.hidden = false;
 }
 
@@ -217,7 +225,12 @@ async function simulate(nodeId) {
   const sim = await api.simulate(state.caseId, nodeId);
   if (!sim.count) { toast("No act depends on this one in the graph."); return; }
   $("#node-drawer").hidden = true;
-  await timeline.domino(sim, $("#domino-sticker"), $("#domino-n"));
+  if (is3d()) {
+    $("#domino-sticker").hidden = false;
+    $("#domino-n").textContent = "0";
+    timeline.resetDomino();
+    await g3.domino(sim, $("#domino-n"));
+  } else await timeline.domino(sim, $("#domino-sticker"), $("#domino-n"));
   const n = state.graph.nodes.find(x => x.id === nodeId);
   const box = $("#node-drawer");
   box.classList.add("node-drawer--right");
@@ -237,8 +250,80 @@ async function simulate(nodeId) {
 
 function resetSim() {
   timeline.resetDomino();
+  g3?.resetDomino();
   $("#domino-sticker").hidden = true;
   $("#node-drawer").hidden = true;
+}
+
+// ------------------------------------------------------------------ 3D graph ↔ timeline
+function setupView() {
+  const apply = () => {
+    $$("[data-for]").forEach(el => { el.hidden = el.dataset.for !== view; });
+    $$("#view-seg button").forEach(b => { b.classList.toggle("is-on", b.dataset.v === view); b.setAttribute("aria-checked", b.dataset.v === view); });
+    $(".graph-layout").classList.toggle("is-3d", view === "3d");
+    if (view === "3d") g3.resize();
+    try { localStorage.setItem("breach.view", view); } catch { /* private mode */ }
+  };
+  $("#view-seg").onclick = e => {
+    const b = e.target.closest("button");
+    if (!b || b.dataset.v === view) return;
+    resetSim();
+    view = b.dataset.v;
+    apply();
+    if (view === "timeline" && state.selectedNode) timeline.select(state.selectedNode);
+  };
+  apply();
+}
+
+function renderLegend3d() {
+  const cats = [...new Set(state.graph.nodes.filter(n => n.type === "ACT").map(n => n.category))];
+  $("#legend-3d").replaceChildren(
+    ...cats.map(c => h("span", {}, h("i", { class: "dot", style: { background: CAT_COLOR[c] ?? "#999" } }), CAT_FR[c]?.[0] ?? c)),
+    h("span", {}, h("i", { class: "dot", style: { background: "#E61300" } }), "Possible nullity"),
+    h("span", {}, h("i", { class: "dot", style: { background: "#EAB308" } }), "To investigate"));
+  const chip = (kind, label) => h("button", { class: "g3-chip", "aria-pressed": String(g3.show[kind]), onclick: e => {
+    const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+    e.currentTarget.setAttribute("aria-pressed", on);
+    g3.toggle(kind, on);
+  } }, label);
+  const rot = h("button", { class: "g3-chip", "aria-pressed": "true", title: "Slow rotation", onclick: e => e.currentTarget.setAttribute("aria-pressed", g3.toggleRotate()) }, "Rotate");
+  g3.onRotate = on => rot.setAttribute("aria-pressed", on);
+  const n = k => state.graph.nodes.filter(x => x.type === k).length;
+  $("#g3-toggles").replaceChildren(chip("PERSON", `People · ${n("PERSON")}`), chip("ITEM", `Seals · ${n("ITEM")}`),
+    chip("ALERT", `Alerts · ${state.alerts.length}`), chip("ISOLATED", `Unlinked documents · ${g3.hidden ?? 0}`), rot);
+}
+
+function selectFrom3d(n) {
+  if (n.kind === "ALERT") { markSel(n.alert.key); openAlert(n.alert.key, { onSimulate: simulate, onReviewed: () => refresh() }); return; }
+  if (n.type === "ACT") return openNode(n);
+  openEntity(n);
+}
+
+// people and seals: the acts they are linked to, in time order
+function openEntity(n) {
+  const linked = new Set();
+  for (const e of state.graph.edges) {
+    if (e.src === n.id) linked.add(e.dst);
+    if (e.dst === n.id) linked.add(e.src);
+  }
+  const acts = state.graph.nodes.filter(x => x.type === "ACT" && linked.has(x.id)).sort((a, b) => (a.start ?? "").localeCompare(b.start ?? ""));
+  const alertsOf = id => state.alerts.filter(a => a.node.id === id);
+  const box = $("#node-drawer");
+  box.classList.remove("node-drawer--right");
+  box.replaceChildren(
+    h("div", { class: "nd__head" },
+      h("div", {}, h("span", { class: "mono", style: { color: "var(--ink-3)" } }, n.type === "PERSON" ? "Person" : "Seal"), h("h3", {}, n.label),
+        h("span", { class: "mono", style: { color: "var(--ink-3)" } }, `${acts.length} linked act${acts.length > 1 ? "s" : ""}`)),
+      h("button", { class: "nd__close", onclick: () => { box.hidden = true; }, title: "Close" }, "×")),
+    h("div", { class: "nd__body" },
+      h("ul", { class: "checklist" }, acts.map(a => {
+        const al = alertsOf(a.id);
+        return h("li", { class: al.some(x => x.status === "possible_nullity") ? "pn" : al.length ? "nr" : "ok" },
+          h("span", { class: "ic" }, al.length ? "!" : "·"),
+          h("b", {}, a.start ? `${dmy(a.start)} ${hm(a.start)}` : "—"),
+          h("span", {}, h("a", { onclick: () => { g3.focus(a.id); openNode(a); } }, a.label), al.length ? ` · ${al.map(x => x.nullity_id).join(", ")}` : ""));
+      }))));
+  box.hidden = false;
 }
 
 // ------------------------------------------------------------------ toggles: mode, pseudo, time travel, zoom

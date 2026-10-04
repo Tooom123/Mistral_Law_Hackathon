@@ -8,7 +8,16 @@ condition_type: measurable
 confidence: n/a
 versions:
   - label: time-order check (graph)
-    check: arrest_before_custody
+    let:
+      a: t('arrest_time')
+      cs: t('custody.@start')
+    outcomes:
+    - when: a is not None and cs is not None and a > cs
+      status: needs_reading
+      say: Arrest at {hm(a)}, after custody began ({hm(cs)}).
+      cite:
+      - arrest_time
+      - custody.custody_start
 rights_at_stake: [starting point of the measure]
 next_steps: [Determine when the constraint began. TODO(legal)]
 weight: 0.6

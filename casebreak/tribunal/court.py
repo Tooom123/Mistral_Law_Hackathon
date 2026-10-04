@@ -117,6 +117,12 @@ def _offline(c: Check, g: CaseGraph) -> dict:
         objections.append(_objection("no_prejudice", c, n, g, pages) if n else
                           {"hint": "no_prejudice", "text": PROSECUTION["no_prejudice"], "strength": "principle", "source": None, "why": ""})
     objections += _procedural(g, c)
+    return {"tier": "offline", "defense": {"role": "Defence", "text": defense, "sources": [s.model_dump() for s in c.sources]},
+            "prosecution": {"role": "Prosecution", "objections": objections},
+            "presiding": _presiding(c, objections)}
+
+
+def _presiding(c: Check, objections: list[dict]) -> dict:
     strong = [o for o in objections if o["strength"] == "supported"]
     check = [o for o in objections if o["strength"] == "to_verify"]
     if strong:
@@ -133,9 +139,7 @@ def _offline(c: Check, g: CaseGraph) -> dict:
         verdict, label = "survives", "The ground survives cross-examination"
         motive = "No prosecution objection is backed by a document in the file."
     motive += " Prejudice is still for the defence to prove; the tool rules on neither prejudice nor nullity."
-    return {"tier": "offline", "defense": {"role": "Defence", "text": defense, "sources": [s.model_dump() for s in c.sources]},
-            "prosecution": {"role": "Prosecution", "objections": objections},
-            "presiding": {"role": "Presiding judge", "verdict": verdict, "label": label, "text": motive}}
+    return {"role": "Presiding judge", "verdict": verdict, "label": label, "text": motive}
 
 
 def deliberate(c: Check, g: CaseGraph) -> dict:
@@ -153,22 +157,30 @@ def deliberate(c: Check, g: CaseGraph) -> dict:
             "Do not invent any article or decision. JSON: {\"defense\": str, \"objections\": [{\"text\": str, "
             "\"quote\": str|null, \"page\": int|null}], \"president\": str}",
             f"Finding: {c.statement_fr}\nRule: {c.article} ({c.law_version})\nObjections already identified: "
-            f"{[o['text'] for o in base['prosecution']['objections']]}\n\nDocuments:\n{masked}", model=settings.judge_model)
+            f"{[o['text'] for o in base['prosecution']['objections']]}\n\nDocuments:\n{masked}", model=settings.judge_model,
+            purpose="tribunal")
     except mistral.MistralUnavailable:
         return base
     llm_obj = []
-    for o in out.get("objections", [])[:6]:
-        q = pseudonymize.unmask(o.get("quote") or "", mapping) if mapping else (o.get("quote") or "")
-        page = o.get("page")
-        ok = bool(q and page in pages and quote_on_page_loose(q, pages[page].text))
-        llm_obj.append({"hint": "llm", "text": pseudonymize.unmask(o.get("text", ""), mapping),
-                        "strength": "supported" if ok else "no_evidence",
+    own = {(s.page, s.quote) for s in c.sources}
+    for o in [o for o in out.get("objections", []) if isinstance(o, dict)][:6]:
+        q = pseudonymize.unmask(str(o.get("quote") or ""), mapping)
+        try:
+            page = int(o.get("page")) if o.get("page") is not None else None
+        except (TypeError, ValueError):
+            page = None
+        ok = bool(q and page in pages and quote_on_page_loose(q, pages[page].text)) and (page, q) not in own
+        # A model saying "this quote backs my objection" is not verified in substance: at most "to verify".
+        llm_obj.append({"hint": "llm", "text": pseudonymize.unmask(str(o.get("text", "")), mapping),
+                        "strength": "to_verify" if ok else "no_evidence",
                         "source": {"doc_id": "?", "page": page, "quote": q} if ok else None,
-                        "why": "Quote verified on the page." if ok else "No verified quote: argument not counted as backed."})
-    base["tier"] = "mistral"
-    base["defense"]["text"] = pseudonymize.unmask(out.get("defense", base["defense"]["text"]), mapping)
+                        "why": "Quote found on the page; relevance to be read by the lawyer." if ok
+                        else "No verified quote: argument not counted as backed."})
+    base["tier"] = out.get("_model", "mistral")
+    base["defense"]["text"] = pseudonymize.unmask(str(out.get("defense") or base["defense"]["text"]), mapping)
     base["prosecution"]["objections"] += llm_obj
-    base["presiding"]["llm_text"] = pseudonymize.unmask(out.get("president", ""), mapping)
+    base["presiding"] = _presiding(c, base["prosecution"]["objections"])
+    base["presiding"]["llm_text"] = pseudonymize.unmask(str(out.get("president") or ""), mapping)
     return base
 
 

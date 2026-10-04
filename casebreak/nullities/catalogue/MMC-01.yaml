@@ -8,7 +8,15 @@ condition_type: measurable
 confidence: n/a
 versions:
   - label: EXIF / report comparison (metadata can be wrong)
-    check: exif_consistency
+    outcomes:
+    - when: defined('exif_conflict')
+      status: needs_reading
+      say: 'Photo of seal {val(''seal_label'')}: {val(''exif_conflict'')}. Metadata can be wrong — never a ground on its own.'
+      cite:
+      - seal_label
+      - exif_conflict
+      details:
+        search: val('exif_conflict_search')
 rights_at_stake: [accuracy of the report]
 next_steps:
   - Check the camera clock and the actual start time of the operations.

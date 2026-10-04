@@ -15,7 +15,7 @@ from datetime import date, datetime, time, timedelta
 from casebreak.config import settings
 from casebreak.facts.normalize_time import parse_date, parse_time
 from casebreak.llm import mistral
-from casebreak.schemas import Attr, Node, PageRec, Piece, Src
+from casebreak.schemas import CATEGORIES, Attr, Node, PageRec, Piece, Src
 from casebreak.text import PieceText, norm, quote_on_page_loose, squash
 
 log = logging.getLogger(__name__)
@@ -476,19 +476,28 @@ def _llm_extract(c: Ctx) -> list[Draft]:
         out = mistral.chat_json(
             "You extract the procedural acts from a document of a French criminal case file. You make no legal "
             "qualification. Every attribute must quote a passage copied word for word. Answer in JSON: " + LLM_SCHEMA,
-            masked, model=settings.extract_model)
+            masked, model=settings.extract_model, purpose="extract")
     except mistral.MistralUnavailable as e:
         log.warning("LLM extraction skipped: %s", e)
         return []
     drafts = []
-    for k, a in enumerate(out.get("acts", [])[:6]):
-        n = c.node(slug(a.get("subtype", "act")) or "act", a.get("category", "AUTRE"), a.get("label", "Act")[:60], suffix=f":llm{k}")
+    un = (lambda s: pseudonymize.unmask(s, mapping)) if mapping else (lambda s: s)
+    for k, a in enumerate([a for a in out.get("acts", []) if isinstance(a, dict)][:6]):
+        cat = a.get("category") if a.get("category") in CATEGORIES else "AUTRE"
+        n = c.node(slug(str(a.get("subtype", "act"))) or "act", cat, un(str(a.get("label", "Act")))[:60], suffix=f":llm{k}")
         for name, v in (a.get("attrs") or {}).items():
-            q = pseudonymize.unmask(str(v.get("quote", "")), mapping) if mapping else str(v.get("quote", ""))
-            page = v.get("page") if v.get("page") in c.piece.pages else c.piece.pages[0]
+            if not isinstance(v, dict):
+                continue
+            q = un(str(v.get("quote") or ""))
+            try:
+                page = int(v.get("page"))
+            except (TypeError, ValueError):
+                page = None
+            page = page if page in c.piece.pages else c.piece.pages[0]
             if q and quote_on_page_loose(q, c.pages[page].text):
-                n.attrs[slug(name)] = Attr(value=v.get("value"), src=Src(doc_id=c.piece.id, page=page, quote=q),
-                                           status="inferred")
+                val = v.get("value")
+                n.attrs[slug(name)] = Attr(value=un(val) if isinstance(val, str) else val,
+                                           src=Src(doc_id=c.piece.id, page=page, quote=q), status="inferred")
         n.start = c.opener_dt
         drafts.append(Draft(n))
     return drafts

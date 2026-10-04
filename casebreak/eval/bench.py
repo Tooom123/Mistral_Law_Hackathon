@@ -163,7 +163,9 @@ def _agg_baseline(cases: list[dict]) -> dict:
     fp = sum(c["fp"] for c in cases if c.get("status") == "ok")
     return {"status": "ok", "model": cases[0].get("model"), "tp": tp, "fn": fn, "fp": fp,
             "recall": round(tp / (tp + fn), 3) if tp + fn else None, "precision": round(tp / (tp + fp), 3) if tp + fp else None,
-            "page_accuracy": round(sum(c["page_ok"] for c in cases) / max(1, sum(c["tp"] for c in cases)), 3)}
+            "matching": "same rule id AND a page of the faulty piece (same rule as CASEBREAK)",
+            "id_only_recall": round(sum(c.get("id_only", 0) for c in cases if c.get("status") == "ok") / (tp + fn), 3) if tp + fn else None,
+            "truncated_cases": sum(1 for c in cases if c.get("truncated"))}
 
 
 def export_zip() -> bytes:

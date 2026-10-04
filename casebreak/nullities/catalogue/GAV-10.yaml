@@ -8,7 +8,28 @@ condition_type: measurable
 confidence: H
 versions:
   - label: art. 63-1 CPP (right to an interpreter)
-    check: interpreter
+    let:
+      act: '''the rights notification'' if subtype == ''rights_notification'' else ''the hearing'''
+    outcomes:
+    - when: not exists('custody') or not is_false('custody.understands_french')
+      status: skip
+    - when: is_true('interpreter_present')
+      status: satisfied
+      say: Interpreter present during {act}.
+      cite:
+      - interpreter_present
+    - when: is_false('interpreter_present') and has_src('interpreter_present')
+      status: possible_nullity
+      say: '{name} states they do not understand French; {act} at {hm(t(''@start''))} was conducted in French, without an interpreter.'
+      cite:
+      - custody.understands_french
+      - interpreter_present
+    - when: 'True'
+      status: needs_reading
+      say: '{name} does not understand French; no interpreter recorded during {act}.'
+      cite:
+      - custody.understands_french
+      kind: missing_mention
 rights_at_stake: [right to an interpreter, understanding of rights]
 next_steps:
   - Check when the interpreter arrived and whether rights were notified again.

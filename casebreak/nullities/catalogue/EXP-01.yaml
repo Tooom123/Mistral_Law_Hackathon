@@ -8,7 +8,12 @@ condition_type: structural
 confidence: n/a
 versions:
   - label: seal traceability check (graph)
-    check: seal_traceable
+    outcomes:
+    - when: defined('orphan_seals')
+      status: needs_reading
+      say: 'Seal(s) {val(''orphan_seals'')} analysed: no matching seizure in the file.'
+      cite:
+      - orphan_seals
 rights_at_stake: [traceability of evidence]
 next_steps:
   - Look for the seizure report of the seal and its chain of custody.

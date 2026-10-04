@@ -8,7 +8,38 @@ condition_type: open_textured
 confidence: H
 versions:
   - label: art. 62-2 CPP (version in force on the date of the act)
-    check: objectives_stated
+    outcomes:
+    - when: not defined('objectives_text')
+      status: skip
+    - when: has('objectives_text')
+      status: satisfied
+      say: Grounds for custody found; whether they match the legal objectives is to be assessed.
+      cite:
+      - objectives_text
+      certainty: inferred
+      grey:
+        attr: objectives_text
+        on_answer:
+          question: objective_stated
+          if_false:
+            status: needs_reading
+            say: 'Grounds for custody found, but no concrete objective identified: wording to be read.'
+          if_true:
+            status: satisfied
+    - when: has_src('objectives_text')
+      status: needs_reading
+      say: No grounds for custody found for {name}; the report only contains a generic phrase.
+      cite:
+      - objectives_text
+      grey:
+        attr: objectives_text
+    - when: 'True'
+      status: needs_reading
+      say: No grounds for custody found for {name}.
+      cite:
+      - objectives_text
+      grey:
+        attr: objectives_text
     grey_zone: {judge_questions: [objective_stated]}
 rights_at_stake: [personal liberty, review of the necessity of the measure]
 next_steps:

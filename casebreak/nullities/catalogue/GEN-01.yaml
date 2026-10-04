@@ -7,7 +7,7 @@ condition_type: procedural
 confidence: H
 versions:
   - label: art. 171 and 802 CPP
-    check: info_only
+    outcomes: []
 rights_at_stake: []
 next_steps: [Establish the prejudice (lawyer).]
 weight: 0

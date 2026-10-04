@@ -7,7 +7,7 @@ condition_type: measurable
 confidence: M
 versions:
   - label: art. 63-4 CPP
-    check: lawyer_meeting
+    outcomes: []
 rights_at_stake: [rights of the defence]
 next_steps:
   - Check that no refusal of the meeting is recorded.

@@ -8,7 +8,94 @@ condition_type: measurable
 confidence: H
 versions:
   - label: art. 63 CPP (ordinary offences — 24 h, one 24 h extension authorised by the prosecutor)
-    check: custody_duration
+    let:
+      start: t('custody_start')
+      end: t('custody_end')
+      ext: has('extension_authorized')
+      base: params['initial_hours'] * 60
+      limit: base + (params['extension_hours'] * 60 if ext else 0)
+      total: minutes(start, end)
+      upper: end_of_day(val('custody_end_date'))
+      up: minutes(start, upper)
+      auth_at: t('extension_authorized_at')
+      ext_note: ''' (extension authorised)'' if ext else '''''
+    outcomes:
+    - when: defined('special_regime')
+      status: needs_reading
+      say: 'Special regime invoked: specific maximum durations to be checked (GAV-03).'
+      cite:
+      - special_regime
+    - when: start is None
+      status: needs_reading
+      say: Custody start time unreadable or missing.
+      cite:
+      - custody_start
+    - when: end is None and upper is not None and up <= limit
+      status: satisfied
+      say: 'End time not recorded; upper bound (end of day {dm(upper)}): {dur(up)} ≤ {dur(limit)}{ext_note}.'
+      cite:
+      - custody_start
+      - custody_end_date
+      - extension_authorized
+      certainty: needs_reading
+    - when: end is None
+      status: needs_reading
+      say: 'Custody end time not recorded: duration cannot be computed.'
+      cite:
+      - custody_start
+      - custody_end
+    - when: total > limit and ext
+      status: possible_nullity
+      say: 'Custody of {name}: {dhm(start)} → {dhm(end)}, i.e. {dur(total)}, beyond {dur(limit)} despite the extension.'
+      cite:
+      - custody_start
+      - custody_end
+      - extension_authorized
+      proof:
+        kind: duration_gt
+        start: iso(start)
+        end: iso(end)
+        limit_minutes: limit
+      details:
+        duration_minutes: total
+        limit_minutes: limit
+        extension: ext
+    - when: total > limit
+      status: possible_nullity
+      say: 'Custody of {name}: {dhm(start)} → {dhm(end)}, i.e. {dur(total)}. No extension authorisation in the file.'
+      cite:
+      - custody_start
+      - custody_end
+      proof:
+        kind: duration_gt
+        start: iso(start)
+        end: iso(end)
+        limit_minutes: limit
+      details:
+        duration_minutes: total
+        limit_minutes: limit
+        extension: ext
+    - when: ext and auth_at is not None and auth_at > add_minutes(start, base)
+      status: needs_reading
+      say: 'Extension authorised at {dhm(auth_at)}, after the initial {dur(base)} expired ({dhm(add_minutes(start, base))}). TODO(legal): consequences.'
+      cite:
+      - custody_start
+      - extension_authorized_at
+    - when: 'True'
+      status: satisfied
+      say: Duration {dur(total)} ≤ {dur(limit)}{ext_note}.
+      cite:
+      - custody_start
+      - custody_end
+      - extension_authorized
+      proof:
+        kind: duration_le
+        start: iso(start)
+        end: iso(end)
+        limit_minutes: limit
+      details:
+        duration_minutes: total
+        limit_minutes: limit
     params: {initial_hours: 24, extension_hours: 24}
 rights_at_stake: [personal liberty]
 next_steps:

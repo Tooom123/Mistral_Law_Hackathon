@@ -12,6 +12,7 @@ from pathlib import Path
 from casebreak.config import CASES, settings
 from casebreak.graph import store
 from casebreak.graph.extract import extract_piece
+from casebreak.graph.fill import fill_gaps
 from casebreak.graph.link import build_graph
 from casebreak.ingest.ocr import read_files
 from casebreak.ingest.split import split_pieces
@@ -108,8 +109,8 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
                 _log(case_id, f"p. {info['page']} · unreadable without OCR — to read", "warn")
             else:
                 _count(case_id, "pages_ocr")
-                _log(case_id, f"p. {info['page']} · {'photo' if info['kind'] == 'image' else 'scan'} read by "
-                     f"{'Mistral OCR' if info['ocr'] == 'mistral_ocr' else 'Tesseract'}", "ocr")
+                engine = {"mistral_ocr": "Mistral OCR", "mistral_vision": "Mistral vision"}.get(info["ocr"], "Tesseract")
+                _log(case_id, f"p. {info['page']} · {'photo' if info['kind'] == 'image' else 'scan'} read by {engine}", "ocr")
             if pace:
                 time.sleep(pace / 60)
 
@@ -169,6 +170,14 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
 
         # ⑥ CHECK
         _stage(case_id, "check", "running")
+        if settings.mistral and settings.llm_fill:
+            # Rule-driven extraction: evaluate once without the judge, ask Mistral only for what the rules lacked.
+            gaps: list = []
+            run_checks(g, use_judge=False, gaps=gaps)
+            n_fill = fill_gaps(g, gaps, lambda m: _log(case_id, m, "act"))
+            _upd(case_id, counters={**status(case_id)["counters"], "llm_filled": n_fill})
+            if n_fill:
+                _log(case_id, f"{n_fill} attribute(s) found by Mistral where the rules needed them (quotes verified)", "info")
         checks = run_checks(g)
         for c in sorted(checks, key=lambda c: -c.rank):
             _count(case_id, "checks")

@@ -8,7 +8,19 @@ condition_type: measurable
 confidence: M
 versions:
   - label: art. 56 CPP
-    check: seized_sealed
+    outcomes:
+    - when: not defined('seal_number')
+      status: skip
+    - when: has('seal_number')
+      status: satisfied
+      say: Placed under seal {val('seal_number')}.
+      cite:
+      - seal_number
+    - when: 'True'
+      status: possible_nullity
+      say: '"{val(''item'')}" seized with no record of being placed under seal.'
+      cite:
+      - seal_number
 rights_at_stake: [integrity and traceability of evidence]
 next_steps:
   - Look for a provisional seal or a later sealing report.

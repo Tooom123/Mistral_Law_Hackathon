@@ -8,7 +8,7 @@ confidence: H
 versions:
   - valid_to: null
     label: art. 173-1 CPP — 6 months (previous regime) / 4 months (law no. 2026-651, art. 9)
-    check: info_only
+    outcomes: []
     params:
       before_months: 6
       after_months: 4

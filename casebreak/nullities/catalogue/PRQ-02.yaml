@@ -9,7 +9,22 @@ condition_type: measurable
 confidence: M
 versions:
   - label: art. 57 CPP (scope depends on the investigation framework)
-    check: search_presence
+    outcomes:
+    - when: not defined('occupant_present')
+      status: skip
+    - when: has('occupant_present') or has('witnesses_present')
+      status: satisfied
+      say: Presence of the occupant or two witnesses recorded.
+      cite:
+      - occupant_present
+      - witnesses_present
+    - when: 'True'
+      status: possible_nullity
+      say: 'Search: neither the occupant nor two witnesses are recorded as present.'
+      cite:
+      - occupant_present
+      certainty: needs_reading
+      kind: missing_mention
 rights_at_stake: [inviolability of the home, fairness of seizures]
 next_steps:
   - Check who attended the operations and who signed the report.

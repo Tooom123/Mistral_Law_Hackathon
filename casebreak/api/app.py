@@ -59,7 +59,12 @@ def _graph(cid: str):
 
 @app.get("/api/engines")
 def engines() -> dict:
-    return {**settings.engines(), "pseudonymize": settings.pseudonymize, "stages": [s for s, _, _ in STAGES]}
+    from casebreak.llm import mistral
+
+    return {**settings.engines(), "pseudonymize": settings.pseudonymize, "stages": [s for s, _, _ in STAGES],
+            "models": {"configured": {"ocr": settings.ocr_model, "extract": settings.extract_model,
+                                      "judge": settings.judge_model, "fast": settings.fast_model},
+                       "used": dict(mistral.LAST_MODEL), "refused": mistral.refused_models()}}
 
 
 @app.get("/api/catalogue")

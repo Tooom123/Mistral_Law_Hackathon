@@ -73,7 +73,7 @@ def _leanstral(code: str) -> str | None:
     try:
         out = mistral.chat([{"role": "system", "content": "You are a Lean 4 prover. Return only the tactic proof that "
                              "replaces PROOF, no prose, no code fences."},
-                            {"role": "user", "content": code}], model=settings.lean_model)
+                            {"role": "user", "content": code}], model=settings.lean_model, fallback=False)
         return out.strip().strip("`").replace("lean\n", "")
     except mistral.MistralUnavailable:
         return None

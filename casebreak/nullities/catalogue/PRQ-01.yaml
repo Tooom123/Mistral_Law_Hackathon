@@ -8,7 +8,56 @@ condition_type: measurable
 confidence: H
 versions:
   - label: art. 59 CPP (legal hours; a search started before 21:00 may continue)
-    check: search_hours
+    let:
+      start: t('start')
+      end: t('end')
+      early: hhmm(params['earliest'])
+      late: hhmm(params['latest'])
+      sc: clock(start)
+    outcomes:
+    - when: not is_true('is_home')
+      status: skip
+    - when: start is None
+      status: needs_reading
+      say: Home search start time {'unreadable (handwritten?)' if unreadable('start') else 'not recorded'}{('; operations ended at ' + hm(end)) if end is not None else ''}. Read the page to check the legal hours.
+      cite:
+      - start
+      - end
+    - when: sc >= late
+      status: possible_nullity
+      say: Home search started at {hm(start)} (outside {params['earliest']}–{params['latest']}).
+      cite:
+      - start
+      - is_home
+      proof:
+        kind: clock_ge
+        start_clock: hm(start)
+        bound: params['latest']
+      details:
+        start: iso(start)
+    - when: sc < early
+      status: possible_nullity
+      say: Home search started at {hm(start)} (outside {params['earliest']}–{params['latest']}).
+      cite:
+      - start
+      - is_home
+      proof:
+        kind: clock_lt
+        start_clock: hm(start)
+        bound: params['earliest']
+      details:
+        start: iso(start)
+    - when: end is not None and clock(end) >= late
+      status: satisfied
+      say: Started at {hm(start)} (before {params['latest']}), continued until {hm(end)}.
+      cite:
+      - start
+      - end
+    - when: 'True'
+      status: satisfied
+      say: Started at {hm(start)}, within legal hours.
+      cite:
+      - start
     params: {earliest: "06:00", latest: "21:00"}
 rights_at_stake: [inviolability of the home]
 next_steps:

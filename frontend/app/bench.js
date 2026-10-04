@@ -41,7 +41,7 @@ export async function renderBench() {
               h("tr", {}, h("td", {}, "Model"), h("td", {}, h("span", { class: "v" }, r.baseline.model))),
               h("tr", {}, h("td", {}, "Recall"), h("td", {}, h("span", { class: "v" }, `${pct(r.baseline.recall)}%`), h("span", { class: "q" }, `BREACH: ${pct(o.recall)}%`))),
               h("tr", {}, h("td", {}, "Precision"), h("td", {}, h("span", { class: "v" }, `${pct(r.baseline.precision)}%`), h("span", { class: "q" }, `BREACH: ${pct(o.precision)}%`))),
-              h("tr", {}, h("td", {}, "Exact page"), h("td", {}, h("span", { class: "v" }, `${pct(r.baseline.page_accuracy)}%`))))
+              h("tr", {}, h("td", {}, "Right rule, any page"), h("td", {}, h("span", { class: "v" }, `${pct(r.baseline.id_only_recall)}%`), h("span", { class: "q" }, r.baseline.matching ?? ""))))
           : h("p", { class: "muted" }, `Not run — ${r.baseline.reason}`))),
     h("div", { class: "honesty" }, h("b", {}, "To say honestly. "), r.honesty,
       h("div", { class: "mono", style: { marginTop: "8px", color: "var(--ink-3)" } }, `${r.n_dossiers} case files · ${r.pages} pages · generated ${r.generated_at}`)));

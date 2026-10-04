@@ -8,7 +8,19 @@ condition_type: structural
 confidence: n/a
 versions:
   - label: authorisation presence check (graph)
-    check: authorization_present
+    outcomes:
+    - when: case_acts(params['auth_subtype']) > 0
+      status: satisfied
+      say: Authorisation present in the file.
+      cite:
+      - authorization_ref
+      - case:geolocation_authorization.date
+    - when: 'True'
+      status: needs_reading
+      say: Authorisation cited in the report{(' (dated ' + val('authorization_date') + ')') if has('authorization_date') else ''} but missing from the file.
+      cite:
+      - authorization_ref
+      - start
     params: {auth_subtype: geolocation_authorization}
 rights_at_stake: [privacy]
 next_steps:

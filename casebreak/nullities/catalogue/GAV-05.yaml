@@ -8,7 +8,23 @@ condition_type: open_textured
 confidence: M
 versions:
   - label: art. 63-1 CPP
-    check: rights_delay_justified
+    let:
+      delay: minutes(t('custody.custody_start'), t('notified_at'))
+    outcomes:
+    - when: not defined('delay_justification') or not exists('custody')
+      status: skip
+    - when: 'True'
+      status: needs_reading
+      say: '{(''Rights notified '' + dur(delay) + '' after custody began'') if delay is not None else ''Notification deferred''}; justification stated in the report: "{val(''delay_justification'')}". For the lawyer to assess.'
+      cite:
+      - custody.custody_start
+      - notified_at
+      - delay_justification
+      certainty: inferred
+      grey:
+        attr: delay_justification
+      details:
+        delay_minutes: delay
     grey_zone: {judge_questions: [delay_justified]}
 rights_at_stake: [rights of the defence]
 next_steps:

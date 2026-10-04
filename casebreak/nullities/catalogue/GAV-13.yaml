@@ -8,7 +8,14 @@ condition_type: measurable
 confidence: n/a
 versions:
   - label: consistency check (not a rule of law)
-    check: custody_start_consistency
+    outcomes:
+    - when: defined('custody_start_conflict')
+      status: needs_reading
+      say: 'Documents disagree on when custody of {name} began: {val(''custody_start_conflict'')}. Time limits must be recomputed from the earliest time.'
+      cite:
+      - '@_conflict_sources'
+      details:
+        values: val('custody_start_conflict')
 rights_at_stake: [computation of durations and time limits]
 next_steps:
   - Determine which start time applies; recompute time limits (GAV-02, GAV-04) from the earliest one.

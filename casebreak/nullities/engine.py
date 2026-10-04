@@ -10,7 +10,7 @@ import logging
 from datetime import date
 
 from casebreak.judge import judge
-from casebreak.nullities.checks import CHECKS, GraphCtx, Result
+from casebreak.nullities.dsl import GraphCtx, Result, evaluate
 from casebreak.nullities.versions import load_catalogue, version_label
 from casebreak.propagate.cascade import affected
 from casebreak.schemas import CaseGraph, Check, Node, Nullity
@@ -37,25 +37,31 @@ def _applies(nl: Nullity, n: Node) -> bool:
     return n.subtype in nl.applies_to and (n.framework in nl.frameworks or n.framework == "unknown" and "unknown" in nl.frameworks)
 
 
-def _build(nl: Nullity, n: Node, res: Result, law_date: date | None, ctx: GraphCtx, use_judge: bool) -> Check:
+def _build(nl: Nullity, n: Node, res: Result, law_date: date | None, ctx: GraphCtx, use_judge: bool, version=None) -> Check:
     certainty = res.certainty
     details = dict(res.details)
     ocr = ctx.ocr_pages(res.sources)
     if ocr and certainty == "documented":
         certainty = "inferred"
         details["ocr_note"] = f"Values read by OCR (p. {', '.join(map(str, sorted(set(ocr))))}) — check the page."
+    inferred = ctx.inferred_quotes(res.sources)
+    if inferred and certainty == "documented":
+        certainty = "inferred"
+        details["llm_note"] = "Some values were extracted by a language model (quote verified on the page) — check them."
     status = res.status
     jd = None
     if res.grey and use_judge:
-        jd = judge.ask(nl, n, res.grey_attr, res.sources, ctx.pages)
+        jd = judge.ask(nl, n, res.grey_attr, res.sources, ctx.pages, version)
         if jd:
-            if nl.id == "GAV-01":
-                ans = next((a for a in jd["answers"] if a.get("id") == "objective_stated"), {})
-                if ans.get("answer") is False:
-                    status, res.statement = "needs_reading", (
-                        "Grounds for custody found, but no concrete objective identified: wording to be read.")
-                elif ans.get("answer") is True and not jd["unsure"]:
-                    status = "satisfied"
+            # Effect of the judge's answer, declared in the rule (grey.on_answer) — no rule-specific code here.
+            eff = (res.details.pop("_on_answer", None) or {})
+            if eff:
+                ans = next((a for a in jd["answers"] if a.get("id") == eff.get("question")), {})
+                branch = eff.get("if_false") if ans.get("answer") is False else \
+                    eff.get("if_true") if ans.get("answer") is True and not jd["unsure"] else None
+                if branch:
+                    status = branch.get("status", status)
+                    res.statement = branch.get("say", res.statement)
             certainty = "needs_reading" if jd["unsure"] else ("inferred" if certainty != "needs_reading" else certainty)
     if res.proof:
         details["proof_facts"] = res.proof
@@ -68,8 +74,14 @@ def _build(nl: Nullity, n: Node, res: Result, law_date: date | None, ctx: GraphC
     )
 
 
-def run_checks(g: CaseGraph, as_of: date | None = None, use_judge: bool = True) -> list[Check]:
+def run_checks(g: CaseGraph, as_of: date | None = None, use_judge: bool = True, gaps: list | None = None) -> list[Check]:
+    """Every rule of the catalogue on every act it applies to. Rules are indexed by act subtype, so the cost grows
+    with (acts × rules for that subtype), not (acts × whole catalogue)."""
     cat = load_catalogue()
+    by_subtype: dict[str, list[Nullity]] = {}
+    for nl in cat.values():
+        for st in nl.applies_to:
+            by_subtype.setdefault(st, []).append(nl)
     ctx = GraphCtx(g.nodes, g.edges, {p.page: p for p in g.pages})
     node_idx = {n.id: n for n in g.nodes}
     checks: list[Check] = []
@@ -77,21 +89,21 @@ def run_checks(g: CaseGraph, as_of: date | None = None, use_judge: bool = True) 
         n.checks = []
         if n.type != "ACT":
             continue
-        for nl in cat.values():
+        for nl in by_subtype.get(n.subtype, []):
             if not _applies(nl, n):
                 continue
             law_date = as_of or node_date(n)
             v = nl.version_at(law_date)
-            if v is None or v.check not in CHECKS:
+            if v is None or not v.outcomes:
                 continue
             try:
-                res = CHECKS[v.check](n, ctx, v.params)
+                res = evaluate(v, n, ctx, gaps)
             except Exception as e:  # noqa: BLE001 — one broken check must not kill the case
                 log.exception("check %s on %s failed: %s", nl.id, n.id, e)
                 continue
             if res is None:
                 continue
-            c = _build(nl, n, res, law_date, ctx, use_judge)
+            c = _build(nl, n, res, law_date, ctx, use_judge, v)
             if c.status in ("possible_nullity", "needs_reading"):
                 aff = affected(n.id, g.edges, node_idx)
                 c.affected = list(aff.keys())

@@ -8,7 +8,56 @@ condition_type: measurable
 confidence: H
 versions:
   - label: art. 63-1 CPP ("immediate" notification)
-    check: rights_delay
+    let:
+      start: t('custody.custody_start')
+      notified: t('notified_at')
+      delay: minutes(start, notified)
+      thr: params['review_threshold_minutes']
+    outcomes:
+    - when: subtype == 'garde_a_vue' and acts('rights_notification') == 0
+      status: possible_nullity
+      say: Custody of {name} with no rights-notification report in the file.
+      cite:
+      - custody_start
+      certainty: needs_reading
+      kind: missing_mention
+    - when: subtype == 'garde_a_vue' or not exists('custody')
+      status: skip
+    - when: start is None or notified is None
+      status: needs_reading
+      say: 'Custody or notification time unreadable: delay cannot be computed.'
+      cite:
+      - custody.custody_start
+      - notified_at
+    - when: delay < thr
+      status: satisfied
+      say: Rights notified {dur(delay)} after custody began ({hm(start)} → {hm(notified)}).
+      cite:
+      - custody.custody_start
+      - notified_at
+      details:
+        delay_minutes: delay
+        threshold_minutes: thr
+      notes:
+        threshold_note: internal flagging threshold, not a legal one — TODO(legal)
+    - when: defined('delay_justification')
+      status: skip
+    - when: 'True'
+      status: possible_nullity
+      say: Rights notified at {hm(notified)}; custody began at {hm(start)} ({dur(delay)}). No justification found.
+      cite:
+      - custody.custody_start
+      - notified_at
+      details:
+        delay_minutes: delay
+        threshold_minutes: thr
+      notes:
+        threshold_note: internal flagging threshold, not a legal one — TODO(legal)
+      proof:
+        kind: duration_gt
+        start: iso(start)
+        end: iso(notified)
+        limit_minutes: int(thr)
     params:
       # TODO(legal): INTERNAL flagging threshold, not a legal threshold. The law says "immediately".
       review_threshold_minutes: 60

@@ -9,7 +9,31 @@ condition_type: measurable
 confidence: H
 versions:
   - label: art. 76 CPP (express consent, handwritten statement, unless authorised by the liberty and custody judge)
-    check: search_consent
+    outcomes:
+    - when: framework != 'preliminaire'
+      status: skip
+    - when: defined('jld_authorization')
+      status: satisfied
+      say: Authorisation from the liberty and custody judge cited.
+      cite:
+      - jld_authorization
+    - when: val('consent') == 'handwritten'
+      status: satisfied
+      say: Express consent handwritten by the person concerned.
+      cite:
+      - consent
+    - when: val('consent') == 'verbal'
+      status: possible_nullity
+      say: 'Preliminary inquiry: verbal agreement only, with no handwritten statement and no JLD authorisation.'
+      cite:
+      - consent
+    - when: 'True'
+      status: possible_nullity
+      say: 'Preliminary inquiry: no consent or JLD authorisation recorded.'
+      cite:
+      - start
+      certainty: needs_reading
+      kind: missing_mention
 rights_at_stake: [inviolability of the home]
 next_steps:
   - Check whether an authorisation from the liberty and custody judge (JLD) exists.

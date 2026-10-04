@@ -205,20 +205,29 @@ class Check(BaseModel):              # one possible nullity on one node
     affected: list[str]               # node ids via SUPPORTS
 ```
 
-Catalogue entry (config, one file per nullity):
+Catalogue entry (data, one file per nullity, evaluated by the generic engine `nullities/dsl.py` — no code per rule):
 
 ```yaml
 id: GAV-04
 category: GARDE_A_VUE
 applies_to: [rights_notification]
-article: CPP 63-1
-needs: [custody_start, rights_notified_at]
+article: art. 63-1 CPP
 versions:
-  - valid_from: 2011-06-01        # TODO(legal)
-    condition: {type: measurable, check: delay_minutes(custody_start, rights_notified_at) <= tolerance}
-    grey_zone: {if_attr: operational_justification, judge_questions: [delay_justified]}
+  - label: art. 63-1 CPP ("immediate" notification)
+    params: {review_threshold_minutes: 60}     # TODO(legal): internal flagging threshold, not a legal one
+    let: {start: "t('custody.custody_start')", notified: "t('notified_at')", delay: "minutes(start, notified)"}
+    outcomes:                                  # ordered; first `when` that holds wins
+      - {when: "start is None or notified is None", status: needs_reading, say: "…", cite: [custody.custody_start, notified_at]}
+      - {when: "delay < params['review_threshold_minutes']", status: satisfied, say: "…"}
+      - {when: "defined('delay_justification')", status: skip}       # grey zone handled by GAV-05 (judge)
+      - {when: "True", status: possible_nullity, say: "Rights notified at {hm(notified)}; …", cite: […], proof: {…}}
 validated_by: null
 ```
+
+Attribute paths are generic over the graph (`attr`, `custody.attr`, `<subtype>.attr` for the same person,
+`case:<subtype>.attr`, `<prefix>.@start`). Attributes are described once in `nullities/attributes.yaml`; the engine
+traces the attributes a rule needed and did not find, and only those are asked to Mistral (rule-driven extraction,
+`graph/fill.py`), with the quote checked on the act's own pages.
 
 ---
 
@@ -321,8 +330,9 @@ Synthetic ≠ real accuracy · the tool never decides grief or nullity · counts
 
 ## 12. Code status
 
-Branch `feat/casebreak`: L0 → L3 built, offline by default (see `README.md`). Schemas follow §6 (`casebreak/schemas.py`);
-`casebreak/facts/normalize_time.py` is reused by the extractors. Every `TODO(legal)` in `casebreak/nullities/catalogue/`
+`main`: L0 → L3 built, offline by default, Mistral paths with a key (see `README.md`). Schemas follow §6
+(`casebreak/schemas.py`); rules are data (`nullities/catalogue/*.yaml` + `nullities/dsl.py`), attributes are
+described in `nullities/attributes.yaml`; `casebreak/facts/normalize_time.py` is reused by the extractors. Every `TODO(legal)` in `casebreak/nullities/catalogue/`
 must be cleared by our legal teammate before the demo.
 
 ---

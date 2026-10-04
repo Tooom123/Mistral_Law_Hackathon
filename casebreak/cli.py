@@ -17,6 +17,7 @@ def main() -> None:
     s.add_argument("--port", type=int, default=8000)
     s.add_argument("--reload", action="store_true")
     sub.add_parser("demo", help="Generate and analyse the synthetic demo case file")
+    sub.add_parser("doctor", help="Check which engines work with the keys in .env (one tiny call per Mistral path)")
     b = sub.add_parser("bench", help="NullityBench-FR: N synthetic case files, recall/precision")
     b.add_argument("--n", type=int, default=10)
     b.add_argument("--seed", type=int, default=1)
@@ -45,6 +46,8 @@ def main() -> None:
         for c in sorted((c for c in checks if c.rank > 0), key=lambda c: -c.rank):
             print(f"{c.id}  {c.nullity_id:7} {c.status:16} {c.certainty:13} p.{','.join(str(s.page) for s in c.sources):8} "
                   f"{len(c.affected):2} affected  {c.statement_fr}")
+    elif a.cmd == "doctor":
+        _doctor()
     elif a.cmd == "bench":
         from casebreak.eval.bench import run
 
@@ -58,6 +61,40 @@ def main() -> None:
 
         t = generate_demo(a.out) if a.seed == 0 else generate_random(a.out, a.seed)
         print(f"{t['pages']} pages, {t['pieces']} pieces, {len(t['entries'])} ground-truth entries → {a.out}")
+
+
+def _doctor() -> None:
+    import io
+
+    from PIL import Image, ImageDraw
+
+    from casebreak.config import settings
+    from casebreak.llm import mistral
+
+    print("engines:", json.dumps(settings.engines()))
+    if not settings.mistral:
+        print("No MISTRAL_API_KEY in .env: everything runs offline (Tesseract OCR, patterns, deterministic judge).")
+        return
+    img = Image.new("RGB", (900, 120), "white")
+    ImageDraw.Draw(img).text((20, 40), "Le 15 septembre 2026 a 21h35, nous transportons au domicile", fill="black")
+    buf = io.BytesIO()
+    img.save(buf, "PNG")
+    probes = [
+        ("chat (fast)", lambda: mistral.chat_meta([{"role": "user", "content": "Say ok"}], model=settings.fast_model, timeout=30)[1]),
+        ("extract", lambda: mistral.chat_json("Answer in JSON {\"ok\": true}", "ping", model=settings.extract_model, cache=False)["_model"]),
+        ("judge / tribunal / baseline", lambda: mistral.chat_json("Answer in JSON {\"ok\": true}", "ping", model=settings.judge_model, cache=False)["_model"]),
+        ("ocr", lambda: "{1} → {0!r}".format(*mistral.ocr_image(buf.getvalue(), "image/png"))),
+    ]
+    if settings.lean_model:
+        probes.append(("leanstral", lambda: mistral.chat_meta([{"role": "user", "content": "Say ok"}], model=settings.lean_model, fallback=False)[1]))
+    for name, fn in probes:
+        try:
+            print(f"  ✓ {name:28} {fn()}")
+        except mistral.MistralUnavailable as e:
+            print(f"  ✕ {name:28} {e}")
+    if mistral.refused_models():
+        print("Refused on this workspace (403 or 0 req/min quota):", ", ".join(mistral.refused_models()))
+        print("→ the next model of MISTRAL_FALLBACK_MODELS is used instead; enable a plan in the Mistral console to use them.")
 
 
 if __name__ == "__main__":

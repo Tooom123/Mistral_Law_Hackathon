@@ -9,11 +9,143 @@ confidence: H
 versions:
   - valid_to: 2024-07-01   # TODO(legal): confirm the entry into force of the law of 22 April 2024
     label: art. 63-4-2 CPP, version before the law of 22 April 2024 (questioning allowed after a 2 h wait)
-    check: hearing_lawyer
+    let:
+      start: t('start')
+      notified: coalesce(t('lawyer_notice.lawyer_notified_at'), t('lawyer_notified_at_stated'))
+      wait: minutes(notified, start)
+      need: params['wait_minutes']
+      old: params['regime'] == 'before_2024'
+    outcomes:
+    - when: not exists('custody') or val('in_custody') is not True
+      status: skip
+    - when: not is_true('rights_notification.lawyer_requested')
+      status: skip
+    - when: val('lawyer_present') is None
+      status: needs_reading
+      say: Lawyer's presence at the hearing not recorded although one was requested.
+      cite:
+      - rights_notification.lawyer_requested
+      - start
+      kind: missing_mention
+    - when: is_true('lawyer_present')
+      status: satisfied
+      say: Hearing held with the lawyer present.
+      cite:
+      - lawyer_present
+    - when: defined('lawyer_waiver')
+      status: satisfied
+      say: Express waiver of the lawyer recorded in the report.
+      cite:
+      - lawyer_waiver
+    - when: defined('prosecutor_authorization')
+      status: needs_reading
+      say: 'Written authorisation from the prosecutor invoked: exceptional circumstances to be assessed.'
+      cite:
+      - prosecutor_authorization
+    - when: old and (notified is None or start is None)
+      status: needs_reading
+      say: 'Time the lawyer was notified is unknown: waiting time cannot be computed.'
+      cite:
+      - rights_notification.lawyer_requested
+      - lawyer_present
+    - when: old and wait >= need
+      status: satisfied
+      say: 'Pre-2024 version: questioned without the lawyer after a {dur(wait)} wait (lawyer notified at {hm(notified)}, hearing at {hm(start)}) ≥ {dur(need)}.'
+      cite:
+      - lawyer_notice.lawyer_notified_at
+      - lawyer_notified_at_stated
+      - start
+      - lawyer_present
+    - when: old
+      status: possible_nullity
+      say: 'Pre-2024 version: questioned without the lawyer after only a {dur(wait)} wait (lawyer notified at {hm(notified)}, hearing at {hm(start)}).'
+      cite:
+      - lawyer_notice.lawyer_notified_at
+      - lawyer_notified_at_stated
+      - start
+      - lawyer_present
+      proof:
+        kind: duration_lt
+        start: iso(notified)
+        end: iso(start)
+        limit_minutes: int(need)
+    - when: 'True'
+      status: possible_nullity
+      say: Hearing of {dhm(start)} without the requested lawyer ({name}), with no waiver or prosecutor authorisation in the report.
+      cite:
+      - rights_notification.lawyer_requested
+      - lawyer_present
+      - start
     params: {regime: before_2024, wait_minutes: 120}
   - valid_from: 2024-07-01
     label: art. 63-4-2 CPP, version from the law of 22 April 2024 (no more waiting period)
-    check: hearing_lawyer
+    let:
+      start: t('start')
+      notified: coalesce(t('lawyer_notice.lawyer_notified_at'), t('lawyer_notified_at_stated'))
+      wait: minutes(notified, start)
+      need: params['wait_minutes']
+      old: params['regime'] == 'before_2024'
+    outcomes:
+    - when: not exists('custody') or val('in_custody') is not True
+      status: skip
+    - when: not is_true('rights_notification.lawyer_requested')
+      status: skip
+    - when: val('lawyer_present') is None
+      status: needs_reading
+      say: Lawyer's presence at the hearing not recorded although one was requested.
+      cite:
+      - rights_notification.lawyer_requested
+      - start
+      kind: missing_mention
+    - when: is_true('lawyer_present')
+      status: satisfied
+      say: Hearing held with the lawyer present.
+      cite:
+      - lawyer_present
+    - when: defined('lawyer_waiver')
+      status: satisfied
+      say: Express waiver of the lawyer recorded in the report.
+      cite:
+      - lawyer_waiver
+    - when: defined('prosecutor_authorization')
+      status: needs_reading
+      say: 'Written authorisation from the prosecutor invoked: exceptional circumstances to be assessed.'
+      cite:
+      - prosecutor_authorization
+    - when: old and (notified is None or start is None)
+      status: needs_reading
+      say: 'Time the lawyer was notified is unknown: waiting time cannot be computed.'
+      cite:
+      - rights_notification.lawyer_requested
+      - lawyer_present
+    - when: old and wait >= need
+      status: satisfied
+      say: 'Pre-2024 version: questioned without the lawyer after a {dur(wait)} wait (lawyer notified at {hm(notified)}, hearing at {hm(start)}) ≥ {dur(need)}.'
+      cite:
+      - lawyer_notice.lawyer_notified_at
+      - lawyer_notified_at_stated
+      - start
+      - lawyer_present
+    - when: old
+      status: possible_nullity
+      say: 'Pre-2024 version: questioned without the lawyer after only a {dur(wait)} wait (lawyer notified at {hm(notified)}, hearing at {hm(start)}).'
+      cite:
+      - lawyer_notice.lawyer_notified_at
+      - lawyer_notified_at_stated
+      - start
+      - lawyer_present
+      proof:
+        kind: duration_lt
+        start: iso(notified)
+        end: iso(start)
+        limit_minutes: int(need)
+    - when: 'True'
+      status: possible_nullity
+      say: Hearing of {dhm(start)} without the requested lawyer ({name}), with no waiver or prosecutor authorisation in the report.
+      cite:
+      - rights_notification.lawyer_requested
+      - lawyer_present
+      - start
     params: {regime: since_2024}
 rights_at_stake: [right to a lawyer, privilege against self-incrimination]
 next_steps:

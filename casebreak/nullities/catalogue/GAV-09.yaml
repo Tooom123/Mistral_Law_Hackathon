@@ -9,7 +9,21 @@ condition_type: structural
 confidence: M
 versions:
   - label: art. 63-3 CPP
-    check: doctor_seen
+    outcomes:
+    - when: not is_true('rights_notification.doctor_requested')
+      status: skip
+    - when: acts('medical_exam') > 0
+      status: satisfied
+      say: Medical examination carried out.
+      cite:
+      - medical_exam.exam_at
+    - when: 'True'
+      status: possible_nullity
+      say: '{name} asked for a medical examination; no examination report or certificate in the file.'
+      cite:
+      - rights_notification.doctor_requested
+      certainty: needs_reading
+      kind: missing_mention
 rights_at_stake: [right to health, dignity]
 next_steps:
   - Look for a request to a doctor or a medical certificate outside the numbered file.
