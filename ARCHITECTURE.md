@@ -321,7 +321,9 @@ Synthetic ≠ real accuracy · the tool never decides grief or nullity · counts
 
 ## 12. Code status
 
-Paused scaffold in the repo: `pyproject.toml` (uv), `casebreak/schemas.py` (earlier contract — to align with §6), `casebreak/facts/normalize_time.py` (French time parser, 6 passing tests). Reuse or discard.
+Branch `feat/casebreak`: L0 → L3 built, offline by default (see `README.md`). Schemas follow §6 (`casebreak/schemas.py`);
+`casebreak/facts/normalize_time.py` is reused by the extractors. Every `TODO(legal)` in `casebreak/nullities/catalogue/`
+must be cleared by our legal teammate before the demo.
 
 ---
 

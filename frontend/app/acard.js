@@ -124,7 +124,7 @@ async function showPage(i) {
   const img = h("img", { src: api.imgUrl(pg.image), alt: `Page ${pg.page}` });
   const page = h("div", { class: "pv__page" }, img);
   box.replaceChildren(page);
-  $("#pv-meta").textContent = `${pg.piece?.id ?? ""} · ${pg.piece?.title ?? ""} · ${pg.kind === "pdf_scan" ? "scan · " : pg.kind === "image" ? "photo · " : ""}${{ native: "texte natif", tesseract: "OCR Tesseract", mistral_ocr: "Mistral OCR", none: "illisible" }[pg.ocr]}`;
+  $("#pv-meta").textContent = `${pg.piece?.id ?? ""} · ${pg.piece?.title ?? ""} · ${pg.kind === "pdf_scan" ? "scan · " : pg.kind === "image" ? "photo · " : ""}${{ native: "texte natif", tesseract: "OCR Tesseract", mistral_ocr: "Mistral OCR", none: "illisible" }[pg.ocr]}${state.pseudo ? " · image d'origine (non masquée)" : ""}`;
   $("#pv-foot").textContent = `page ${pg.page} / ${pg.total_pages}${pg.exif?.DateTimeOriginal ? " · EXIF " + pg.exif.DateTimeOriginal : ""}`;
   $("#pv-text").onclick = () => {
     const t = box.querySelector(".pv__text");

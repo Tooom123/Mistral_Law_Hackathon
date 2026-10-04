@@ -6,6 +6,7 @@ Deterministic and reversible inside one call: `mask()` returns the masked text a
 
 from __future__ import annotations
 
+import hashlib
 import re
 
 _UP = r"[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜ][A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜ'-]{1,}"
@@ -30,7 +31,7 @@ PATTERNS = [
 ]
 
 
-def mask(text: str) -> tuple[str, dict[str, str]]:
+def mask(text: str, stable: bool = False) -> tuple[str, dict[str, str]]:
     mapping: dict[str, str] = {}
     reverse: dict[str, str] = {}
     counters: dict[str, int] = {}
@@ -39,7 +40,8 @@ def mask(text: str) -> tuple[str, dict[str, str]]:
         if original in reverse:
             return reverse[original]
         counters[kind] = counters.get(kind, 0) + 1
-        tok = f"[{kind}_{counters[kind]}]"
+        key = " ".join(original.upper().split())
+        tok = f"[{kind}_{hashlib.sha1(key.encode()).hexdigest()[:4].upper()}]" if stable else f"[{kind}_{counters[kind]}]"
         mapping[tok] = original
         reverse[original] = tok
         return tok
@@ -65,4 +67,4 @@ def unmask(text: str, mapping: dict[str, str]) -> str:
 
 def mask_value(text: str) -> str:
     """One-way masking for display (UI pseudonymisation toggle)."""
-    return mask(text)[0]
+    return mask(text, stable=True)[0]
