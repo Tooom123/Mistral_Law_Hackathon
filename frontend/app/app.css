@@ -249,6 +249,7 @@ button { font: inherit; color: inherit; }
 .t-hourlabel { font-size: 9px; fill: var(--ink-3); }
 .t-break { fill: url(#hatch-break); }
 .t-breaklabel { font-size: 9px; fill: var(--ink-3); font-weight: 700; }
+.t-edge, .t-con, .t-custody text { pointer-events: none; }
 .t-edge { fill: none; stroke: var(--ink-2); stroke-width: 1.2; opacity: .22; transition: opacity .15s; }
 .t-edge.llm { stroke-dasharray: 4 4; }
 .t-edge.hot { opacity: 1; stroke: var(--ink); stroke-width: 1.8; }
@@ -601,6 +602,11 @@ button { font: inherit; color: inherit; }
   .counter:nth-child(3) { border-right: 0; }
 }
 @media (max-width: 860px) {
+  .top { grid-template-columns: auto 1fr; gap: 10px; padding: 0 12px; }
+  .top__case { display: none; }
+  .tabs { overflow-x: auto; scrollbar-width: none; justify-self: end; max-width: 100%; }
+  .tab { padding: 0 9px; white-space: nowrap; }
+  .lawbar { padding: 10px 12px; }
   .graph-layout { grid-template-columns: 1fr; grid-template-rows: 58vh auto; }
   .side { border-left: 0; border-top: 1.5px solid var(--ink); }
   .view--graph { height: auto; }

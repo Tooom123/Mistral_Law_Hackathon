@@ -119,13 +119,13 @@ def _offline(c: Check, g: CaseGraph) -> dict:
     objections += _procedural(g, c)
     strong = [o for o in objections if o["strength"] == "appuyee"]
     check = [o for o in objections if o["strength"] == "a_verifier"]
-    if c.status == "needs_reading":
-        verdict, label = "a_instruire", "À instruire"
-        motive = "Le constat dépend d'une lecture humaine de la page (illisible, absent ou contradictoire)."
-    elif strong:
+    if strong:
         verdict, label = "fragilise", "Moyen fragilisé"
         motive = "Le parquet produit une pièce du dossier : " + "; ".join(
             f"« {o['source']['quote'][:120]} » (p. {o['source']['page']})" for o in strong if o.get("source"))
+    elif c.status == "needs_reading":
+        verdict, label = "a_instruire", "À instruire"
+        motive = "Le constat dépend d'une lecture humaine de la page (illisible, absent ou contradictoire)."
     elif check:
         verdict, label = "survit_sous_reserve", "Survit — points à vérifier"
         motive = "Aucune objection appuyée par une pièce ; des mentions ailleurs dans le dossier sont à lire."

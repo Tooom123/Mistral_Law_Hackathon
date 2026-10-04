@@ -116,9 +116,15 @@ export class Timeline {
       const nRows = Math.max(1, lastX.length, rows.length);
       const hgt = LANE_PAD * 2 + nRows * ROW;
       this.lanes.push({ cat, y, h: hgt, nodes, count: nodes.length });
-      for (const n of nodes) {
+      const lastOnRow = new Map();
+      for (const n of [...nodes].sort((a, b) => a._t - b._t)) {
         const r = place.get(n.id) ?? 0;
-        this.positions.set(n.id, { x: this.xOf(n._t), y: y + LANE_PAD + r * ROW + ROW / 2, lane: cat });
+        const x = this.xOf(n._t);
+        let dy = 0;
+        const prev = lastOnRow.get(r);
+        if (prev && x - prev.x < 16 && n.subtype !== "garde_a_vue") dy = prev.dy === 0 ? (prev.flip ? -11 : 11) : 0;
+        lastOnRow.set(r, { x, dy, flip: dy > 0 });
+        this.positions.set(n.id, { x, y: y + LANE_PAD + r * ROW + ROW / 2 + dy, lane: cat });
       }
       y += hgt;
     }
@@ -266,7 +272,8 @@ export class Timeline {
 
     // nodes
     const gNodes = s("g");
-    for (const n of this.acts) {
+    const rankOf = n => (this.alertsByNode.get(n.id)?.length ? 2 : (n.checks ?? []).length ? 1 : 0);
+    for (const n of [...this.acts].sort((a, b) => rankOf(a) - rankOf(b))) {
       if (n.subtype === "garde_a_vue") continue;
       const p = this.positions.get(n.id);
       const al = this.alertsByNode.get(n.id) ?? [];
