@@ -109,6 +109,8 @@ ACT             deadline clock + draft list of "moyens" for the lawyer
 
 ## 5. Architecture
 
+> **Full architecture lives in `ARCHITECTURE.md`** (Fact Bank × Law Bank, two-way matcher, judge, certainty, API, repo layout, build plan). The overview below is kept for context; if they differ, `ARCHITECTURE.md` wins.
+
 ```text
 ┌──────────────────────────────────────────────────────────────────────────┐
 │ 1. INGEST    PDF/images → pages → OCR text + layout + bbox               │
