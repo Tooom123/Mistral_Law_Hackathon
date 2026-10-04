@@ -5,15 +5,19 @@ import { $, $$, h, CERT, VERDICT, ATTR_FR, CAT_FR, fmtVal, hm, dmy, toast, REDUC
 import { startWarroom } from "./warroom.js";
 import { Timeline } from "./timeline.js";
 import { Graph3D, CAT_COLOR } from "./graph3d.js";
+import { Flow } from "./flow.js";   // pixel-collage graph (small cases); the 3D graph stays for big ones
 import { openAlert } from "./acard.js";
 import { renderReport } from "./report.js";
 import { renderBench } from "./bench.js";
 
 const params = new URLSearchParams(location.search);
-let timeline, g3;
+let timeline, g3, flow;
+let applyView = () => {};
 let stopWar = null;
 let view = (() => { try { return localStorage.getItem("breach.view") || "3d"; } catch { return "3d"; } })();
 const is3d = () => view === "3d" && g3?.ready;
+const useFlow = () => (state.graph?.nodes.filter(n => n.type === "ACT").length ?? 99) <= 24;
+const isFlow = () => view === "3d" && useFlow();
 
 // ------------------------------------------------------------------ boot
 async function boot() {
@@ -81,6 +85,11 @@ async function openCase() {
     onSelect: n => openNode(n),
   });
   g3 ??= new Graph3D($("#g3d"), { onSelect: n => selectFrom3d(n) });
+  flow ??= new Flow($("#flow"), {
+    onSelect: n => openNode(n),
+    onAlert: key => { markSel(key); openAlert(key, { onSimulate: simulate, onReviewed: () => refresh() }); },
+    onSimulate: id => simulate(id),
+  });
   setupView();
   await refresh({ first: true });
   route();
@@ -95,6 +104,8 @@ async function refresh({ first = false } = {}) {
   document.title = `BREACH — ${graph.title}`;
   timeline.setData(graph, al.alerts);
   g3.setData(graph, al.alerts);
+  flow.setData(graph, al.alerts);
+  applyView();
   renderLegend3d();
   renderAlerts(first ? null : before);
   renderDeadline();
@@ -134,8 +145,9 @@ function renderAlerts(before) {
     const li = h("li", {
       class: `al ${a.status === "needs_reading" ? "nr" : ""} ${a.review?.decision === "rejected" ? "rejected" : ""}`, "data-key": a.key, tabindex: 0,
       style: { animationDelay: before && before.has(a.key) ? "0s" : `${Math.min(i, 12) * 40}ms` },
-      onclick: () => { timeline.select(a.node.id); if (is3d()) g3.focus(a.node.id); markSel(a.key); openAlert(a.key, { onSimulate: simulate, onReviewed: () => refresh() }); },
-      onmouseenter: () => { timeline.select(a.node.id, { scroll: false }); if (is3d() && !g3.locked) g3.highlight(a.node.id); },
+      onclick: () => { timeline.select(a.node.id); flow.select(a.node.id); if (is3d()) g3.focus(a.node.id); markSel(a.key); openAlert(a.key, { onSimulate: simulate, onReviewed: () => refresh() }); },
+      onmouseenter: () => { timeline.select(a.node.id, { scroll: false }); flow.highlight(a.node.id); if (is3d() && !g3.locked) g3.highlight(a.node.id); },
+      onmouseleave: () => flow.highlight(null),
       onkeydown: e => { if (e.key === "Enter") e.currentTarget.click(); },
     },
       h("div", { class: "al__rank" }, "#", h("b", {}, String(i + 1).padStart(2, "0"))),
@@ -225,7 +237,10 @@ async function simulate(nodeId) {
   const sim = await api.simulate(state.caseId, nodeId);
   if (!sim.count) { toast("No act depends on this one in the graph."); return; }
   $("#node-drawer").hidden = true;
-  if (is3d()) {
+  if (isFlow()) {
+    timeline.resetDomino();
+    await flow.domino(sim, $("#domino-sticker"), $("#domino-n"));
+  } else if (is3d()) {
     $("#domino-sticker").hidden = false;
     $("#domino-n").textContent = "0";
     timeline.resetDomino();
@@ -235,7 +250,7 @@ async function simulate(nodeId) {
   const box = $("#node-drawer");
   box.classList.add("node-drawer--right");
   box.replaceChildren(
-    h("div", { class: "nd__head" }, h("div", {}, h("span", { class: "mono", style: { color: "var(--red)" } }, "Domino effect · art. 174 CPP (logic)"),
+    h("div", { class: "nd__head" }, h("div", {}, h("span", { class: "mono", style: { color: "var(--red)" } }, "Domino effect"),
       h("h3", {}, `${sim.count} act(s) potentially affected`), h("span", { class: "mono", style: { color: "var(--ink-3)" } }, `if “${n?.label ?? nodeId}” falls — ${sim.waves} wave(s)`)),
       h("button", { class: "nd__close", onclick: resetSim }, "×")),
     h("div", { class: "nd__body" },
@@ -250,6 +265,7 @@ async function simulate(nodeId) {
 
 function resetSim() {
   timeline.resetDomino();
+  flow?.resetDomino();
   g3?.resetDomino();
   $("#domino-sticker").hidden = true;
   $("#node-drawer").hidden = true;
@@ -260,8 +276,12 @@ function setupView() {
   const apply = () => {
     $$("[data-for]").forEach(el => { el.hidden = el.dataset.for !== view; });
     $$("#view-seg button").forEach(b => { b.classList.toggle("is-on", b.dataset.v === view); b.setAttribute("aria-checked", b.dataset.v === view); });
-    $(".graph-layout").classList.toggle("is-3d", view === "3d");
-    if (view === "3d") g3.resize();
+    // the "Graph" tab shows the pixel-collage graph for small cases, the 3D graph for big ones
+    const fl = isFlow();
+    $("#flow").hidden = !fl; $("#g3-wrap").hidden = view !== "3d" || fl;
+    $("#legend-flow").hidden = !fl; $("#legend-3d").hidden = view !== "3d" || fl;
+    $(".graph-layout").classList.toggle("is-3d", view === "3d" && !fl);
+    if (fl) flow.resize(); else if (view === "3d") g3.resize();
     try { localStorage.setItem("breach.view", view); } catch { /* private mode */ }
   };
   $("#view-seg").onclick = e => {
@@ -272,10 +292,15 @@ function setupView() {
     apply();
     if (view === "timeline" && state.selectedNode) timeline.select(state.selectedNode);
   };
+  applyView = apply;
   apply();
 }
 
 function renderLegend3d() {
+  const lanesIn = state.graph.lanes.filter(l => state.graph.nodes.some(n => n.type === "ACT" && n.category === l));
+  const ramp = ["#FFAF01", "#FF8204", "#FA500F", "#F5742B", "#FFC247"];
+  $("#legend-flow").replaceChildren(...lanesIn.map((l, i) => h("span", {}, h("i", { class: "dot", style: { background: ramp[i % ramp.length] } }), CAT_FR[l]?.[0] ?? l)),
+    h("span", {}, h("i", { class: "dot", style: { background: "#E61300" } }), "Possible nullity"));
   const cats = [...new Set(state.graph.nodes.filter(n => n.type === "ACT").map(n => n.category))];
   $("#legend-3d").replaceChildren(
     ...cats.map(c => h("span", {}, h("i", { class: "dot", style: { background: CAT_COLOR[c] ?? "#999" } }), CAT_FR[c]?.[0] ?? c)),

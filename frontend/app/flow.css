@@ -1,0 +1,134 @@
+/* Case graph — cut-out collage, same language as the landing page (see front_mistral-main/cut-out-style.md):
+   Mistral ramp, white cut-out edges with soft paper shadows, slight rotations, tape, a sticker, a hand-written note,
+   hard offset shadows on buttons, stop-motion steps. Limited to the graph area: no other screen is touched. */
+
+.flow-wrap { position: relative; background: #fff; min-width: 0; min-height: 0; overflow: hidden; --hard: 3px 4px 0 #151524; }
+.flow { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.flow text { font-family: "Inter", system-ui, sans-serif; }
+
+/* rows */
+.flow__band { fill: transparent; }
+.flow__band.alt { fill: rgba(255, 248, 242, .85); }
+.flow__tag rect:first-child { fill: #fff; stroke: #151524; stroke-width: 1.5; filter: drop-shadow(2px 3px 0 #151524); }
+.flow__tag text { font: 600 12px "Inter", sans-serif; fill: #151524; }
+
+/* pen lines */
+.flow__edge { fill: none; stroke: #151524; stroke-width: 2.2; stroke-linecap: round; opacity: .72; transition: stroke .2s, opacity .25s; }
+.flow__edge.inferred { stroke-dasharray: 3 6; }
+.flow__edge.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: flow-draw .8s steps(14, end) forwards; }
+.flow__edge.draw.inferred { stroke-dasharray: 1; }
+.flow__edge.hot { stroke: #FA500F; opacity: 1; stroke-width: 2.8; }
+.flow__edge.domino { stroke: #E61300; opacity: 1; stroke-width: 3; stroke-dasharray: 9 6; stroke-dashoffset: 0; animation: march .5s linear infinite; }
+.has-hover .flow__edge:not(.hot) { opacity: .18; }
+@keyframes flow-draw { to { stroke-dashoffset: 0; } }
+@keyframes march { to { stroke-dashoffset: -15; } }
+
+/* paper cut-outs */
+.fn { cursor: pointer; outline: none; transition: opacity .25s; }
+.fn__in { transform-box: fill-box; transform-origin: center; animation: fn-in .5s steps(4, end) both; transition: transform .22s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes fn-in { from { opacity: 0; transform: translateY(16px) rotate(-9deg) scale(.5); } to { opacity: 1; transform: none; } }
+.fn__paper { filter: drop-shadow(3px 5px 3px rgba(21, 21, 36, .22)); transition: filter .2s; }
+.fn__cut { fill: #fff; }
+.fn__tile { transition: fill .35s; }
+.fn:hover .fn__in, .fn:focus-visible .fn__in, .fn.sel .fn__in { transform: translateY(-5px) rotate(1.8deg); }
+.fn:hover .fn__paper, .fn.sel .fn__paper { filter: drop-shadow(5px 9px 4px rgba(21, 21, 36, .26)); }
+.fn__px { pointer-events: none; }
+.fn__sel { fill: none; stroke: #151524; stroke-width: 2; stroke-dasharray: 5 4; opacity: 0; }
+.fn.sel .fn__sel { opacity: 1; }
+.fn__ring { fill: none; stroke: #FFAF01; stroke-width: 2.4; stroke-dasharray: 5 5; }
+.has-hover .fn:not(.near) { opacity: .32; }
+
+/* paper label */
+.fn__lab rect { fill: #fff; filter: drop-shadow(2px 3px 2px rgba(21, 21, 36, .16)); }
+.fn__label { font-size: 12px; font-weight: 600; fill: #151524; text-anchor: middle; letter-spacing: -.005em; pointer-events: none; }
+.fn__date { font: 400 10.5px "Space Mono", monospace; fill: #8A8A96; text-anchor: middle; pointer-events: none; }
+
+/* the breach: crack, tape, pulse, sticker */
+.fn__pulse { fill: none; stroke: #E61300; stroke-width: 2.2; transform-box: fill-box; transform-origin: center; animation: pulse 2.4s steps(8, end) infinite; }
+.fn__pulse.p2 { animation-delay: 1.2s; }
+@keyframes pulse { from { transform: scale(1); opacity: .9; } to { transform: scale(1.8); opacity: 0; } }
+.fn__crack { fill: none; stroke: #fff; stroke-width: 2.6; stroke-linejoin: miter; stroke-linecap: square; }
+.fn__tape { fill: rgba(255, 175, 1, .6); filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .12)); pointer-events: none; }
+.fn__sticker { cursor: pointer; transition: transform .2s cubic-bezier(.34, 1.56, .64, 1); }
+.fn__sticker .st__ring { fill: #fff; filter: drop-shadow(3px 6px 0 rgba(21, 21, 36, .14)); }
+.fn__sticker .st__disc { fill: #FFAF01; }
+.fn__sticker.read .st__disc { fill: #FFD27A; }
+.fn__sticker .st__big { font: 800 15px "Inter", sans-serif; letter-spacing: -.03em; fill: #151524; text-anchor: middle; }
+.fn__sticker .st__small { font: 400 10px "Space Mono", monospace; text-transform: uppercase; fill: #151524; text-anchor: middle; }
+.fn__sticker:hover { transform: translate(0, -4px) rotate(-6deg); }
+/* hard-shadow button, like the landing's */
+.fn__sim { cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .15s, transform .15s cubic-bezier(.34, 1.56, .64, 1); }
+.fn__sim .sim__sh { fill: #151524; }
+.fn__sim .sim__bt { fill: #fff; stroke: #151524; stroke-width: 1.5; }
+.fn__sim .sim__tx { font: 600 12px "Inter", sans-serif; fill: #151524; text-anchor: middle; }
+.fn__sim:hover { transform: translate(-2px, -2px); }
+.fn__sim:hover .sim__bt { fill: #FA500F; }
+.fn__sim:hover .sim__tx { fill: #fff; }
+.fn.is-alert:hover .fn__sim, .fn.is-alert.sel .fn__sim, .fn.is-alert:focus-visible .fn__sim { opacity: 1; pointer-events: auto; }
+
+/* domino: the paper falls and goes grey */
+.fn.fade { opacity: .22; }
+.fn.origin .fn__tile { fill: #151524 !important; }
+.fn.origin .fn__in { animation: shake .5s steps(6) 2; }
+.fn.origin .fn__pulse, .fn.origin .fn__tape { display: none; }
+.fn.fallen .fn__in { animation: fall .6s cubic-bezier(.34, 1.56, .64, 1) forwards; }
+.fn.fallen .fn__tile { fill: #CFCAC4 !important; }
+.fn.fallen .fn__label { fill: #8A8A96; text-decoration: line-through; }
+.tipping .fn.is-alert .fn__sim { opacity: 0; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+@keyframes fall { 40% { transform: translateY(-8px) rotate(-4deg); } to { transform: translateY(12px) rotate(8deg); opacity: .7; } }
+
+/* the three numbers: paper cards with hard shadows, a little crooked */
+.flow-stats { position: absolute; left: 22px; top: 18px; display: flex; gap: 14px; pointer-events: none; }
+.fs { background: #fff; border: 1.5px solid #151524; box-shadow: var(--hard); padding: 8px 14px 9px; min-width: 100px; }
+.fs:nth-child(1) { rotate: -1.8deg; }
+.fs:nth-child(2) { rotate: 1.2deg; translate: 0 3px; }
+.fs:nth-child(3) { rotate: -.8deg; }
+.fs b { display: block; font: 800 30px/1 "Inter", sans-serif; letter-spacing: -.045em; }
+.fs span { font: 400 11px "Space Mono", monospace; text-transform: uppercase; color: #4A4A5A; letter-spacing: .02em; }
+.fs.red b { color: #E61300; }
+.flow-replay { position: absolute; right: 16px; top: 16px; width: 36px; height: 36px; border: 1.5px solid #151524; background: #fff; box-shadow: 2px 3px 0 #151524; cursor: pointer; font-size: 16px; color: #151524; transition: translate .15s cubic-bezier(.34, 1.56, .64, 1), box-shadow .15s; }
+.flow-replay:hover { translate: -2px -2px; box-shadow: 4px 5px 0 #151524; }
+
+/* the breach in one picture, on a taped sheet */
+.ruler { position: absolute; right: 26px; bottom: 28px; width: min(560px, calc(100% - 52px)); background: #fff; border: 1.5px solid #151524; box-shadow: 6px 6px 0 #151524; padding: 54px 20px 36px; rotate: -.7deg; }
+.rl__tape { position: absolute; top: -13px; left: 50%; width: 110px; height: 26px; translate: -50% 0; rotate: -3deg; background: rgba(255, 175, 1, .6); clip-path: polygon(0 8%, 4% 0, 8% 10%, 12% 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 3% 55%); }
+.rl__row { position: relative; display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 3px; }
+.rl__c { aspect-ratio: 1; background: var(--c); display: block; opacity: 0; transform: scale(.4); transition: opacity .15s steps(3, end), transform .25s cubic-bezier(.34, 1.56, .64, 1); }
+.rl__c.on { opacity: 1; transform: none; }
+.rl__c.over { background: #E61300; }
+.rl__c.over.on { opacity: .4; }
+.rl__c.recv.on { opacity: 1; animation: flash 1.6s steps(2) infinite; }
+@keyframes flash { 50% { background: #C4001D; } }
+.rl__lim { position: absolute; top: -10px; bottom: -10px; left: calc(var(--d) / var(--n) * 100% - 1.5px); width: 2.5px; background: #151524; }
+.rl__lim em { position: absolute; left: 50%; top: -19px; translate: -100% 0; padding-right: 8px; font: 700 12px "Space Mono", monospace; font-style: normal; white-space: nowrap; color: #151524; }
+.rl__note { position: absolute; left: calc((var(--d) + .5) / var(--n) * 100%); top: -46px; translate: calc(-100% - 40px) 0; font: 700 22px/1 "Caveat", cursive; color: #E61300; white-space: nowrap; rotate: -4deg; }
+.rl__arrow { position: absolute; left: calc(100% + 6px); top: 6px; width: 40px; display: block; rotate: 4deg; }
+.rl__arrow svg { width: 100%; }
+.rl__marks { position: relative; height: 0; }
+.rl__m { position: absolute; top: 12px; left: calc((var(--d) + .5) / var(--n) * 100%); translate: -50% 0; font: 400 11px/1 "Space Mono", monospace; text-transform: uppercase; color: #8A8A96; white-space: nowrap; }
+.rl__m.red { color: #E61300; font-weight: 700; translate: -80% 0; }
+
+/* sidebar while the graph is the pixel one: titles and stamps only (the alert card keeps the full text) */
+.graph-layout:has(.flow-wrap:not([hidden])) .al__what { display: none; }
+.graph-layout:has(.flow-wrap:not([hidden])) .al__meta { margin-top: 6px; }
+
+/* domino panel / sticker, in the same language */
+.view--graph:has(.flow-wrap:not([hidden])) .node-drawer--right { right: 436px; top: 76px; bottom: auto; width: 330px; min-width: 0; max-height: 300px; border: 1.5px solid #151524; box-shadow: 5px 6px 0 #151524; border-radius: 0; rotate: .6deg; }
+.view--graph:has(.flow-wrap:not([hidden])) .domino-sticker { left: 24px; bottom: 24px; top: auto; width: 132px; height: 132px; }
+.view--graph:has(.flow-wrap:not([hidden])) .domino-sticker__n { font: 800 50px/1 "Inter", sans-serif; letter-spacing: -.05em; }
+
+@media (max-width: 860px) {
+  .graph-layout:has(.flow-wrap:not([hidden])) { grid-template-columns: 1fr; grid-template-rows: 62vh auto; }
+  .flow-stats { left: 12px; top: 12px; gap: 9px; }
+  .fs { min-width: 80px; padding: 6px 10px; box-shadow: 2px 3px 0 #151524; }
+  .fs b { font-size: 22px; }
+  .ruler { right: 12px; bottom: 14px; width: calc(100% - 28px); padding: 34px 12px 32px; box-shadow: 4px 4px 0 #151524; }
+  .rl__m:not(.red) { display: none; }
+  .flow-replay { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fn__in, .flow__edge.draw, .fn__pulse, .rl__c.recv { animation: none !important; }
+  .flow__edge.draw { stroke-dashoffset: 0; }
+  .rl__c { opacity: 1; transform: none; transition: none; }
+}
