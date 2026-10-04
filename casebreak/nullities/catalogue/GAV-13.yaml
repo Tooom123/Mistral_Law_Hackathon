@@ -1,0 +1,17 @@
+id: GAV-13
+category: GARDE_A_VUE
+title: Incohérence entre pièces sur l'heure de placement
+article: "— (cohérence interne)"
+applies_to: [garde_a_vue]
+kind: contradiction
+condition_type: measurable
+confidence: n/a
+versions:
+  - label: contrôle de cohérence (pas une règle de droit)
+    check: custody_start_consistency
+rights_at_stake: [calcul de la durée et des délais]
+next_steps:
+  - Déterminer l'heure de début retenue ; recalculer les délais (GAV-02, GAV-04) avec l'heure la plus ancienne.
+prosecution_hints: [erreur_materielle]
+judilibre_query: garde à vue heure de début point de départ interpellation
+weight: 0.7

@@ -1,0 +1,16 @@
+id: MMC-01
+category: PERQUISITION_SAISIE
+title: Corroboration multimodale — horodatage photo incompatible avec le PV
+article: "— (corroboration, jamais un moyen à elle seule)"
+applies_to: [photo]
+kind: contradiction
+condition_type: measurable
+confidence: n/a
+versions:
+  - label: comparaison EXIF / PV (les métadonnées peuvent être fausses)
+    check: exif_consistency
+rights_at_stake: [sincérité du PV]
+next_steps:
+  - Vérifier l'horloge de l'appareil photo et l'heure de début réelle des opérations.
+prosecution_hints: [horloge_appareil]
+weight: 0.5

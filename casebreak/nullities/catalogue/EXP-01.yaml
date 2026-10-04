@@ -1,0 +1,18 @@
+id: EXP-01
+category: EXPERTISE
+title: Scellé analysé non rattaché à une saisie du dossier
+article: TODO(legal)
+applies_to: [lab_report, seal_analysis]
+kind: graph
+condition_type: structural
+confidence: n/a
+versions:
+  - label: contrôle de traçabilité des scellés (graphe)
+    check: seal_traceable
+rights_at_stake: [traçabilité de la preuve]
+next_steps:
+  - Rechercher le PV de saisie du scellé et la chaîne de conservation.
+prosecution_hints: [piece_hors_dossier, erreur_materielle]
+judilibre_query: scellé expertise traçabilité saisie
+weight: 0.7
+legal_todo: [Fondement textuel à identifier.]

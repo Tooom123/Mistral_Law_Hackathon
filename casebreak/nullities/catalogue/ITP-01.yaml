@@ -1,0 +1,14 @@
+id: ITP-01
+category: INTERPELLATION
+title: Heure d'interpellation incompatible avec le début de la garde à vue
+article: "— (cohérence du graphe)"
+applies_to: [interpellation]
+kind: graph
+condition_type: measurable
+confidence: n/a
+versions:
+  - label: contrôle d'ordre temporel (graphe)
+    check: arrest_before_custody
+rights_at_stake: [point de départ de la mesure]
+next_steps: [Déterminer l'heure de début de la contrainte. TODO(legal)]
+weight: 0.6

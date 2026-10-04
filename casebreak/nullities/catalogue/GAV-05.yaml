@@ -1,0 +1,18 @@
+id: GAV-05
+category: GARDE_A_VUE
+title: Retard de notification — justification à apprécier
+article: art. 63-1 CPP
+applies_to: [rights_notification]
+needs: [delay_justification]
+condition_type: open_textured
+confidence: M
+versions:
+  - label: art. 63-1 CPP
+    check: rights_delay_justified
+    grey_zone: {judge_questions: [delay_justified]}
+rights_at_stake: [droits de la défense]
+next_steps:
+  - Apprécier si la justification relevée constitue une circonstance insurmontable (à l'avocat).
+prosecution_hints: [justification_retard]
+judilibre_query: garde à vue notification différée ivresse justification
+weight: 0.7

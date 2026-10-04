@@ -6,3 +6,6 @@ __pycache__/
 data/cases/*
 !data/cases/.gitkeep
 data/real/
+data/cache/
+data/bench/
+!data/bench/.gitkeep

@@ -1,0 +1,25 @@
+id: GAV-08
+category: GARDE_A_VUE
+title: Audition sur les faits hors la présence de l'avocat demandé
+article: art. 63-4-2 CPP
+applies_to: [hearing]
+needs: [lawyer_requested, lawyer_present]
+condition_type: measurable
+confidence: H
+versions:
+  - valid_to: 2024-07-01   # TODO(legal): date d'entrée en vigueur de la loi du 22 avril 2024 à confirmer
+    label: art. 63-4-2 CPP, version antérieure à la loi du 22 avril 2024 (audition possible après 2 h d'attente)
+    check: hearing_lawyer
+    params: {regime: before_2024, wait_minutes: 120}
+  - valid_from: 2024-07-01
+    label: art. 63-4-2 CPP, version issue de la loi du 22 avril 2024 (plus de délai de carence)
+    check: hearing_lawyer
+    params: {regime: since_2024}
+rights_at_stake: [droit à l'assistance d'un avocat, droit de ne pas s'auto-incriminer]
+next_steps:
+  - Vérifier l'absence de renonciation expresse ou d'autorisation écrite du procureur.
+  - Lister les déclarations recueillies lors de cette audition et leur usage ultérieur.
+prosecution_hints: [renonciation, autorisation_procureur, grief]
+judilibre_query: garde à vue audition sans avocat délai de carence
+weight: 1.0
+legal_todo: [Détails de la réforme 2024 (confiance M) et date d'entrée en vigueur à confirmer.]

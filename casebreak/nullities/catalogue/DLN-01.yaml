@@ -1,0 +1,22 @@
+id: DLN-01
+category: INSTRUCTION
+title: Délai pour présenter une requête en nullité pendant l'information
+article: art. 173-1 CPP
+applies_to: [mise_en_examen]
+condition_type: procedural
+confidence: H
+versions:
+  - valid_to: null
+    label: art. 173-1 CPP — 6 mois (régime antérieur) / 4 mois (loi n° 2026-651, art. 9)
+    check: info_only
+    params:
+      before_months: 6
+      after_months: 4
+      # TODO(legal): date d'entrée en vigueur de l'art. 9 de la loi 2026-651 (source officielle contradictoire)
+      entry_into_force: null
+rights_at_stake: [forclusion]
+next_steps:
+  - Vérifier sur Légifrance la date d'entrée en vigueur et les dispositions transitoires.
+judilibre_query: requête en nullité délai six mois mise en examen forclusion
+weight: 0
+legal_todo: [Entrée en vigueur de l'art. 9 de la loi 2026-651 (immédiate / 25 oct. 2026 / « 23 oct. 2027 »).]

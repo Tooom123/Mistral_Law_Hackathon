@@ -1,0 +1,18 @@
+id: PRQ-02
+category: PERQUISITION_SAISIE
+title: Présence de l'occupant ou de deux témoins non mentionnée
+article: art. 57 CPP
+applies_to: [search]
+needs: [occupant_present, witnesses_present]
+kind: missing_mention
+condition_type: measurable
+confidence: M
+versions:
+  - label: art. 57 CPP (portée selon le cadre d'enquête)
+    check: search_presence
+rights_at_stake: [inviolabilité du domicile, loyauté des saisies]
+next_steps:
+  - Vérifier qui a assisté aux opérations et qui a signé le PV.
+prosecution_hints: [signature, grief]
+judilibre_query: perquisition présence occupant témoins article 57
+weight: 0.8

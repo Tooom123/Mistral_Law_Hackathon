@@ -1,0 +1,13 @@
+id: GEN-01
+category: AUTRE
+title: Pas de nullité sans grief — le grief n'est jamais apprécié par l'outil
+article: art. 171 et 802 CPP
+applies_to: []
+condition_type: procedural
+confidence: H
+versions:
+  - label: art. 171 et 802 CPP
+    check: info_only
+rights_at_stake: []
+next_steps: [Qualifier le grief (avocat).]
+weight: 0

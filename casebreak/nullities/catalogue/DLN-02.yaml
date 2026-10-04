@@ -1,0 +1,14 @@
+id: DLN-02
+category: INSTRUCTION
+title: Date butoir pour les mémoires en nullité (chambre de l'instruction, tribunal correctionnel)
+article: art. 198, 221-3, 385 CPP
+applies_to: [chamber_ruling]
+condition_type: procedural
+confidence: H
+versions:
+  - label: art. 198, 221-3, 385 CPP (loi n° 2026-651)
+    check: info_only
+rights_at_stake: [forclusion]
+next_steps: [Modalités exactes à vérifier. TODO(legal)]
+weight: 0
+legal_todo: [Modalités de la date butoir (confiance M).]

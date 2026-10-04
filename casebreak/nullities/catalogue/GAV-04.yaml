@@ -1,0 +1,22 @@
+id: GAV-04
+category: GARDE_A_VUE
+title: Notification des droits non immédiate
+article: art. 63-1 CPP
+applies_to: [rights_notification, garde_a_vue]
+needs: [custody_start, notified_at]
+condition_type: measurable
+confidence: H
+versions:
+  - label: art. 63-1 CPP (notification « immédiate »)
+    check: rights_delay
+    params:
+      # TODO(legal): seuil INTERNE de signalement, pas un seuil légal. La loi dit « immédiatement ».
+      review_threshold_minutes: 60
+    grey_zone: {if_attr: delay_justification, judge_questions: [delay_justified]}
+rights_at_stake: [droits de la défense, droit au silence, droit à l'avocat]
+next_steps:
+  - Rechercher dans le dossier une circonstance insurmontable justifiant le délai.
+  - Identifier les actes réalisés avant la notification (auditions, perquisition).
+prosecution_hints: [justification_retard, grief]
+judilibre_query: garde à vue notification des droits retard immédiatement
+weight: 1.0

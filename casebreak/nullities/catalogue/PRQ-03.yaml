@@ -1,0 +1,18 @@
+id: PRQ-03
+category: PERQUISITION_SAISIE
+title: Enquête préliminaire — assentiment exprès écrit de la main absent
+article: art. 76 CPP
+applies_to: [search]
+frameworks: [preliminaire]
+needs: [consent]
+condition_type: measurable
+confidence: H
+versions:
+  - label: art. 76 CPP (assentiment exprès, déclaration écrite de la main, sauf autorisation du JLD)
+    check: search_consent
+rights_at_stake: [inviolabilité du domicile]
+next_steps:
+  - Vérifier l'existence d'une autorisation du juge des libertés et de la détention.
+prosecution_hints: [autorisation_jld, grief]
+judilibre_query: perquisition enquête préliminaire assentiment exprès manuscrit
+weight: 1.0

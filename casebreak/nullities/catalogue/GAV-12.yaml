@@ -1,0 +1,18 @@
+id: GAV-12
+category: GARDE_A_VUE
+title: Mentions obligatoires du PV (début, fin, durées)
+article: art. 64 CPP
+applies_to: [garde_a_vue, hearing]
+kind: missing_mention
+condition_type: measurable
+confidence: L
+versions:
+  - label: art. 64 CPP
+    check: pv_mentions
+rights_at_stake: [contrôle de la durée de la mesure]
+next_steps:
+  - Rechercher l'heure manquante dans les autres PV (registre de garde à vue, PV de conduite).
+prosecution_hints: [mention_ailleurs, grief]
+judilibre_query: garde à vue mentions procès-verbal heure de fin
+weight: 0.5
+legal_todo: [Règle de confiance L — liste exacte des mentions à valider.]

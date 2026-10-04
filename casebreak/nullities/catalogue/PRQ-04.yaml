@@ -1,0 +1,17 @@
+id: PRQ-04
+category: PERQUISITION_SAISIE
+title: Objet saisi non placé sous scellé
+article: art. 56 CPP
+applies_to: [seizure]
+needs: [seal_number]
+condition_type: measurable
+confidence: M
+versions:
+  - label: art. 56 CPP
+    check: seized_sealed
+rights_at_stake: [intégrité et traçabilité des preuves]
+next_steps:
+  - Rechercher un scellé provisoire ou un PV de placement sous scellé ultérieur.
+prosecution_hints: [scelle_ulterieur, grief]
+judilibre_query: saisie scellé inventaire perquisition
+weight: 0.8

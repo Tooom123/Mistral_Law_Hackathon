@@ -1,0 +1,19 @@
+id: GEO-01
+category: GEOLOCALISATION
+title: Géolocalisation — autorisation visée mais absente du dossier
+article: TODO(legal)
+applies_to: [geolocation]
+kind: graph
+condition_type: structural
+confidence: n/a
+versions:
+  - label: contrôle de présence de l'autorisation (graphe)
+    check: authorization_present
+    params: {auth_subtype: geolocation_authorization}
+rights_at_stake: [vie privée]
+next_steps:
+  - Demander la communication de l'autorisation et vérifier sa durée.
+prosecution_hints: [piece_hors_dossier]
+judilibre_query: géolocalisation autorisation procureur durée
+weight: 0.7
+legal_todo: [Article, autorité compétente et durée — TODO(legal).]
