@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BREACH — Dossier</title>
+  <meta name="description" content="Frise des actes, nullités possibles avec la page, effet domino, tribunal, preuves.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23FFAF01' d='M0 0h3v1H0zM4 0h2v1H4z'/%3E%3Cpath fill='%23FF8204' d='M0 1h2v1H0zM3 1h3v1H3z'/%3E%3Cpath fill='%23FA500F' d='M0 2h3v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h3v1H3z'/%3E%3Cpath fill='%23E61300' d='M0 4h3v1H0zM4 4h2v1H4z'/%3E%3Cpath fill='%23C4001D' d='M0 5h2v1H0zM3 5h3v1H3z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app/app.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 6 6" shape-rendering="crispEdges">
+      <path fill="#FFAF01" d="M0 0h3v1H0zM4 0h2v1H4z"/><path fill="#FF8204" d="M0 1h2v1H0zM3 1h3v1H3z"/>
+      <path fill="#FA500F" d="M0 2h3v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h3v1H3z"/><path fill="#E61300" d="M0 4h3v1H0zM4 4h2v1H4z"/>
+      <path fill="#C4001D" d="M0 5h2v1H0zM3 5h3v1H3z"/>
+    </symbol>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="6" height="6" fill="#FFAF01"/><rect width="2.4" height="6" fill="#FFD27A"/>
+    </pattern>
+    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>
+  </svg>
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="top" id="top">
+    <a class="brand" href="index.html" title="Accueil">
+      <svg class="brand__mark"><use href="#mark"/></svg><span class="brand__word">BREACH</span>
+    </a>
+    <div class="top__case">
+      <span class="mono top__eyebrow">Dossier</span>
+      <span class="top__title" id="case-title">—</span>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Vues">
+      <a href="#graph" data-view="graph" class="tab"><i>01</i>Frise</a>
+      <a href="#alerts" data-view="alerts" class="tab"><i>02</i>Alertes<b id="tab-count"></b></a>
+      <a href="#report" data-view="report" class="tab"><i>03</i>Rapport</a>
+      <a href="#bench" data-view="bench" class="tab"><i>04</i>Mesures</a>
+    </nav>
+    <div class="top__tools">
+      <div class="seg" id="mode-seg" role="radiogroup" aria-label="Mode">
+        <button data-mode="defense" class="is-on" role="radio" aria-checked="true">Défense</button>
+        <button data-mode="parquet" role="radio" aria-checked="false">Parquet</button>
+      </div>
+      <button class="chip-toggle" id="pseudo-toggle" aria-pressed="false" title="Masquer noms, adresses, dates de naissance">
+        <span class="chip-toggle__box"></span> Pseudonymiser
+      </button>
+      <button class="engines" id="engines-btn" aria-haspopup="true">Moteurs <span id="engines-dots"></span></button>
+    </div>
+  </header>
+  <div class="engines-pop" id="engines-pop" hidden></div>
+
+  <!-- ================= WAR ROOM ================= -->
+  <section class="warroom" id="warroom" hidden>
+    <canvas class="warroom__pixels" id="war-pixels" aria-hidden="true"></canvas>
+    <div class="warroom__grid">
+      <div class="warroom__head">
+        <p class="mono warroom__eyebrow"><span class="rec"></span> Salle des opérations · <span id="war-case">—</span></p>
+        <h1 class="warroom__title" id="war-title">Lecture du dossier</h1>
+        <p class="warroom__sub" id="war-sub">Chaque page garde sa position. Chaque fait garde sa citation.</p>
+      </div>
+      <div class="counters" id="counters"></div>
+      <ol class="stages" id="stages"></ol>
+      <div class="stream">
+        <div class="stream__head mono"><span>Flux</span><span id="war-clock">00:00</span></div>
+        <ol class="stream__log" id="war-log"></ol>
+      </div>
+      <div class="lanes-preview" id="lanes-preview"></div>
+      <div class="pagestrip" id="pagestrip" aria-hidden="true"></div>
+      <div class="warroom__cta">
+        <button class="btn btn--primary btn--xl" id="war-open" disabled>Ouvrir la frise <span>→</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EMPTY / PICKER ================= -->
+  <section class="picker" id="picker" hidden>
+    <div class="picker__inner">
+      <p class="mono eyebrow">Aucun dossier ouvert</p>
+      <h1>Choisissez un dossier<br><span class="hand">ou lancez la démo.</span></h1>
+      <div class="picker__actions">
+        <button class="btn btn--primary btn--xl" id="picker-demo">Affaire des Mathurins (synthétique) →</button>
+        <a class="btn" href="index.html">Déposer un dossier</a>
+      </div>
+      <ul class="picker__list" id="picker-list"></ul>
+    </div>
+  </section>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main" id="main" hidden>
+
+    <!-- ---------- GRAPH VIEW ---------- -->
+    <section class="view view--graph" data-view="graph">
+      <div class="lawbar">
+        <div class="lawbar__left">
+          <span class="mono lawbar__label">Droit applicable</span>
+          <div class="seg seg--sm" id="asof-seg">
+            <button data-asof="auto" class="is-on">À la date de chaque acte</button>
+            <button data-asof="fixed">Date fixée</button>
+          </div>
+          <div class="timetravel" id="timetravel" aria-disabled="true">
+            <input type="range" id="asof-range" min="0" max="100" value="100" aria-label="Droit applicable au">
+            <div class="timetravel__marks" id="asof-marks"></div>
+            <output class="timetravel__out mono" id="asof-out">—</output>
+          </div>
+        </div>
+        <div class="lawbar__right">
+          <div class="zoom">
+            <button class="icon-btn" id="zoom-out" title="Dézoomer">−</button>
+            <span class="mono" id="zoom-label">1×</span>
+            <button class="icon-btn" id="zoom-in" title="Zoomer">+</button>
+          </div>
+          <div class="legend mono">
+            <span><i class="lg lg--pn"></i>Nullité possible</span>
+            <span><i class="lg lg--nr"></i>À instruire</span>
+            <span><i class="lg lg--ok"></i>Conforme</span>
+            <span><i class="lg lg--sup"></i>Dépend de</span>
+            <span><i class="lg lg--con"></i>Contradiction</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="graph-layout">
+        <div class="timeline-wrap">
+          <div class="timeline-lanes" id="lane-labels"></div>
+          <div class="timeline-scroll" id="timeline-scroll">
+            <svg id="timeline" class="timeline" role="img" aria-label="Frise des actes par catégorie"></svg>
+          </div>
+          <div class="domino-sticker" id="domino-sticker" hidden>
+            <span class="domino-sticker__n" id="domino-n">0</span>
+            <span class="domino-sticker__l">actes potentiellement<br>affectés</span>
+          </div>
+          <div class="tooltip" id="tooltip" hidden></div>
+        </div>
+
+        <aside class="side" id="side">
+          <div class="deadline" id="deadline"></div>
+          <div class="side__head">
+            <h2>Alertes <span class="hand" id="alerts-hand"></span></h2>
+            <div class="filters" id="filters">
+              <button data-f="all" class="is-on">Toutes</button>
+              <button data-f="possible_nullity">Nullités possibles</button>
+              <button data-f="needs_reading">À instruire</button>
+              <button data-f="accepted">Retenues</button>
+            </div>
+          </div>
+          <ol class="alert-list" id="alert-list"></ol>
+        </aside>
+      </div>
+
+      <div class="node-drawer" id="node-drawer" hidden></div>
+    </section>
+
+    <!-- ---------- ALERTS (dense list) ---------- -->
+    <section class="view view--alerts" data-view="alerts" hidden>
+      <div class="sheet">
+        <header class="sheet__head">
+          <p class="mono eyebrow" id="alerts-eyebrow">Moyens à examiner</p>
+          <h1 id="alerts-h1">Toutes les alertes, classées</h1>
+          <p class="sheet__lede">Classement : certitude → nombre d'actes affectés → poids de la catégorie. Aucun pourcentage : trois niveaux seulement — <b>documenté</b>, <b>déduit</b>, <b>à lire</b>.</p>
+        </header>
+        <table class="dense" id="dense"></table>
+      </div>
+    </section>
+
+    <!-- ---------- REPORT ---------- -->
+    <section class="view view--report" data-view="report" hidden>
+      <div class="report-bar">
+        <p class="mono">Rapport · <span id="report-mode">défense</span></p>
+        <div class="report-bar__actions">
+          <a class="btn" id="dl-md" download>Markdown ↓</a>
+          <a class="btn btn--primary" id="dl-pdf" download>PDF ↓</a>
+        </div>
+      </div>
+      <article class="paper" id="report"></article>
+    </section>
+
+    <!-- ---------- BENCHMARK ---------- -->
+    <section class="view view--bench" data-view="bench" hidden>
+      <div class="sheet">
+        <header class="sheet__head">
+          <p class="mono eyebrow">NullityBench-FR · synthétique</p>
+          <h1>Mesuré, pas promis.</h1>
+          <p class="sheet__lede" id="bench-lede">Dossiers fictifs, nullités injectées, leurres licites. Rappel et précision par nullité et par niveau de certitude, comparés à un LLM seul quand une clé est disponible.</p>
+          <div class="bench-actions">
+            <button class="btn btn--primary" id="bench-run">Lancer 10 dossiers</button>
+            <a class="btn" href="/benchmark/export" download>Exporter NullityBench-FR (.zip) ↓</a>
+            <span class="mono" id="bench-state"></span>
+          </div>
+        </header>
+        <div id="bench"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= ALERT CARD (overlay) ================= -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="overlay__scrim" data-close></div>
+    <article class="acard" id="acard" role="dialog" aria-modal="true" aria-labelledby="acard-title"></article>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="app/main.js"></script>
+</body>
+</html>

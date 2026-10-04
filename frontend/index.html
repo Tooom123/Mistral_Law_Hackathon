@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BREACH — Find the flaw</title>
-  <meta name="description" content="BREACH reads the criminal case file, rebuilds the timeline of every procedural act and flags potential procedural defects, pinned to the page.">
+  <title>BREACH — Trouver le vice</title>
+  <meta name="description" content="BREACH lit le dossier pénal, reconstitue la chronologie de chaque acte de procédure et signale les nullités possibles, page à l’appui.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23FFAF01' d='M0 0h3v1H0zM4 0h2v1H4z'/%3E%3Cpath fill='%23FF8204' d='M0 1h2v1H0zM3 1h3v1H3z'/%3E%3Cpath fill='%23FA500F' d='M0 2h3v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h3v1H3z'/%3E%3Cpath fill='%23E61300' d='M0 4h3v1H0zM4 4h2v1H4z'/%3E%3Cpath fill='%23C4001D' d='M0 5h2v1H0zM3 5h3v1H3z'/%3E%3C/svg%3E">
   <script>document.documentElement.classList.add("js");</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
     <canvas class="pixels" data-pixels="hero" data-anchor="#card" aria-hidden="true"></canvas>
 
     <header class="nav">
-      <a class="brand" href="#top" aria-label="BREACH — home">
+      <a class="brand" href="#top" aria-label="BREACH — accueil">
         <svg class="brand__mark" viewBox="0 0 6 6" shape-rendering="crispEdges" aria-hidden="true">
           <!-- cracked block: each row follows the Mistral ramp, the crack zigzags -->
           <path fill="#FFAF01" d="M0 0h3v1H0zM4 0h2v1H4z"/>
@@ -40,28 +40,29 @@
         <span class="brand__word">BREACH</span>
       </a>
       <nav class="nav__links" aria-label="Sections">
-        <a href="#method">Method</a>
-        <a href="#finding">Findings</a>
-        <a href="#guardrails">Guardrails</a>
+        <a href="#method">Méthode</a>
+        <a href="#finding">Alertes</a>
+        <a href="#guardrails">Garde-fous</a>
+        <a href="app.html#bench">Mesures</a>
       </nav>
       <span class="nav__tag mono">Prototype · Hackathon</span>
     </header>
 
     <div class="hero__inner">
       <h1 class="headline" data-split>
-        Find the <span class="cutout cutout--tilt"><span>flaw</span></span><br>
-        before the deadline does.
+        Trouver le <span class="cutout cutout--tilt"><span>vice</span></span><br>
+        avant le délai.
       </h1>
 
       <p class="lede" data-reveal="up" style="--i: 3">
-        BREACH reads the entire case file, rebuilds the timeline of every procedural act and flags
-        <strong>potential procedural defects</strong>, each one pinned to its page.
+        BREACH lit tout le dossier, reconstitue la chronologie de chaque acte de procédure et signale
+        les <strong>nullités possibles</strong>, chacune épinglée à sa page.
       </p>
 
       <!-- ===== Drop zone: start of the pipeline ===== -->
       <div class="drop-wrap" data-reveal="up" style="--i: 4">
         <p class="annotation" aria-hidden="true" data-speed="-0.06">
-          the whole file,<br>even the scans
+          tout le dossier,<br>même les scans
           <svg class="annotation__arrow" viewBox="0 0 120 70" fill="none">
             <path d="M4 8 C 40 4, 78 18, 104 54" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
             <path d="M92 52 L105 56 L106 42" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -70,8 +71,8 @@
 
         <!-- TODO(legal): validate this sticker (loi n° 2026-651, art. 173-1 CPP; entry into force to verify) before the demo -->
         <div class="sticker" aria-hidden="true" data-speed="0.08">
-          <span class="sticker__big">4 months</span>
-          <span class="sticker__small">not 6</span>
+          <span class="sticker__big">4 mois</span>
+          <span class="sticker__small">et non 6</span>
         </div>
 
         <div class="card" id="card">
@@ -81,7 +82,7 @@
           <div class="stage" data-stage="drop">
             <label class="dropzone" id="dropzone" for="file-input">
               <input id="file-input" type="file" multiple
-                     accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.heic,.webp,.mp3,.wav,.m4a"
+                     accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.webp"
                      class="visually-hidden">
               <!-- stack of 3 documents: on hover they fan out and open -->
               <span class="docstack" aria-hidden="true">
@@ -105,18 +106,18 @@
                   <path class="doc__line" fill="#E61300" d="M2 10h7v1H2z"/>
                 </svg>
               </span>
-              <span class="dropzone__title">Drop the criminal case file</span>
-              <span class="dropzone__hint">or <u>browse your files</u></span>
-              <span class="dropzone__formats mono">PDF · scans · photos · audio</span>
+              <span class="dropzone__title">Déposez le dossier pénal</span>
+              <span class="dropzone__hint">ou <u>parcourez vos fichiers</u></span>
+              <span class="dropzone__formats mono">PDF · scans · photos</span>
             </label>
 
             <div class="files" id="files" hidden>
               <div class="files__stats mono" id="stats"></div>
               <ul class="files__list" id="file-list"></ul>
               <div class="files__actions">
-                <label class="btn btn--ghost" for="file-input">+ Add</label>
+                <label class="btn btn--ghost" for="file-input">+ Ajouter</label>
                 <button class="btn btn--primary" id="analyze" type="button">
-                  Analyze the file <span aria-hidden="true">→</span>
+                  Analyser le dossier <span aria-hidden="true">→</span>
                 </button>
               </div>
             </div>
@@ -125,80 +126,80 @@
           <!-- stage 2: pipeline running -->
           <div class="stage" data-stage="pipeline" hidden>
             <div class="pipeline__head">
-              <span class="mono">Case file <span id="dossier-id">—</span></span>
+              <span class="mono">Dossier <span id="dossier-id">—</span></span>
               <span class="mono" id="pipeline-mode"></span>
             </div>
             <ol class="pipeline" id="pipeline"></ol>
             <div class="files__actions">
-              <button class="btn btn--ghost" id="reset" type="button">New case file</button>
+              <button class="btn btn--ghost" id="reset" type="button">Nouveau dossier</button>
               <a class="btn btn--primary is-disabled" id="open-timeline" href="#" aria-disabled="true">
-                Open the timeline <span aria-hidden="true">→</span>
+                Ouvrir la frise <span aria-hidden="true">→</span>
               </a>
             </div>
           </div>
         </div>
 
         <p class="demo-link">
-          No case file at hand?
-          <button type="button" class="link" id="demo">Load the Mathurins case (synthetic)</button>
+          Pas de dossier sous la main ?
+          <button type="button" class="link" id="demo">Lancer l’affaire des Mathurins (synthétique)</button>
         </p>
       </div>
     </div>
 
     <ul class="trust mono" data-reveal="up" style="--i: 6">
-      <li>Every finding cited to the page</li>
-      <li>Law in force on the act’s date</li>
-      <li>No real data in the demo</li>
+      <li>Chaque alerte citée à la page</li>
+      <li>Le droit en vigueur à la date de l’acte</li>
+      <li>Aucune donnée réelle dans la démo</li>
     </ul>
   </section>
 
   <!-- ============ SCROLL-LINKED TICKER ============ -->
-  <section class="ticker" aria-label="The pipeline in seven verbs">
-    <p class="ticker__row" data-drift="-1">Read <i></i> Rebuild <i></i> Check <i></i> Cross-check <i></i> Read <i></i> Rebuild <i></i> Check <i></i> Cross-check <i></i></p>
-    <p class="ticker__row ticker__row--alt" data-drift="1">Cascade <i></i> Ground <i></i> Act <i></i> Cascade <i></i> Ground <i></i> Act <i></i> Cascade <i></i> Ground <i></i> Act <i></i></p>
+  <section class="ticker" aria-label="La chaîne en sept verbes">
+    <p class="ticker__row" data-drift="-1">Lire <i></i> Reconstituer <i></i> Vérifier <i></i> Confronter <i></i> Lire <i></i> Reconstituer <i></i> Vérifier <i></i> Confronter <i></i></p>
+    <p class="ticker__row ticker__row--alt" data-drift="1">Domino <i></i> Fonder <i></i> Agir <i></i> Domino <i></i> Fonder <i></i> Agir <i></i> Domino <i></i> Fonder <i></i> Agir <i></i></p>
   </section>
 
   <!-- ============ METHOD ============ -->
   <section class="section" id="method">
     <div class="section__head">
-      <p class="eyebrow mono" data-reveal="left">The pipeline</p>
-      <h2 data-reveal="left" style="--i: 1">The LLM reads. The code judges.<br><span class="hl">The lawyer decides.</span></h2>
+      <p class="eyebrow mono" data-reveal="left">La chaîne</p>
+      <h2 data-reveal="left" style="--i: 1">Le modèle lit. Le code vérifie.<br><span class="hl">L’avocat décide.</span></h2>
     </div>
 
     <ol class="steps">
-      <li data-reveal="left" style="--i: 0"><span class="steps__n">01</span><b>Read</b><span>OCR and vision: every fact keeps its page and position.</span></li>
-      <li data-reveal="left" style="--i: 1"><span class="steps__n">02</span><b>Rebuild</b><span>Acts, times, actors: one timeline per category.</span></li>
-      <li data-reveal="left" style="--i: 2"><span class="steps__n">03</span><b>Check</b><span>Rules as code, using the law in force on the act’s date.</span></li>
-      <li data-reveal="left" style="--i: 3"><span class="steps__n">04</span><b>Cross-check</b><span>Two reports, two different times for the same fact.</span></li>
-      <li data-reveal="right" style="--i: 4"><span class="steps__n">05</span><b>Cascade</b><span>What falls with the act: the acts to name in the motion.</span></li>
-      <li data-reveal="right" style="--i: 5"><span class="steps__n">06</span><b>Ground</b><span>Article text and case law retrieved from Judilibre.</span></li>
-      <li data-reveal="right" style="--i: 6"><span class="steps__n">07</span><b>Act</b><span>The deadline to watch and the grounds to examine.</span></li>
+      <li data-reveal="left" style="--i: 0"><span class="steps__n">01</span><b>Lire</b><span>OCR et vision : chaque fait garde sa page et sa position.</span></li>
+      <li data-reveal="left" style="--i: 1"><span class="steps__n">02</span><b>Reconstituer</b><span>Actes, heures, personnes : une frise par catégorie.</span></li>
+      <li data-reveal="left" style="--i: 2"><span class="steps__n">03</span><b>Vérifier</b><span>Les conditions de la loi, en code, à la date de l’acte.</span></li>
+      <li data-reveal="left" style="--i: 3"><span class="steps__n">04</span><b>Confronter</b><span>Deux PV, deux heures différentes pour le même fait.</span></li>
+      <li data-reveal="right" style="--i: 4"><span class="steps__n">05</span><b>Domino</b><span>Ce qui tombe avec l’acte : les actes à viser dans la requête.</span></li>
+      <li data-reveal="right" style="--i: 5"><span class="steps__n">06</span><b>Fonder</b><span>Version de l’article et décisions récupérées sur Judilibre.</span></li>
+      <li data-reveal="right" style="--i: 6"><span class="steps__n">07</span><b>Agir</b><span>Le délai à surveiller et les moyens à examiner.</span></li>
     </ol>
   </section>
 
   <!-- ============ A FINDING ============ -->
   <section class="section section--tint" id="finding">
     <div class="section__head">
-      <p class="eyebrow mono" data-reveal="right">Every finding answers four questions</p>
-      <h2 data-reveal="right" style="--i: 1">Not a summary.<br>A flaw, with its page number.</h2>
+      <p class="eyebrow mono" data-reveal="right">Chaque alerte répond à quatre questions</p>
+      <h2 data-reveal="right" style="--i: 1">Pas un résumé.<br>Un vice, avec son numéro de page.</h2>
     </div>
 
     <div class="questions">
       <article class="q q--a" data-reveal="left" style="--i: 0">
-        <span class="q__tag mono">What</span>
-        <p>A fact, with no legal conclusion: rights were notified well after custody began.</p>
+        <span class="q__tag mono">Quoi</span>
+        <p>Un fait, sans conclusion juridique : droits notifiés 3 h 15 après le placement.</p>
       </article>
       <article class="q q--b" data-reveal="left" style="--i: 1">
-        <span class="q__tag mono">Where</span>
-        <p>Document, page, highlighted line. One click opens the source page.</p>
+        <span class="q__tag mono">Où</span>
+        <p>La pièce, la page, la ligne surlignée. Un clic ouvre la page source.</p>
       </article>
       <article class="q q--c" data-reveal="right" style="--i: 1">
-        <span class="q__tag mono">Why</span>
-        <p>The rule in its applicable version, the acts potentially affected, the precedents.</p>
+        <span class="q__tag mono">Pourquoi</span>
+        <p>La règle dans sa version applicable, les actes potentiellement affectés, les précédents.</p>
       </article>
       <article class="q q--d" data-reveal="right" style="--i: 2">
-        <span class="q__tag mono">What next</span>
-        <p>What the lawyer must check — prejudice, a justification in the file — and the deadline.</p>
+        <span class="q__tag mono">Et maintenant</span>
+        <p>Ce que l’avocat doit vérifier — le grief, une justification au dossier — et le délai.</p>
       </article>
     </div>
   </section>
@@ -206,15 +207,15 @@
   <!-- ============ GUARDRAILS ============ -->
   <section class="section" id="guardrails">
     <div class="section__head">
-      <p class="eyebrow mono" data-reveal="left">Guardrails</p>
-      <h2 data-reveal="left" style="--i: 1">An audit tool,<br>not an oracle.</h2>
+      <p class="eyebrow mono" data-reveal="left">Garde-fous</p>
+      <h2 data-reveal="left" style="--i: 1">Un outil d’audit,<br>pas un oracle.</h2>
     </div>
     <ul class="rules">
-      <li data-reveal="left"><span><b>No source, no finding.</b> Everything on screen points to a page in the file.</span></li>
-      <li data-reveal="right"><span><b>No made-up percentages.</b> Three levels: documented, inferred, needs reading.</span></li>
-      <li data-reveal="left"><span><b>No nullity declared.</b> We speak of “grounds to examine”; prejudice is for the lawyer to assess.</span></li>
-      <li data-reveal="right"><span><b>No hallucinated case law.</b> Only decisions retrieved from the Judilibre API are cited.</span></li>
-      <li data-reveal="left"><span><b>Both sides of the bar.</b> The same audit serves the defense and the prosecutor who wants a clean procedure.</span></li>
+      <li data-reveal="left"><span><b>Pas de source, pas d’alerte.</b> Tout ce qui s’affiche renvoie à une page du dossier.</span></li>
+      <li data-reveal="right"><span><b>Aucun pourcentage inventé.</b> Trois niveaux : documenté, déduit, à lire.</span></li>
+      <li data-reveal="left"><span><b>Aucune nullité déclarée.</b> On parle de « moyens à examiner » ; le grief, c’est l’avocat.</span></li>
+      <li data-reveal="right"><span><b>Aucune jurisprudence inventée.</b> Seules les décisions récupérées via l’API Judilibre sont citées.</span></li>
+      <li data-reveal="left"><span><b>Des deux côtés de la barre.</b> Le même audit sert la défense et le parquet qui veut une procédure propre.</span></li>
     </ul>
   </section>
 
@@ -222,7 +223,7 @@
   <footer class="footer">
     <div class="footer__grid">
       <div class="footer__col footer__about">
-        <a class="brand" href="#top" aria-label="BREACH — back to top">
+        <a class="brand" href="#top" aria-label="BREACH — haut de page">
           <svg class="brand__mark" viewBox="0 0 6 6" shape-rendering="crispEdges" aria-hidden="true">
             <path fill="#FFAF01" d="M0 0h3v1H0zM4 0h2v1H4z"/>
             <path fill="#FF8204" d="M0 1h2v1H0zM3 1h3v1H3z"/>
@@ -232,23 +233,23 @@
           </svg>
           <span class="brand__word">BREACH</span>
         </a>
-        <p>Find the flaw before the deadline does.</p>
+        <p>Trouver le vice avant le délai.</p>
       </div>
       <nav class="footer__col" aria-label="Product">
-        <p class="footer__title mono">Product</p>
-        <a href="#top">Upload a case file</a>
-        <a href="#method">Method</a>
-        <a href="#finding">Findings</a>
-        <a href="#guardrails">Guardrails</a>
+        <p class="footer__title mono">Produit</p>
+        <a href="#top">Déposer un dossier</a>
+        <a href="app.html">Ouvrir l’application</a>
+        <a href="app.html#bench">NullityBench-FR</a>
+        <a href="#guardrails">Garde-fous</a>
       </nav>
       <div class="footer__col">
-        <p class="footer__title mono">Project</p>
-        <span>Hackathon prototype</span>
-        <span>Synthetic data only</span>
-        <span>Legal content pending validation</span>
+        <p class="footer__title mono">Projet</p>
+        <span>Prototype de hackathon</span>
+        <span>Données synthétiques uniquement</span>
+        <span>Contenu juridique à valider</span>
       </div>
       <div class="footer__col">
-        <p class="footer__title mono">Built with</p>
+        <p class="footer__title mono">Construit avec</p>
         <span class="footer__powered">
           <svg viewBox="0 0 162 162" aria-hidden="true">
             <rect x="31" y="31" width="20" height="20" fill="#FFAF01"/><rect x="111" y="31" width="20" height="20" fill="#FFAF01"/>
@@ -263,8 +264,8 @@
     </div>
     <div class="footer__bar mono">
       <span>BREACH © 2026</span>
-      <span>Not legal advice · the lawyer decides</span>
-      <a href="#top">Back to top ↑</a>
+      <span>Pas un conseil juridique · l’avocat décide</span>
+      <a href="#top">Haut de page ↑</a>
     </div>
   </footer>
 

@@ -111,7 +111,7 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
                 _log(case_id, f"p. {info['page']} · {'photo' if info['kind'] == 'image' else 'scan'} lu par "
                      f"{'Mistral OCR' if info['ocr'] == 'mistral_ocr' else 'Tesseract'}", "ocr")
             if pace:
-                time.sleep(pace / 6)
+                time.sleep(pace / 60)
 
         pages = read_files(d, files, on_page)
         _stage(case_id, "read", "done")
@@ -130,7 +130,7 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
             _log(case_id, f"{pc.id} · p. {pc.pages[0]}{'–' + str(pc.pages[-1]) if len(pc.pages) > 1 else ''} · "
                  f"{label} → {pc.category}", "piece")
             if pace:
-                time.sleep(pace / 3)
+                time.sleep(pace / 10)
         _stage(case_id, "classify", "done")
 
         # ④ EXTRACT
@@ -148,7 +148,7 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
                 if dr.node.start and dr.node.subtype not in ("other",):
                     _log(case_id, f"{dr.node.label} · {dr.node.start:%d/%m %Hh%M} · {pc.id}", "act")
             if pace:
-                time.sleep(pace / 4)
+                time.sleep(pace / 16)
         _stage(case_id, "extract", "done")
 
         # ⑤ LINK
@@ -182,7 +182,7 @@ def run_case(case_id: str, files: list[str], title: str = "", pace: float = 0.0)
                 if c.certainty == "documented":
                     _count(case_id, "documented")
             if pace and c.rank > 0:
-                time.sleep(pace / 3)
+                time.sleep(pace / 2.5)
         _stage(case_id, "check", "done")
         _stage(case_id, "cascade", "running")
         top = max(checks, key=lambda c: len(c.affected), default=None)

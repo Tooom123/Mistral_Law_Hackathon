@@ -268,37 +268,23 @@
     if (!$('[data-stage="drop"]').hidden) addFiles(e.dataTransfer.files);
   });
 
-  // synthetic case file (produced by the generator, see CONTEXT.md §8)
-  $("#demo").addEventListener("click", async () => {
-    try {
-      const res = await fetch("demo/manifest.json");
-      if (!res.ok) throw new Error(res.status);
-      const manifest = await res.json();   // { name, files: [{ path, name? }] }
-      const files = await Promise.all(manifest.files.map(async f => {
-        const blob = await (await fetch("demo/" + f.path)).blob();
-        return new File([blob], f.name ?? f.path.split("/").pop(), { type: blob.type });
-      }));
-      addFiles(files);
-      toast(`Case file “${manifest.name ?? "synthetic"}” loaded.`);
-    } catch {
-      toast("Synthetic case file not generated yet (expected in frontend/demo/manifest.json).");
-    }
-  });
+  // synthetic case file (generated server-side, CONTEXT.md §8): straight to the war room
+  $("#demo").addEventListener("click", () => { location.href = "app.html?demo"; });
 
   /* ================================================================
      3. Pipeline
      ================================================================ */
 
   const STEPS = [
-    { id: "read",        label: "Reading",        detail: "OCR and vision, page and position kept" },
-    { id: "reconstruct", label: "Rebuilding",     detail: "Acts, times, actors" },
-    { id: "check",       label: "Checking",       detail: "Rules in force on each act’s date" },
-    { id: "crosscheck",  label: "Cross-checking", detail: "Contradictions between reports on relevant facts" },
-    { id: "cascade",     label: "Cascade",        detail: "Acts potentially affected" },
-    { id: "ground",      label: "Grounding",      detail: "Articles and Judilibre case law" },
-    { id: "act",         label: "Deadlines",      detail: "Deadlines to verify, grounds to examine" },
+    { id: "read",        label: "Lecture",        detail: "OCR et vision, page et position conservées" },
+    { id: "reconstruct", label: "Reconstitution", detail: "Actes, heures, personnes" },
+    { id: "check",       label: "Vérification",   detail: "Règles en vigueur à la date de chaque acte" },
+    { id: "crosscheck",  label: "Confrontation",  detail: "Contradictions entre PV sur les faits utiles" },
+    { id: "cascade",     label: "Domino",         detail: "Actes potentiellement affectés" },
+    { id: "ground",      label: "Fondement",      detail: "Articles et décisions Judilibre" },
+    { id: "act",         label: "Délais",         detail: "Délais à vérifier, moyens à examiner" },
   ];
-  const STATE_LABEL = { pending: "Pending", running: "Running", done: "Done", error: "Error" };
+  const STATE_LABEL = { pending: "En attente", running: "En cours", done: "Fait", error: "Erreur" };
 
   const pipelineEl = $("#pipeline");
   const openTimeline = $("#open-timeline");
@@ -332,50 +318,28 @@
     openTimeline.href = `timeline.html?dossier=${encodeURIComponent(dossierId)}`;
   }
 
-  /* Expected backend contract (to align with the engines team):
-       POST {API}/api/dossiers            multipart, field "files"  → { dossier_id }
-       GET  {API}/api/dossiers/{id}/events  (SSE)                   → { step, state, detail? }
-     With no reachable backend, we switch to mockup mode: steps tick through,
-     with no numbers at all. */
+  /* Backend contract (casebreak/api/app.py):
+       POST {API}/cases   multipart, field "files" → { case_id }
+     then the app shows the war room (app.html?case=…) fed by GET /cases/{id}/status. */
   async function startPipeline() {
     if (!items.length) return;
     renderSteps();
     setStage("pipeline");
     $("#pipeline-mode").textContent = "";
-
     const form = new FormData();
     items.forEach(it => form.append("files", it.file, it.file.name));
-
-    let dossierId;
+    setStep(STEPS[0].id, "running", "Envoi du dossier…");
     try {
-      const res = await fetch(`${API_BASE}/api/dossiers`, { method: "POST", body: form });
-      if (!res.ok) throw new Error(res.status);
-      ({ dossier_id: dossierId } = await res.json());
-    } catch {
-      return runMockup();
+      const res = await fetch(`${API_BASE}/cases`, { method: "POST", body: form });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail ?? res.status);
+      const { case_id } = await res.json();
+      $("#dossier-id").textContent = case_id;
+      setStep(STEPS[0].id, "done", "Dossier reçu");
+      location.href = `app.html?case=${encodeURIComponent(case_id)}`;
+    } catch (e) {
+      setStep(STEPS[0].id, "error", String(e.message ?? e));
+      toast("Serveur injoignable : lancez `uv run casebreak serve` puis rechargez.");
     }
-
-    $("#dossier-id").textContent = dossierId;
-    const es = new EventSource(`${API_BASE}/api/dossiers/${encodeURIComponent(dossierId)}/events`);
-    es.onmessage = ev => {
-      const msg = JSON.parse(ev.data);
-      setStep(msg.step, msg.state, msg.detail);
-      if (msg.step === STEPS.at(-1).id && msg.state === "done") { es.close(); finish(dossierId); }
-    };
-    es.onerror = () => { es.close(); toast("Connection to the pipeline lost."); };
-  }
-
-  async function runMockup() {
-    $("#dossier-id").textContent = "mockup";
-    $("#pipeline-mode").textContent = "Backend not connected · mockup";
-    const wait = ms => new Promise(r => setTimeout(r, REDUCED_MOTION ? 0 : ms));
-    for (const s of STEPS) {
-      if ($('[data-stage="pipeline"]').hidden) return;   // the user reset
-      setStep(s.id, "running");
-      await wait(700 + Math.random() * 600);
-      setStep(s.id, "done");
-    }
-    finish("mockup");
   }
 
   openTimeline.addEventListener("click", async e => {
