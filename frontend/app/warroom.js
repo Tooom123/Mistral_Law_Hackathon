@@ -70,7 +70,7 @@ export function startWarroom(caseId, onDone) {
       $("#war-title").textContent = `${c.possible_nullity} nullités possibles, ${c.needs_reading} points à lire`;
       $("#war-sub").textContent = `${c.pages} pages · ${c.pieces} pièces · ${c.acts} actes · ${c.supports} liens de dépendance — chaque alerte renvoie à sa page.`;
       $("#war-open").disabled = false;
-      $("#war-open").focus();
+      $("#war-open").focus({ preventScroll: true });
       clearInterval(clock);
       stop = true;
       onDone?.(st);
